@@ -1,0 +1,23 @@
+
+
+-Ein JuptyerNotebook anlegen
+
+-nötige Pakete laden:
+    import matplotlib.pyplot as plt
+    import numpy as np
+    from Packages.RK4 import *
+    from Packages.Configuration import *
+
+-mit importer(filename) die configfile laden
+    Output: 2 Arrays, der erste sind die configdaten, der zweite die bezeichnungen der Daten
+
+-mit rk4alg(BaseEquation,*config) die Simulation laufen lassen
+    Output: 3 Arrays, der erste die Zeit, der zweite die ZMT, der dritte die GMT
+
+
+
+Notiz zu PredefinedForcing:
+Das Forcing muss die gleiche zeitliche Auflösung haben wie es dem Algorithmus zum rechnen gegeben wird (h), 
+da bisher ein Wert für einen bestimmten Schritt und nicht für eine bestimmte Zeit genommen wird. 
+
+

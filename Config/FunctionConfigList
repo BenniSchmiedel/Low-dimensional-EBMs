@@ -1,0 +1,22 @@
+R_infix
+[Q,alpha_p]
+[342,0.33] (W/m^2)
+[85.71,0.33] (kcal/cm^2/month)
+
+R_innoise
+[Q,alpha_p,v,vt]
+[342,0.33,0.01*342,0] 
+
+R_outbudc
+[A,B,A1,B1,f_c]
+[222.47,2.2247] (W/m^2)   -> Budyko equation beta=[3.739] (W/m^2) = [0.235] (kcal/cm^2/month)
+[14,0.14] (kcal/cm^2/month)
+
+R_outbudc
+[A,B,A1,B1,f_c]
+[222.47,2.2247,47.73,1.591,0.5] (W/m^2)   -> Budyko equation beta=[3.739] (W/m^2) = [0.235] (kcal/cm^2/month)
+[14,0.14,3.0,0.1,0.5] (kcal/cm^2/month)
+
+
+
+
