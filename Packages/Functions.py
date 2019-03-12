@@ -20,45 +20,47 @@ import time
 
 """Energy Flux from incoming radiation"""
 
-def R_ininsolalbedo(R_ininsolalbedoparam):
+def R_ininsolalbedo(funcparam):
     #Incoming radiation with latitudal dependence, albedo transition for T<T_ice, without noise
     #R_ininsolalbedo=[Conversion,alpha_p,T_ice,m]
-    
+    key=list(funcparam.keys())
+    list_parameters=list(funcparam.values())
+    print(list_parameters)
     #Loading inputparameters
-    Q,factor_solar,dQ,albedofunc,albedoread,albedofuncparam,noise,noiseamp,noisedelay,    seed,seedmanipulation,solarinput,convfactor,timeunit,orbital,orbitalyear=R_ininsolalbedoparam
+    Q,factor_solar,dQ,albedofunc,albedoread,albedofuncparam,noise,noiseamp,noisedelay,    seed,seedmanipulation,solarinput,convfactor,timeunit,orbital,orbitalyear=list_parameters#R_ininsolalbedoparam
     
     #Calculating albedo from given albedofunction
     alpha=albedofunc(*albedofuncparam) 
     #Readout to give albedo as output
     if albedoread==True: 
-        if Runtime_Tracker % 4*ReadoutStep == 0:    #Only on 4th step (due to rk4)
-            Vars.Read[6][int(Runtime_Tracker/(4*ReadoutStep))]=alpha
+        if Runtime_Tracker % 4*data_readout == 0:    #Only on 4th step (due to rk4)
+            Vars.Read[6][int(Runtime_Tracker/(4*data_readout))]=alpha
 
     #Noise factor z on the solar insolation        
     z=0
     if noise==True:
         #possible noisedelay which indicates a gap between updating the noise factor
         if (int(Vars.t/stepsize_of_integration) % noisedelay)==0: 
-            if (Runtime_Tracker % 4*ReadoutStep)==0:
+            if (Runtime_Tracker % 4*data_readout)==0:
                 #seed if same noise is desired
                 if seed==True:
                     np.random.seed(int(Vars.t)+seedmanipulation)
                 z=np.random.normal(0,noiseamp)
                 #write to builtins and output
                 builtins.Noise_Tracker=z
-                Vars.Read[9][int(Runtime_Tracker/(4*ReadoutStep))]=z
+                Vars.Read[9][int(Runtime_Tracker/(4*data_readout))]=z
     z=builtins.Noise_Tracker
     
     #Calculating solar insolation distribution from functions using climlab
     
-    if latitude_stepsize==0:
+    if spatial_resolution==0:
         Vars.Solar=Q
     if solarinput==True:
         #with orbital variations (if False by default present day)
         if orbital==True:
-            if Runtime_Tracker % 4*ReadoutStep == 0:
+            if Runtime_Tracker % 4*data_readout == 0:
                 Vars.Solar=Solarradiation_orbital(convfactor,orbitalyear)
-                Vars.Read[8][int(Runtime_Tracker/(4*ReadoutStep))]=Vars.Solar
+                Vars.Read[8][int(Runtime_Tracker/(4*data_readout))]=Vars.Solar
         else:
             if Runtime_Tracker==0:
                 Vars.Solar=Solarradiation(convfactor,timeunit,orbitalyear)
@@ -67,8 +69,8 @@ def R_ininsolalbedo(R_ininsolalbedoparam):
     
     #Equation of incoming radiation
     R_in=(Q_total+z)*factor_solar*(1-lna(alpha))
-    if Runtime_Tracker % 4*ReadoutStep == 0:    #Only on 4th step (due to rk4)
-        Vars.Read[10][int(Runtime_Tracker/(4*ReadoutStep))]=R_in
+    if Runtime_Tracker % 4*data_readout == 0:    #Only on 4th step (due to rk4)
+        Vars.Read[10][int(Runtime_Tracker/(4*data_readout))]=R_in
     return R_in
 
 
@@ -144,8 +146,8 @@ def R_outbudnc(R_outbudncparam):
     #R_outbudncparam=[A,B]
     A,B=R_outbudncparam
     R_out=-(A+B*(Vars.T-273.15))
-    if Runtime_Tracker % 4*ReadoutStep == 0:    #Only on 4th step (due to rk4)
-        Vars.Read[11][int(Runtime_Tracker/(4*ReadoutStep))]=R_out
+    if Runtime_Tracker % 4*data_readout == 0:    #Only on 4th step (due to rk4)
+        Vars.Read[11][int(Runtime_Tracker/(4*data_readout))]=R_out
     return R_out
 
 def R_outbudc(R_outbudcparam):
@@ -153,8 +155,8 @@ def R_outbudc(R_outbudcparam):
     #R_outbudcparam=[A,B,A1,B1,f_c]
     A,B,A1,B1,f_c=R_outbudcparam
     R_out=-(A+B*(np.array(Vars.T)-273.15)-(A1+B1*(np.array(Vars.T)-273.15))*f_c)
-    if Runtime_Tracker % 4*ReadoutStep == 0:    #Only on 4th step (due to rk4)
-        Vars.Read[11][int(Runtime_Tracker/(4*ReadoutStep))]=R_out
+    if Runtime_Tracker % 4*data_readout == 0:    #Only on 4th step (due to rk4)
+        Vars.Read[11][int(Runtime_Tracker/(4*data_readout))]=R_out
     return R_out
 
 def R_outplanck(R_outplanckparam):
@@ -162,8 +164,8 @@ def R_outplanck(R_outplanckparam):
     #R_outplanckparam=[grey,sig]
     grey,sig=R_outplanckparam
     R_out=-(grey*sig*Vars.T**4)
-    if Runtime_Tracker % 4*ReadoutStep == 0:    #Only on 4th step (due to rk4)
-        Vars.Read[11][int(Runtime_Tracker/(4*ReadoutStep))]=R_out
+    if Runtime_Tracker % 4*data_readout == 0:    #Only on 4th step (due to rk4)
+        Vars.Read[11][int(Runtime_Tracker/(4*data_readout))]=R_out
     return R_out
 
 def R_outsel(R_outselparam):
@@ -171,8 +173,8 @@ def R_outsel(R_outselparam):
     #R_outselparam=[sig,grey,gamma,m]"""
     m,sig,gamma,grey=R_outselparam
     R_out=-grey*sig*Vars.T**4*(1-m*np.tanh(gamma*Vars.T**6))
-    if Runtime_Tracker % 4*ReadoutStep == 0:    #Only on 4th step (due to rk4)
-        Vars.Read[11][int(Runtime_Tracker/(4*ReadoutStep))]=R_out
+    if Runtime_Tracker % 4*data_readout == 0:    #Only on 4th step (due to rk4)
+        Vars.Read[11][int(Runtime_Tracker/(4*data_readout))]=R_out
     return R_out
 
 
@@ -191,8 +193,8 @@ def Transfer_bud(Transfer_budparam):
         F=0
     #Reading the distribution to give an output
     if Read==True:
-        if Runtime_Tracker % 4*ReadoutStep == 0:
-            Vars.Read[7][int(Runtime_Tracker/(4*ReadoutStep))]=F
+        if Runtime_Tracker % 4*data_readout == 0:
+            Vars.Read[7][int(Runtime_Tracker/(4*data_readout))]=F
     return F
 
 def WV_Sel(WV_Selparam):
@@ -265,9 +267,9 @@ def Transfer_Sel(Transfer_Selparam):
         
         #reading for output
         if Readout==True:
-            if Runtime_Tracker % 4*ReadoutStep == 0:
+            if Runtime_Tracker % 4*data_readout == 0:
                 for l in range(6):
-                    Vars.Read[l][int(Runtime_Tracker/(4*ReadoutStep))]=Readdata[l]
+                    Vars.Read[l][int(Runtime_Tracker/(4*data_readout))]=Readdata[l]
     else:
         Transfer=0
     return Transfer
@@ -281,7 +283,7 @@ def Transfer_Sel(Transfer_Selparam):
 def PredefinedForcing(PredefinedForcingparam):
     forcingnumber,datapath,name,delimiter,header,col_time,col_forcing,timeunit,BP,time_start,k=PredefinedForcingparam
     if Runtime_Tracker==0:
-        Vars.ExternalInput[forcingnumber]=np.genfromtxt('Config/'+str(name),delimiter=str(delimiter),skip_header=header,usecols=(col_time,col_forcing),unpack=True,encoding='ISO-8859-1')  
+        Vars.ExternalInput[forcingnumber]=np.genfromtxt(str(datapath)+str(name),delimiter=str(delimiter),skip_header=header,usecols=(col_time,col_forcing),unpack=True,encoding='ISO-8859-1')  
         Vars.External_time_start[forcingnumber]=time_start    
         if BP==True:
             Vars.ExternalInput[forcingnumber][0]=-(lna(Vars.ExternalInput[forcingnumber][0])-Vars.External_time_start[forcingnumber])
@@ -308,8 +310,8 @@ def PredefinedForcing(PredefinedForcingparam):
             Vars.ForcingTracker[forcingnumber][1] = Vars.ExternalInput[forcingnumber][1][Vars.ForcingTracker[forcingnumber][0]]
             Vars.ForcingTracker[forcingnumber][0] += 1
     F=Vars.ForcingTracker[forcingnumber][1]*k
-    if Runtime_Tracker % 4*ReadoutStep == 0:
-        Vars.ExternalOutput[forcingnumber][int(Runtime_Tracker/(4*ReadoutStep))]=F
+    if Runtime_Tracker % 4*data_readout == 0:
+        Vars.ExternalOutput[forcingnumber][int(Runtime_Tracker/(4*data_readout))]=F
     return F
 
 
@@ -409,16 +411,16 @@ def HumDif(e0,eps,L,Rd,p):
     
 def Tempdif():
     #Returning the temperature difference between the northern and southern latitudinal boundary
-    if latitude_belt==True:
+    if latitudinal_belt==True:
         dT=Vars.T[1:]-Vars.T[:-1]  
     #Calculation if for sellers it is desired to be defined on the latitudinal circles, 
     #with interpolation towards the poles
-    if latitude_circle==True:
+    if latitudinal_circle==True:
         f=interpolator(Vars.Lat,Vars.T)
-        if latitude_NS==True:
-            Lat_new=np.linspace(-90,90,int(180/latitude_stepsize+1))
+        if both_hemispheres==True:
+            Lat_new=np.linspace(-90,90,int(180/spatial_resolution+1))
         else:
-            Lat_new=np.linspace(0,90,int(90/latitude_stepsize+1))
+            Lat_new=np.linspace(0,90,int(90/spatial_resolution+1))
         dT=f(Lat_new)[1:]-f(Lat_new)[:-1]
     return dT
 
@@ -471,8 +473,8 @@ def plotmeanstd(array):
     arraymean=[]
     arraystd=[]
     for l in range(len(arraynew)):
-        arraymean.append(np.mean(arraynew[l][-ConditionLength:]))
-        arraystd.append(np.std(arraynew[l][-ConditionLength:]))
+        arraymean.append(np.mean(arraynew[l][-eq_condition_length:]))
+        arraystd.append(np.std(arraynew[l][-eq_condition_length:]))
     return arraynew, arraymean, arraystd
 
 def datasetaverage(dataset):
@@ -498,11 +500,11 @@ def SteadyStateConditionGlobal(Global):
     #equilibrium condition of the RK4-algorithm, checking if the condition is fulfilled or not
     dT=np.std(Global)
     #if fulfilled, return True to interupt the algorithm and stop with output message
-    if dT <= ConditionValue:
-        print('Steady State reached after %s steps, within %s seconds'               %(int(Runtime_Tracker/(4*ReadoutStep)),(time.time() - Vars.start_time)))
+    if dT <= eq_condition_amplitude:
+        print('Steady State reached after %s steps, within %s seconds'               %(int(Runtime_Tracker/(4*data_readout)),(time.time() - Vars.start_time)))
         return True
     #if not fulfilled return False, until the integrationnumber is exceeded
-    if Runtime_Tracker==(num_of_integration-1)*4:
+    if Runtime_Tracker==(number_of_integration-1)*4:
         print('Transit State within %s seconds' %(time.time() - Vars.start_time))
         return True
     else:

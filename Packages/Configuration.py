@@ -1,9 +1,3 @@
-
-# coding: utf-8
-
-# In[5]:
-
-
 """Package for importing system configuration.
    The needed data is imported from a specific config.ini and placed in different arrays
    which can be called """
@@ -17,55 +11,81 @@ def importer(filename):
     config=configparser.ConfigParser()                      
     config.read('Config/'+filename)    
                          
-    #Creating arrays for the sections in the configfile      
-    EQparam=config.options('EQparam')      
-    rk4input=config.options('rk4input')
-    var=config.options('var')
-
-    #Creating an array of functions included 
-    funclist=[]
-    funclistnames=[]
-
-    #evaluating the values of the config
-    for i in range(len(config.sections())-3): 
-        funclist.append(eval(config['func'+str(i)]['func']))  
-        funclistnames.append(config['func'+str(i)]['func'])
-        
-    #Creating an array with the functionparameter
-    funcparam=[]
-    funcparamnames=[]
-    #at the position for the corresponding function in funclist
-    for i in range(len(config.sections())-3):
-        funcparamnames.append(config.options('func'+str(i))[1:])    
-        funcparam.append(config.options('func'+str(i))[1:])    
-        for l in range(len(funcparam[i])):                     
-            funcparam[i][l]=eval(config['func'+str(i)][config.options('func'+str(i))[l+1]])
-
-    #Filling the arrays of system parameters and variables with the corresponding values       
-    for i in range(len(EQparam)):                          
-        EQparam[i]=eval(config['EQparam'][EQparam[i]])     
-    for i in range(len(rk4input)):                         
-        rk4input[i]=eval(config['rk4input'][rk4input[i]])
-    for i in range(len(var)):
-        var[i]=eval(config['var'][var[i]])
+    #Creating arrays for the sections in the configfile 
+    keys=config.options('eqparam')  
+    values=[]      
+    for j in range(len(keys)):        
+        values.append(eval(config['eqparam'][keys[j]]))
+    eqparamd=dict(zip(keys,values))
     
-    #packing the function components into just one array
-    funccomp=[funclist,funcparam]                
-                    
+    keys=config.options('rk4input')  
+    values=[]      
+    for j in range(len(keys)):        
+        values.append(eval(config['rk4input'][keys[j]]))
+    rk4inputd=dict(zip(keys,values))
+
+    keys=config.options('initials')  
+    values=[]      
+    for j in range(len(keys)):        
+        values.append(eval(config['initials'][keys[j]]))
+    initialsd=dict(zip(keys,values))
+
+    #Creating a dictionary of functions included 
+    funclistd={}
+    funcparamd={}
+    i=0
+    while 'func'+str(i) in config:
+        funclistd['func'+str(i)]=eval(config['func'+str(i)]['func'])
+
+        keys=config.options('func'+str(i))[1:]  
+        values=[]      
+        for j in range(len(keys)):        
+            values.append(eval(config['func'+str(i)][keys[j]]))
+        funcparamd['func'+str(i)]=dict(zip(keys,values))
+        i+=1
+    
+    #packing the function components into one dictionary
+    funccompd={'funclist':funclistd,'funcparam':funcparamd} 
+    #converting to list-type to allow indexing
+    funccomp=dict_to_list(funccompd)     
+    eqparam=dict_to_list(eqparamd)     
+    rk4input=dict_to_list(rk4inputd)
+    initials=dict_to_list(initialsd)     
     #creating output array
-    configa=[EQparam, rk4input, funccomp, var]
-    
+    configa=[eqparam, rk4input, funccomp, initials]
+    configad=[eqparamd, rk4inputd, funccompd, initialsd]
     #creating array with the names of configa
-    configanames=lna([config.options('EQparam'),config.options('rk4input'),                  [funclistnames,funcparamnames],config.options('var')])
-    configdicnames=lna(['EQparam','rk4input','funccomp','var'])
-    configdic=dict((configdicnames[j],configanames[j]) for j in range(len(configdicnames)))
+    configdicnames=lna(['eqparam','rk4input','funccomp','initials'])
+    configdic=dict(zip(configdicnames,configad))
     
-    ###Importing the Variables and initial conditions    
+    #Importing the Variables and initial conditions    
     #Variable_importer()
 
     #returning the arrays with all needed system parameters and variables
-    return configa, configdic
+    return configa, configdic, funccompd
 
+def dict_to_list(dic):
+    dic_to_list=list(dic.values())
+    to_list=dic_to_list
+    #print(to_list)
+    
+    i=0
+    while type(to_list[i]) == dict:
+        to_list[i]=list(to_list[i].values())
+        j=0
+        while type(to_list[i][j])==dict:
+            to_list[i][j]=list(to_list[i][j].values())
+            k=0
+            while type(to_list[i][j][k])==dict:
+                to_list[i][j][k]=list(to_list[i][j][k].values())
+                if k<len(to_list[i][j])-1:
+                    k+=1
+            if j<len(to_list[i])-1:
+                j+=1
+                
+        if i<len(to_list)-1:
+            i+=1
+    return(to_list)
 
 ###Function to import parameters for the Sellers-EBM from a configfile
 ###with arrays of values
@@ -102,9 +122,6 @@ def parameterimporter(filename):
     
     #Returning the ordered arrays with systemparameters for latitudinal circles and belts
     return circlecomb, beltcomb
-
-
-# In[1]:
 
 
 ###Function to interpolate the parameterizations given from sellers, into an interpolated
@@ -149,9 +166,6 @@ def parameterinterpolator(filename):
         newbelt[i]=newbelt[i][:-1]
     
     return newcircle, newbelt
-
-
-# In[2]:
 
 
 ###Function to interpolate the parameterizations given from sellers, into an interpolated
@@ -246,9 +260,6 @@ def parameterinterpolatorstepwise(filename):
                     newbelt[k][int((i-0.5)*10/latitude_stepsize+j)]=np.mean([fb(latnewb                    [int((i-0.5)*10/latitude_stepsize+j)]),newbelt[k][int((i-0.5)*10/latitude_stepsize+j)]])
                     
     return newcircle, newbelt
-
-
-# In[ ]:
 
 
 #Function to rewrite parameters with arrays of parameters from the Sellers parameterinterpolator
