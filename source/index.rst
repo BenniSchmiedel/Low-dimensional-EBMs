@@ -1,11 +1,9 @@
-
-Welcome!!!
-==========
+.. include:: introduction.rst
 
 .. toctree::
    :maxdepth: 2
 
-   introduction
+   
    installation
    howtouse
    input
