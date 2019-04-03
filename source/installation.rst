@@ -1,0 +1,7 @@
+
+************
+Installation
+************
+
+Via Python Package
+==================
