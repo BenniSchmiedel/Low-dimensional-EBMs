@@ -1,19 +1,16 @@
-.. doc documentation master file, created by
-   sphinx-quickstart on Thu Mar 28 23:47:15 2019.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
 
-Welcome to doc's documentation!
-===============================
+Welcome!
+========
 
 .. toctree::
    :maxdepth: 2
-   :caption: Contents:
-   
-.. include:: Configuration.rst
 
-Configuration
--------------
+   introduction
+   installation
+   howtouse
+   input
+   output
+
 .. automodule:: Packages.Configuration
 
 .. autofunction:: importer

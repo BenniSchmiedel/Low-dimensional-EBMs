@@ -10,6 +10,7 @@ Welcome!
    howtouse
    input
    output
+   sourcecode
 
 .. automodule:: Packages.Configuration
 
