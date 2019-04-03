@@ -15,6 +15,7 @@ class Vars():
     orbtable=float
     Noise=float
     ForcingTracker=[0,0]
+    CO2Tracker=[0,0]
     meridional=list
     tempdif=list
 
@@ -24,6 +25,7 @@ class Vars():
     bounds=list
     latlength=list
     External_time_start=float
+    CO2_time_start=float
 
     ###Readout parameters###
     cL=list
@@ -37,8 +39,11 @@ class Vars():
     Rin=list
     Rout=list
     ExternalOutput=list
-    Read=[cL,C,F,v,P,Transfer,alpha,BudTransfer,Solar,Noise,Rin,Rout,ExternalOutput]
+    CO2Forcing=list
+    Read=[cL,C,F,v,P,Transfer,alpha,BudTransfer,Solar,Noise,Rin,Rout,ExternalOutput,CO2Forcing]
     ExternalInput=list
+    CO2=list
+    
 
 
     ###Variables initial values### (for reset)
@@ -54,6 +59,7 @@ class Vars():
         self.orbtable=float
         self.Noise=float
         self.ForcingTracker=[0,0]
+        self.CO2Tracker=[0,0]
         self.meridional=list
         self.tempdif=list
 
@@ -62,6 +68,7 @@ class Vars():
         self.bounds=list
         self.latlength=list
         self.External_time_start=float
+        self.CO2_time_start=float
 
         self.cL=list
         self.C=list
@@ -74,8 +81,11 @@ class Vars():
         self.Rin=list
         self.Rout=list
         self.ExternalOutput=list
-        self.Read=[self.cL,self.C,self.F,self.v,self.P,self.Transfer,self.alpha,self.BudTransfer,self.Solar,self.Noise,self.Rin,self.Rout,self.ExternalOutput]
+        self.CO2Forcing=list
+        self.Read=[self.cL,self.C,self.F,self.v,self.P,self.Transfer,self.alpha,self.BudTransfer,self.Solar,self.Noise,self.Rin,self.Rout,self.ExternalOutput,self.CO2Forcing]
         self.ExternalInput=list
+        self.CO2=list
+        
 
 def reset(x):
     classreset=Vars()
@@ -104,7 +114,7 @@ def Builtin_importer(rk4input):
     values=list(rk4input.values())
     for i in range(len(keys)):
         exec("builtins.%s=%f" % (keys[i],values[i]))
-    builtins.Runtime_Tracker=int
+    builtins.Runtime_Tracker=0
     builtins.Noise_Tracker=0
 
     """builtins.number_of_integration=rk4input['number_of_integration']     
@@ -189,12 +199,12 @@ def Var_importer(initials):
 
 def Output_importer():
     #Assigning dynamical variables in Variables Package with initial values from var
-    Vars.cL,Vars.C,Vars.F,Vars.v,Vars.P,Vars.Transfer,Vars.alpha,Vars.BudTransfer,Vars.Solar,Vars.Noise,Vars.Rin,Vars.Rout,Vars.ExternalOutput=    np.array([[0]*int(number_of_integration/data_readout)]*len(Vars.Read),dtype=object)
+    Vars.cL,Vars.C,Vars.F,Vars.v,Vars.P,Vars.Transfer,Vars.alpha,Vars.BudTransfer,Vars.Solar,Vars.Noise,Vars.Rin,Vars.Rout,Vars.ExternalOutput,Vars.CO2Forcing=    np.array([[0]*int(number_of_integration/data_readout)]*len(Vars.Read),dtype=object)
     Vars.ExternalOutput=np.array([Vars.ExternalOutput for i in range(int(number_of_externals))],dtype=object)
     Vars.External_time_start=np.array([0 for i in range(int(number_of_externals))],dtype=object)
     Vars.ForcingTracker=np.array([[0,0] for i in range(int(number_of_externals))],dtype=object)
     Vars.ExternalInput=np.array([0 for i in range(int(number_of_externals))],dtype=object)
-    Vars.Read=[Vars.cL,Vars.C,Vars.F,Vars.v,Vars.P,Vars.Transfer,Vars.alpha,Vars.BudTransfer,               Vars.Solar,Vars.Noise,Vars.Rin,Vars.Rout,Vars.ExternalOutput]
+    Vars.Read=[Vars.cL,Vars.C,Vars.F,Vars.v,Vars.P,Vars.Transfer,Vars.alpha,Vars.BudTransfer,               Vars.Solar,Vars.Noise,Vars.Rin,Vars.Rout,Vars.ExternalOutput,Vars.CO2Forcing]
 
 
 

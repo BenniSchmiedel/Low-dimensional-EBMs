@@ -1,9 +1,3 @@
-
-# coding: utf-8
-
-# In[ ]:
-
-
 import numpy as np
 from climlab import constants as const
 from climlab.solar.insolation import daily_insolation
@@ -14,18 +8,14 @@ import builtins
 from Packages.Variables import *
 import time
 
-
-# In[ ]:
-
-
 """Energy Flux from incoming radiation"""
 
 def R_ininsolalbedo(funcparam):
+    """Hello"""
     #Incoming radiation with latitudal dependence, albedo transition for T<T_ice, without noise
     #R_ininsolalbedo=[Conversion,alpha_p,T_ice,m]
     key=list(funcparam.keys())
     list_parameters=list(funcparam.values())
-    print(list_parameters)
     #Loading inputparameters
     Q,factor_solar,dQ,albedofunc,albedoread,albedofuncparam,noise,noiseamp,noisedelay,    seed,seedmanipulation,solarinput,convfactor,timeunit,orbital,orbitalyear=list_parameters#R_ininsolalbedoparam
     
@@ -141,37 +131,41 @@ def AlbedoBud(alpha_p,border_1,border_2):
 
 """Energy Flux from outgoing radiation"""
 
-def R_outbudnc(R_outbudncparam):     
+def R_outbudnc(funcparam):     
     #Outgoing radiation, from empirical approximation formula by Budyko (no clouds)
     #R_outbudncparam=[A,B]
-    A,B=R_outbudncparam
+    list_parameters=list(funcparam.values())
+    A,B=list_parameters
     R_out=-(A+B*(Vars.T-273.15))
     if Runtime_Tracker % 4*data_readout == 0:    #Only on 4th step (due to rk4)
         Vars.Read[11][int(Runtime_Tracker/(4*data_readout))]=R_out
     return R_out
 
-def R_outbudc(R_outbudcparam):
+def R_outbudc(funcparam):
     #Outgoing radiation, from empirical approximation formula by Budyko (clouds)
     #R_outbudcparam=[A,B,A1,B1,f_c]
-    A,B,A1,B1,f_c=R_outbudcparam
+    list_parameters=list(funcparam.values())
+    A,B,A1,B1,f_c=list_parameters
     R_out=-(A+B*(np.array(Vars.T)-273.15)-(A1+B1*(np.array(Vars.T)-273.15))*f_c)
     if Runtime_Tracker % 4*data_readout == 0:    #Only on 4th step (due to rk4)
         Vars.Read[11][int(Runtime_Tracker/(4*data_readout))]=R_out
     return R_out
 
-def R_outplanck(R_outplanckparam):
+def R_outplanck(funcparam):
     #Outgoing radiation, from plancks radiation law
     #R_outplanckparam=[grey,sig]
-    grey,sig=R_outplanckparam
+    list_parameters=list(funcparam.values())
+    grey,sig=list_parameters
     R_out=-(grey*sig*Vars.T**4)
     if Runtime_Tracker % 4*data_readout == 0:    #Only on 4th step (due to rk4)
         Vars.Read[11][int(Runtime_Tracker/(4*data_readout))]=R_out
     return R_out
 
-def R_outsel(R_outselparam):
+def R_outsel(funcparam):
     #Outgoing radiation, from Sellers earth-atmosphere model
     #R_outselparam=[sig,grey,gamma,m]"""
-    m,sig,gamma,grey=R_outselparam
+    list_parameters=list(funcparam.values())
+    m,sig,gamma,grey=list_parameters
     R_out=-grey*sig*Vars.T**4*(1-m*np.tanh(gamma*Vars.T**6))
     if Runtime_Tracker % 4*data_readout == 0:    #Only on 4th step (due to rk4)
         Vars.Read[11][int(Runtime_Tracker/(4*data_readout))]=R_out
@@ -183,10 +177,11 @@ def R_outsel(R_outselparam):
 
 """Exchange/Transport Fluxes"""  
 
-def Transfer_bud(Transfer_budparam):
+def Transfer_bud(funcparam):
     #Diffusive transfer flow by Budyko
     #A_budpama=[beta]
-    beta,Read,Activated=Transfer_budparam
+    list_parameters=list(funcparam.values())
+    beta,Read,Activated=list_parameters
     if Activated==True: #with activation statement
         F=beta*(Vars.T_global-Vars.T)        
     else:
@@ -197,10 +192,11 @@ def Transfer_bud(Transfer_budparam):
             Vars.Read[7][int(Runtime_Tracker/(4*data_readout))]=F
     return F
 
-def WV_Sel(WV_Selparam):
+def WV_Sel(funcparam):
     #Transfer flow of water vapour across latitudinal bands
     #WV_Selparam=[K_wv,g,a,eps,p,e0,L,Rd,dy,dp]
-    K_wv,g,a,eps,p,e0,L,Rd,dy,dp,factor_wv,factor_kwv=WV_Selparam
+    list_parameters=list(funcparam.values())
+    K_wv,g,a,eps,p,e0,L,Rd,dy,dp,factor_wv,factor_kwv=list_parameters
     
     #calculating the specific humidity q and its latitudinal difference dq
     q=SatSpecHum_Sel(e0,eps,L,Rd,p)
@@ -210,30 +206,32 @@ def WV_Sel(WV_Selparam):
     c=L*(Vars.meridional*q-K_wv*factor_kwv*(dq/(dy)))*((dp*const.mb_to_Pa)/g)*factor_wv
     return c
 
-def SH_airSel(SH_airSelparam):
+def SH_airSel(funcparam):
     #Transfer flux due to atmosphere sensible heat transfer across latitudinal bands
     #SH_airSelparam=[K_h,g,a,dy,cp,dp]
-    K_h,g,a,dy,cp,dp,factor_air,factor_kair=SH_airSelparam
+    list_parameters=list(funcparam.values())
+    K_h,g,a,dy,cp,dp,factor_air,factor_kair=list_parameters
     
     #equation of the atmosphere sensible heat transfer, with dependence on Temperature and Temperature difference
     C=(Vars.meridional*Vars.T[:-1]-K_h**factor_kair*(Vars.tempdif/(dy)))*(cp*dp*const.mb_to_Pa/g)*factor_air
     return C
     
-def SH_oceanSel(SH_oceanSelparam):
+def SH_oceanSel(funcparam):
     #Transer flux due to sensible heat transfer from ocean currents
     #SH_oceanSelparam=[K_o,dz,l_cover,dy,re]
-    K_o,dz,l_cover,dy,cp_w,dens_w,factor_oc=SH_oceanSelparam
+    list_parameters=list(funcparam.values())
+    K_o,dz,l_cover,dy,cp_w,dens_w,factor_oc=list_parameters
     
     #equation of ocean sensible heat transfer
     F=-K_o*dz*l_cover*Vars.tempdif/(dy)*cp_w*dens_w*factor_oc
     return F
 
-def Transfer_Sel(Transfer_Selparam):
+def Transfer_Sel(funcparam):
     #Combined transfer fluxes, Sellers
     #Transfer_Sel=WV_Sel+SH_airSel+SH_oceanSel
     #Transfer_Selparam=[K_wv,g,a,eps,p,e0,L,Rd,dy,dp,K_h,cp,K_o,dz,l_cover,re]
-    
-    Readout,Activated,K_wv,K_h,K_o,g,a,eps,p,e0,L,Rd,dy,dp     ,cp,dz,l_cover,re,cp_w,dens_w,factor_wv,factor_air,factor_oc,factor_kwv,factor_kair=Transfer_Selparam
+    list_parameters=list(funcparam.values())
+    Readout,Activated,K_wv,K_h,K_o,g,a,eps,p,e0,L,Rd,dy,dp     ,cp,dz,l_cover,re,cp_w,dens_w,factor_wv,factor_air,factor_oc,factor_kwv,factor_kair=list_parameters
     if Activated==True:
         #Parameters for different transfer Fluxes+their calculation 
         WV_Selparam=[K_wv,g,a,eps,p,e0,L,Rd,dy,dp,factor_wv,factor_kwv]   
@@ -280,8 +278,9 @@ def Transfer_Sel(Transfer_Selparam):
 
 """External forcing terms"""
 
-def PredefinedForcing(PredefinedForcingparam):
-    forcingnumber,datapath,name,delimiter,header,col_time,col_forcing,timeunit,BP,time_start,k=PredefinedForcingparam
+def PredefinedForcing(funcparam):
+    list_parameters=list(funcparam.values())
+    forcingnumber,datapath,name,delimiter,header,col_time,col_forcing,timeunit,BP,time_start,k=list_parameters
     if Runtime_Tracker==0:
         Vars.ExternalInput[forcingnumber]=np.genfromtxt(str(datapath)+str(name),delimiter=str(delimiter),skip_header=header,usecols=(col_time,col_forcing),unpack=True,encoding='ISO-8859-1')  
         Vars.External_time_start[forcingnumber]=time_start    
@@ -315,6 +314,44 @@ def PredefinedForcing(PredefinedForcingparam):
     return F
 
 
+def CO2Forcing(funcparam):
+    list_parameters=list(funcparam.values())
+    A,C_0,datapath,name,delimiter,header,col_time,col_conc,timeunit,BP,time_start=list_parameters
+    if Runtime_Tracker==0:
+        Vars.CO2=np.genfromtxt(str(datapath)+str(name),delimiter=str(delimiter),skip_header=header,usecols=(col_time,col_conc),unpack=True,encoding='ISO-8859-1')  
+        Vars.CO2_time_start=time_start    
+        if BP==True:
+            Vars.CO2[0]=-(lna(Vars.CO2[0])-Vars.CO2_time_start)
+        if BP==False:
+            Vars.CO2[0]=lna(Vars.CO2[0])+Vars.CO2_time_start
+        if timeunit=='minute':
+            Vars.CO2[0]=lna(Vars.CO2[0])*60
+        if timeunit=='hour':
+            Vars.CO2[0]=lna(Vars.CO2[0])*60*60
+        if timeunit=='day':
+            Vars.CO2[0]=lna(Vars.CO2[0])*60*60*24
+        if timeunit=='week':
+            Vars.CO2[0]=lna(Vars.CO2[0])*60*60*24*7
+        if timeunit=='month':
+            Vars.CO2[0]=lna(Vars.CO2[0])*60*60*24*365/12
+        if timeunit=='year':
+            Vars.CO2[0]=lna(Vars.CO2[0])*60*60*24*365
+        
+        if Vars.CO2[0][0]>Vars.CO2[0][1]:
+            Vars.CO2[0]=np.flip(Vars.CO2[0],axis=0)
+            Vars.CO2[1]=np.flip(Vars.CO2[1],axis=0)
+    while Vars.t>Vars.CO2[0][Vars.CO2Tracker[0]]:
+        if Vars.CO2Tracker[0]==(len(Vars.CO2[0])-1):
+            Vars.CO2Tracker[1]=0
+            break
+        else:
+            
+            Vars.CO2Tracker[1] = A*(np.log(Vars.CO2[1][Vars.CO2Tracker[0]]/C_0))
+            Vars.CO2Tracker[0] += 1
+    F=Vars.CO2Tracker[1]
+    if Runtime_Tracker % 4*data_readout == 0:
+        Vars.CO2Forcing[int(Runtime_Tracker/(4*data_readout))]=F
+    return F
 # In[ ]:
 
 
