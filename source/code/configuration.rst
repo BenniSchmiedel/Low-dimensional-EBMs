@@ -2,7 +2,7 @@
 *************
 Configuration
 *************
-.. _configuration::
+.. _configuration:
 
 .. literalinclude:: ../Packages/Configuration.py
     :pyobject: importer
