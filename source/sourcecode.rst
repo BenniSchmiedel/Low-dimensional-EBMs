@@ -1,4 +1,6 @@
 
+.. _configuration:
+
 ***********
 Source Code
 ***********
