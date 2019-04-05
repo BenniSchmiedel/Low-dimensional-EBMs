@@ -1,0 +1,3 @@
+include lowEBMs/Configuration.ini
+include lowEBMs/Tutorials/0DEBM_Tutorial_Config.ini
+include lowEBMs/Tutorials/0DEBM_Tutorial.ipynb
