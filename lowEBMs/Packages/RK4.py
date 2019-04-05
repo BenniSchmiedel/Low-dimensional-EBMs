@@ -1,4 +1,4 @@
-from BaseEquation import *
+from ModelEquation import *
 from Functions import *
 import numpy as np
 import builtins
@@ -57,5 +57,8 @@ def rk4alg(func,eqparam,rk4input,funccomp):
                         Vars.Read[m]=Vars.Read[m][:(j)]
                     break
     dataout=[data[0][:(j+1)],data[1][:(j+1)],data[2][:(j+1)]]
+
+    print('Finished!')
+
     return dataout
 

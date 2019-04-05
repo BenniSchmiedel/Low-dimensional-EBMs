@@ -64,7 +64,8 @@ def importer(path,filename):
     #Variable_importer()
 
     #returning the arrays with all needed system parameters and variables
-    return configa, configdic
+    #return configa, configdic
+    return configdic
 
 def dict_to_list(dic):
     dic_to_list=list(dic.values())
