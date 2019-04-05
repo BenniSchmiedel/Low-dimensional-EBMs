@@ -32,7 +32,7 @@ First Step: Import model configuration
 The way this project is built up enables to take any physical function implemented and merge them to create the basis of a desired EBM, which will be our input.
 The input will be created manually and is stored in a **configuration.ini** file. Details on how to create and structure this **.ini** file will be given in the :doc:`input <input>`-section. Important is: **the configuration.ini file will provide the physical sense of the EBM!**
 
-For now you can simply use the **0Dconf.ini** file which imports a zero-dimensional EBM with a model run over 1 year and stepsize of integration of 1 day.
+For now you can simply use the **0DEBM_Config.ini** file which imports a zero-dimensional EBM with a model run over 1 year and stepsize of integration of 1 day.
 To import this file go to your .py or .ipynb file and use the *importer*-function::
 
     configuration=importer('/insert/path/where/your/configurationfiles/are/stored/','filename')
@@ -64,7 +64,33 @@ Depending on your settings the algorithm will need some time until it say *Finis
 Final Step: Evaluating the output
 =================================
 
-For the algorithm you will directly get the *outputdata* array. It is a three-dimensional array of **outputdata=[time, zonal mean temperature, global mean temperature]**. 
+From the algorithm you will directly get the *outputdata* array. It is a three-dimensional array of **outputdata=[time, zonal mean temperature, global mean temperature]**. Other variables which are of interest, for example the grid specifications, can be accessed by importing the :doc:` variables <code/variables>` package::
+
+    import Variables as Vars
+
+and then call the desired variables by their name, for example::
+
+    latitudinal_grid=Vars.Lat
+
+For detailed information about output variables see section :doc:` output <output>`.
+
+If you look at the output of the algorithm (with the **0DEBM_Config.ini** file) and plot the global temperature over time with::
+
+    plt.plot(np.array(outputdata[0])/stepsize_of_integration/365,outputdata[2])
+    plt.xlabel('time [years]')
+    plt.ylabel('GMT [K]')
+
+you get something like this:
+
+.. figure:: static/GMT12.jpg
+   :align: by using an initial temperature of 12°C (285K)
+
+.. figure:: static/yi_jing_01_chien.jpg
+   :align: by using an initial temperature of 17°C (290K)
+
+
+
+
 
 
 
