@@ -83,10 +83,14 @@ If you look at the output of the algorithm (with the **0DEBM_Config.ini** file) 
 you get something like this:
 
 .. figure:: static/GMT12.jpg
-   :align: by using an initial temperature of 12°C (285K)
+   :align: center
+
+    with an initial temperature of 12°C (285K)
 
 .. figure:: static/yi_jing_01_chien.jpg
-   :align: by using an initial temperature of 17°C (290K)
+   :align: center
+
+    with an initial temperature of 17°C (290K)
 
 
 
