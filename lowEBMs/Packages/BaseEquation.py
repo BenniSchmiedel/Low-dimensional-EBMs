@@ -1,9 +1,4 @@
 
-# coding: utf-8
-
-# In[1]:
-
-
 def BaseEquation(eqparam,funccomp):
     y=0                    	            #variable which can be used to sum up functions
     funclist=funccomp['funclist']             #Extracting needed arrays from the funccomp array

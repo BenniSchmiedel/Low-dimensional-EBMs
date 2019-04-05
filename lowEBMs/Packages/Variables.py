@@ -99,13 +99,13 @@ def datareset():
     Vars.Lat=classreset.Lat
     Vars.Lat2=classreset.Lat2
 
-def Variable_importer(config):
+def variable_importer(config):
 
-    Builtin_importer(config['rk4input'])
-    Var_importer(config['initials'])
-    Output_importer()
+    builtin_importer(config['rk4input'])
+    var_importer(config['initials'])
+    output_importer()
 
-def Builtin_importer(rk4input):
+def builtin_importer(rk4input):
 
     #Writing systemparameters into builtin-module to make them globally callable
     #Overview given in Readme.txt
@@ -135,7 +135,7 @@ def Builtin_importer(rk4input):
     builtins.data_readout=rk4input[15]
     builtins.number_of_externals=rk4input[16]"""
 
-def Var_importer(initials):
+def var_importer(initials):
     
     ###filling the running variables with values depending on the systemconfiguration in rk4input###
 
@@ -197,7 +197,7 @@ def Var_importer(initials):
     Vars.Lat=initials['latitude_c']
     Vars.Lat2=initials['latitude_b']
 
-def Output_importer():
+def output_importer():
     #Assigning dynamical variables in Variables Package with initial values from var
     Vars.cL,Vars.C,Vars.F,Vars.v,Vars.P,Vars.Transfer,Vars.alpha,Vars.BudTransfer,Vars.Solar,Vars.Noise,Vars.Rin,Vars.Rout,Vars.ExternalOutput,Vars.CO2Forcing=    np.array([[0]*int(number_of_integration/data_readout)]*len(Vars.Read),dtype=object)
     Vars.ExternalOutput=np.array([Vars.ExternalOutput for i in range(int(number_of_externals))],dtype=object)

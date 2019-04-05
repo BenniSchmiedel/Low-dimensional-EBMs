@@ -2,14 +2,16 @@
    The needed data is imported from a specific config.ini and placed in different arrays
    which can be called """
 import configparser
-from Packages.Functions import *
-from Packages.Variables import *
+import os
+from Functions import *
+from Variables import *
 
-def importer(filename): 
+def importer(path,filename): 
     
     #Importing the configfile.ini
-    config=configparser.ConfigParser()                      
-    config.read('Config/'+filename)    
+    config=configparser.ConfigParser() 
+    os.chdir(path)                     
+    config.read(filename)    
                          
     #Creating arrays for the sections in the configfile 
     keys=config.options('eqparam')  
@@ -62,7 +64,7 @@ def importer(filename):
     #Variable_importer()
 
     #returning the arrays with all needed system parameters and variables
-    return configa, configdic, funccompd
+    return configa, configdic
 
 def dict_to_list(dic):
     dic_to_list=list(dic.values())
