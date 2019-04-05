@@ -14,7 +14,7 @@ Here shown is, how this file is structured and which syntax has to be maintained
 
 There are four main components of the file, the modelequation parameters ``eqparam``, the runge-kutta parameters ``rk4input``, the initial condition parameters ``initials`` and a compilation of physical functions with their specific parameters ``funccomp``.
 
-If you want to put together a new model simply create a textfile with the suffix **.ini**. These four main components will be used as header, whereas the headers the ``funccomp`` has to be replaced by ``func0``, ``func1``,... depending on how many functions you want to include. It will look like this::
+If you want to put together a new model simply create a textfile with the suffix **.ini**. These four main components will be used as header of a section, whereas the headers the ``funccomp`` has to be replaced by ``func0``, ``func1``,... depending on how many functions you want to include. It will look like this::
 
     [eqparam]
 
@@ -25,6 +25,10 @@ If you want to put together a new model simply create a textfile with the suffix
     [func1]
     
     [func2]
+
+Now each section has to be filled with parameters. The first three sections will always contain the same parameters since they define **how** the algorithm runs. The func-sections can be modified since they define **which** model equation the algorithm solves. 
+
+Ich hab Hanna lieb!
 
 
 
