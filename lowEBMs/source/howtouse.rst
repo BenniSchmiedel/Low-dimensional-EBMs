@@ -30,7 +30,9 @@ First Step: Import model configuration
 ======================================
 
 The way this project is built up enables to take any physical function implemented and merge them to create the basis of a desired EBM, which will be our input.
-The input will be created manually and is stored in a **configuration.ini** file. Details on how to create and structure this **.ini** file will be given in the :doc:`input <input>`-section. Important is: **the configuration.ini file will provide the physical sense of the EBM!**
+The input will be created manually and is stored in a **configuration.ini** file. Details on how to create and structure this **.ini** file will be given in the :doc:`input <input>`-section. 
+.. important::
+    the configuration.ini file will provide the physical sense of the EBM!
 
 For now you can simply use the **0DEBM_Config.ini** file which imports a zero-dimensional EBM with a model run over 10 year and stepsize of integration of 1 day.
 To import this file go to your .py or .ipynb file and use the *importer*-function::
@@ -84,11 +86,13 @@ you get something like this:
 
 .. figure:: _static/GMT12.png
    :align: center
+   :width: 80%
 
     with an initial temperature of 12°C (285K)
 
 .. figure:: _static/GMT17.png
    :align: center
+   :width: 80%
 
     with an initial temperature of 17°C (290K)
 
