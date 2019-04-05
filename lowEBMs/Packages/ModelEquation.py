@@ -1,5 +1,5 @@
 
-def BaseEquation(eqparam,funccomp):
+def model_equation(eqparam,funccomp):
     y=0                    	            #variable which can be used to sum up functions
     funclist=funccomp['funclist']             #Extracting needed arrays from the funccomp array
     funcparam=funccomp['funcparam']
