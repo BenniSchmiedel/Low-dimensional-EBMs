@@ -61,12 +61,12 @@ Now we are ready to run the algorithm with the *rk4alg* function. It requires th
 
     outputdata=rk4alg(model_equation,eq,rk4,fun)
 
-Depending on your settings the algorithm will need some time until it say *Finished!*.
+Depending on your settings the algorithm will need some time until it prints *Finished!*.
 
 Final Step: Evaluating the output
 =================================
 
-From the algorithm you will directly get the *outputdata* array. It is a three-dimensional array of **outputdata=[time, zonal mean temperature, global mean temperature]**. Other variables which are of interest, for example the grid specifications, can be accessed by importing the :doc:` variables <code/variables>` package::
+From the algorithm you will directly get the *outputdata* array. It is a three-dimensional array of **outputdata=[time, zonal mean temperature, global mean temperature]**. Other variables which are of interest, for example the grid specifications, can be accessed by importing the :doc:`variables <code/variables>` package::
 
     import Variables as Vars
 
@@ -74,9 +74,9 @@ and then call the desired variables by their name, for example::
 
     latitudinal_grid=Vars.Lat
 
-For detailed information about output variables see section :doc:` output <output>`.
+For detailed information about output variables see section :doc:`output <output>`. 
 
-If you look at the output of the algorithm (with the **0DEBM_Config.ini** file) and plot the global temperature over time with::
+If you look at the output of the algorithm (initialized with the **0DEBM_Config.ini** file) and plot the global temperature over time with::
 
     plt.plot(np.array(outputdata[0])/stepsize_of_integration/365,outputdata[2])
     plt.xlabel('time [years]')
