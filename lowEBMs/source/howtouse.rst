@@ -36,11 +36,11 @@ The input will be created manually and is stored in a **configuration.ini** file
     The configuration.ini file will provide the physical sense of the EBM!
 
 For now you can simply use the **0DEBM_Config.ini** file which imports a zero-dimensional EBM with a model run over 10 year and a stepsize of integration of 1 day.
-To import this file use the *importer*-function::
+To import this file use the ``importer``-function::
 
     configuration=importer('/insert/path/where/your/configurationfiles/are/stored/','filename')
 
-`configuration` is an dictionary which contains all required input parameters. To seperate them for a clearer structure you can use::
+``configuration`` is an dictionary which contains all required input parameters. To seperate them for a clearer structure you can use::
 
     eq=configuration['eqparam']
     rk4=configuration['rk4input']
@@ -52,14 +52,14 @@ These are four dictionaries which contain the information needed for the base eq
 Second Step: Import variables
 =============================
 
-As next step the configuration we just imported has to be distributed on different variables. For example arrays of initals conditions are calculated or arrays for the output will be created. To do so we can simply use the `variable_importer`::
+As next step the configuration we just imported has to be distributed on different variables. For example arrays of initals conditions are calculated or arrays for the output will be created. To do so we can simply use the ``variable_importer``::
 
     variable_importer(configuration)
 
 Third Step: Let the model/algorithm run
 =======================================
 
-Now we are ready to run the algorithm with the `rk4alg` function. It requires the `model_equation` function and the dictionaries we seperated before (maintain the order)::
+Now we are ready to run the algorithm with the ``rk4alg`` function. It requires the ``model_equation`` function and the dictionaries we seperated before (maintain the order)::
 
     outputdata=rk4alg(model_equation,eq,rk4,fun)
 
@@ -68,7 +68,7 @@ Depending on your settings the algorithm will need some time until it prints *Fi
 Final Step: Evaluating the output
 =================================
 
-From the algorithm you will directly get the `outputdata` array. It is a three-dimensional array with **outputdata=[time, zonal mean temperature, global mean temperature]**. Other variables which are of interest, for example the grid specifications, can be accessed by importing the :doc:`variables <code/variables>` package::
+From the algorithm you will directly get the ``outputdata`` array. It is a three-dimensional array with **outputdata=[time, zonal mean temperature, global mean temperature]**. Other variables which are of interest, for example the grid specifications, can be accessed by importing the :doc:`variables <code/variables>` package::
 
     import Variables as Vars
 
