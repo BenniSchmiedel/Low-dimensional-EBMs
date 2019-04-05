@@ -1,5 +1,5 @@
-from Packages.BaseEquation import *
-from Packages.Functions import *
+from BaseEquation import *
+from Functions import *
 import numpy as np
 import builtins
 import time

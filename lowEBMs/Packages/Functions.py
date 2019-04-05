@@ -5,7 +5,7 @@ from climlab.solar.orbital import OrbitalTable
 #from climlab.solar.orbital import LongOrbitalTable
 import scipy
 import builtins
-from Packages.Variables import *
+from Variables import *
 import time
 
 """Energy Flux from incoming radiation"""
