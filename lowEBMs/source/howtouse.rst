@@ -32,7 +32,7 @@ First Step: Import model configuration
 The way this project is built up enables to take any physical function implemented and merge them to create the basis of a desired EBM, which will be our input.
 The input will be created manually and is stored in a **configuration.ini** file. Details on how to create and structure this **.ini** file will be given in the :doc:`input <input>`-section. Important is: **the configuration.ini file will provide the physical sense of the EBM!**
 
-For now you can simply use the **0DEBM_Config.ini** file which imports a zero-dimensional EBM with a model run over 1 year and stepsize of integration of 1 day.
+For now you can simply use the **0DEBM_Config.ini** file which imports a zero-dimensional EBM with a model run over 10 year and stepsize of integration of 1 day.
 To import this file go to your .py or .ipynb file and use the *importer*-function::
 
     configuration=importer('/insert/path/where/your/configurationfiles/are/stored/','filename')
@@ -82,18 +82,40 @@ If you look at the output of the algorithm (with the **0DEBM_Config.ini** file) 
 
 you get something like this:
 
-.. figure:: static/GMT12.jpg
+.. figure:: static/GMT12.png
    :align: center
 
     with an initial temperature of 12°C (285K)
 
-.. figure:: static/yi_jing_01_chien.jpg
+.. figure:: static/GMT17.png
    :align: center
 
     with an initial temperature of 17°C (290K)
 
+Putting it together
+===================
 
+The summary of what you need to get the model running. Import package::
 
+    import matplotlib as plt
+    import numpy as np
+    import os
+    os.chdir('/insert/your/path/to/the/project/here'+'/Packages')
+    from Configuration import importer
+    from Variables import variable_importer
+    from ModelEquation import model_equation
+    from RK4 import rk4alg
+
+and run the specific functions::
+
+    configuration=importer('/insert/path/where/your/configurationfiles/are/stored/','filename')
+    eq=configuration['eqparam']
+    rk4=configuration['rk4input']
+    fun=configuration['funccomb']
+    variable_importer(configuration)
+    outputdata=rk4alg(model_equation,eq,rk4,fun)
+
+This demonstration also exists as a jupyter notebook in the *Tutorials* directive.
 
 
 
