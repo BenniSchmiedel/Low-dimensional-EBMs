@@ -82,12 +82,12 @@ If you look at the output of the algorithm (with the **0DEBM_Config.ini** file) 
 
 you get something like this:
 
-.. figure:: static/GMT12.png
+.. figure:: _static/GMT12.png
    :align: center
 
     with an initial temperature of 12°C (285K)
 
-.. figure:: static/GMT17.png
+.. figure:: _static/GMT17.png
    :align: center
 
     with an initial temperature of 17°C (290K)
@@ -115,7 +115,7 @@ and run the specific functions::
     variable_importer(configuration)
     outputdata=rk4alg(model_equation,eq,rk4,fun)
 
-This demonstration also exists as a jupyter notebook in the *Tutorials* directive.
+This demonstration also exists as a jupyter notebook in the *Tutorials/* directive of the project.
 
 
 
