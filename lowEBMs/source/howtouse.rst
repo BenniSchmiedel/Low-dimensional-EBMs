@@ -7,5 +7,8 @@ Here a brief introduction is given on how to get from a given input, which initi
 
 We will write a small python script, which will do this in a few steps. As it is easier to visualize the output in a plot and modify it, I recommend to perform this steps in a jupyter notebook.
 
-The way the project is built up enables to take any physical function implemented here and merge them to create the basis of a desired EBM, which will be our input.
-In order
+First Step: Import
+==================
+
+The way this project is built up enables to take any physical function implemented and merge them to create the basis of a desired EBM, which will be our input.
+The input will be created manually and is stored in a **configuration.ini** file. 
