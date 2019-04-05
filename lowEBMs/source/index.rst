@@ -8,6 +8,11 @@
    howtouse
    input
    output
+   models
+   tutorials
    sourcecode
+   todo
+   references
+   contact
 
 
