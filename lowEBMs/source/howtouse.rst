@@ -31,6 +31,7 @@ First Step: Import model configuration
 
 The way this project is built up enables to take any physical function implemented and merge them to create the basis of a desired EBM, which will be our input.
 The input will be created manually and is stored in a **configuration.ini** file. Details on how to create and structure this **.ini** file will be given in the :doc:`input <input>`-section. 
+
 .. Important::
     the configuration.ini file will provide the physical sense of the EBM!
 
