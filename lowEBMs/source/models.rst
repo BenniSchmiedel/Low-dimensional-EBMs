@@ -16,7 +16,7 @@ EBMs describe the energybalance mostly with the most crucial parts only, which m
 
 .. sidebar:: Figure 1: Earth's energybudget 
 
-    .. image:: _static/EB.png
+    .. figure:: _static/EB.png
     
     :doc:`IPCC, 2013 <references>`
 
