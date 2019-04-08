@@ -68,7 +68,7 @@ The parameters of the sections look like this (which is the configuration of the
 
 If the meaning of parameters is unclear, there is a detailed definition of the parameters given in the attached Readme.txt.
 
-If you now want to add functions you can write them into the configfile with the scheme shon above. If we want to add two functions, one for incoming radiative energy and one for outgoing radiative energy, this might look like this::
+If you now want to add functions you can write them into the configfile with the scheme shown above. If we want to add two functions, one for incoming radiative energy and one for outgoing radiative energy, this might look like this::
 
     [func0]
     func=R_ininsolalbedo
@@ -103,5 +103,5 @@ If you now want to add functions you can write them into the configfile with the
 
 A detailed description of the function parameters is given along with the implementation of the :doc:`Functions <code/functions>`.
 
-With this content a OD-EBM can be run the way it is described in :doc:`How to use <howtouse>`.
+With this content the **0DEBM_Config.ini** is complete and the OD-EBM can be run the way it is described in :doc:`How to use <howtouse>`.
 
