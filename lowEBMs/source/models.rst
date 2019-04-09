@@ -39,15 +39,15 @@ If one is interested in the zero-dimensional case, the model equation above suff
 
 .. math::
 
-    R_{in}(t) = \pi \cdot (1-\alpha(t))\cdot Q(t)
+    R_{in}(t) = \cdot (1-\alpha(t))\cdot Q(t)
 
-    R_{out}(t) = - 4 \pi \cdot \sigma T^4(t)
+    R_{out}(t) = - \cdot \sigma T^4(t)
 
 the simplest form of an EBM is described with:
 
 .. math::
 
-    C \cdot \frac{dT}{dt} = R_{in}(t) + R_{out}(t) = \pi \cdot (1-\alpha(t)) Q(t) - 4 \pi \cdot \sigma T^4(t)
+    C \cdot \frac{dT}{dt} = R_{in}(t) + R_{out}(t) = \cdot (1-\alpha(t)) \cdot Q(t) - \cdot \sigma T^4(t)
 
 This equation can easily be solved analytically, but to observe the behaviour of the energybalance over time a numerical algorithm can be used to solve this equation.
 With the chapter :doc:`How to use <howtouse>` it will be investigated in detail how this project implements such an EBM. Additionally there is a tutorial given once you have :doc:`installed <installation>` this project.
