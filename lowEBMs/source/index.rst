@@ -3,8 +3,8 @@
 .. toctree::
    :maxdepth: 2
 
-   models
    installation
+   models
    howtouse
    input
    output

@@ -39,7 +39,7 @@ If one is interested in the zero-dimensional case, the model equation above suff
 
 .. math::
 
-    R_{in}(t) = \pi \cdot (1-\alpha(t))\cdotQ(t)
+    R_{in}(t) = \pi \cdot (1-\alpha(t))\cdot Q(t)
 
     R_{out}(t) = - 4 \pi \cdot \sigma T^4(t)
 
