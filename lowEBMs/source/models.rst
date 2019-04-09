@@ -23,7 +23,9 @@ Here shown is a zero-dimensional schematic of the earth's energybudget like it i
 EBMs are commonly restricted to the **incoming radiative energyflux** (:math:`R_{in}`), the **outgoing radiative energyflux** (:math:`R_{out}`) and in some cases of 0D-EBMs an **external forcing energyflux** (:math:`F_{ext}`) (e.g. Carbon Dioxide forcing), or in cases of 1D-EBMs to **latitudinal transfer energyfluxes** (:math:`F_{transfer}`). This is of course no necessity rather than a general identification of EBMs since they are specifically characterized by their simplicity.
 
 The physical basis of EBMs can be expressed in a model equation which commonly has the following form:
+
 .. _above:
+
 .. math::
 
     C \cdot \frac{dT}{dt} = R_{in}(t) + R_{out}(t) + F (t)
@@ -37,7 +39,8 @@ If one is interested in the zero-dimensional case, the model equation above suff
 
 .. math::
 
-    R_{in}(t) = \pi \cdot (1-\alpha(t)) Q(t)
+    R_{in}(t) = \pi \cdot (1-\alpha(t))\cdotQ(t)
+
     R_{out}(t) = - 4 \pi \cdot \sigma T^4(t)
 
 the simplest form of an EBM is described with:
@@ -54,6 +57,16 @@ With the chapter :doc:`How to use <howtouse>` it will be investigated in detail 
 
 One-dimensional EBMs do not differ much from zero-dimensional ones. In one-dimensional EBMs the earth is commonly described by a grid of latitudinal bands.
 The model equation as introduced above_ can directly be transfered to be valid for each latitudinal band seperately. 
+
+As already mentioned, 1D EBMs use latitudinal transfer energyfluxes :math:`F_{transfer}` which consider an exchange of energy between those latitudinal bands. This term is crucial, because the energybudget resolved over the latitudes shows strong differences between equator and poles, which is logical due to the stronger insolation at the equator.
+
+By indentifying each latitudinal band and all its parameters with an index i, the simplest form of an 1D-EBM is described by:
+
+.. math::
+
+    C \cdot \frac{dT_i}{dt} = R_{in,i}(t) + R_{out,i}(t) + F_{transfer,i} (t)
+
+There are many different approaches to discretize all this terms in one dimension.
 
 
 
