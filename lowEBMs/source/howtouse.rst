@@ -35,7 +35,7 @@ The input will be created manually and is stored in a **configuration.ini** file
 .. Important::
     The configuration.ini file will provide the physical sense of the EBM!
 
-For now you can simply use the **0DEBM_Config.ini** file which imports a zero-dimensional EBM with a model run over 10 year and a stepsize of integration of 1 day.
+For now you can simply use the **0DEBM_Config.ini** file which imports a 0D EBM with a model run over 10 year and a stepsize of integration of 1 day.
 To import this file use the ``importer``-function::
 
     configuration=importer('/insert/path/where/your/configurationfiles/are/stored/','filename')

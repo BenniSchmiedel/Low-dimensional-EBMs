@@ -68,7 +68,7 @@ The parameters of the sections look like this (which is the configuration of the
 
 If the meaning of parameters is unclear, there is a detailed definition of the parameters given in the attached Readme.txt.
 
-If you now want to add functions you can write them into the configfile with the scheme shown above. If we want to add two functions, one for incoming radiative energy and one for outgoing radiative energy, this might look like this::
+If you now want to add functions you can write them into the configfile with the scheme shown above. If we want to add two functions, one for incoming radiative energy flux and one for outgoing radiative energy flux, this might look like this::
 
     [func0]
     func=R_ininsolalbedo
