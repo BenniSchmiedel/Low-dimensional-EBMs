@@ -32,8 +32,11 @@ The physical basis of EBMs can be expressed in a model equation which commonly h
 
 where C is the heatcapacity, :math:`\frac{dT}{dt}` the term to consider that the system is dynamical and :math:`R_{in}`, :math:`R_{out}`, :math:`F` the energy fluxes which are commonly included.
 
+Model Types
+===========
+
 0D-EBM
-======
+------
 
 If one is interested in the 0D case, the model equation above suffices to describe the energy balance over time. However, :math:`F` is neglected in general and only used in specific cases. By using the following discretizations:
 
@@ -53,7 +56,7 @@ This equation can easily be solved analytically, but to observe the behaviour of
 With the chapter :doc:`How to use <howtouse>` it will be investigated in detail how this project implements such an EBM. Additionally there is a tutorial given once you have :doc:`installed <installation>` this project.
 
 1D-EBM
-======
+------
 
 1D EBMs do not differ much from 0D ones. In 1D EBMs the earth is commonly described by a grid of latitudinal bands.
 The model equation as introduced above_ can directly be transfered to be valid for each latitudinal band seperately. 
@@ -69,7 +72,7 @@ By indentifying each latitudinal band and all its parameters with an index i, th
 There are many different approaches to discretize these terms in 1D. Because this project was started to implement two specific EBMs, one created by :doc:`Michail Budyko <references>` and one by :doc:`William Seller  <references>`, both published in the late 1960s, these two discretizations will be shown. 
 
 Budyko-type model
-=================
+^^^^^^^^^^^^^^^^^
 
 This EBM constructed by :doc:`Michail Budyko  <references>` uses various assumptions, supported by global earth observation data. The key features of this model are:
 
@@ -89,7 +92,7 @@ An example zonal mean temperature distribution:
 
 
 Sellers-type model
-==================
+^^^^^^^^^^^^^^^^^^
 
 The EBM constructed :doc:`William Seller  <references>` is adapted even more to global earth observation data and thereby is constructed with more complex terms than the EBM from Budyko. The key features of this model are:
 
