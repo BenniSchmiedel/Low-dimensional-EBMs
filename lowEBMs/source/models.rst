@@ -42,17 +42,21 @@ If one is interested in the 0D case, the model equation above suffices to descri
 
 .. math::
 
-    R_{in}(t) & = (1-\alpha(t))\cdot Q(t) \\
-    R_{out}(t) & = - \sigma T^4(t)
+    R_{in} & = (1-\alpha)\cdot \\
+    R_{out} & = - \epsilon\sigma T^4
 
-with the albedo :math:`\alpha`, the solar insolation :math:`Q`, and the Stefan-Boltzmann constant :math:`\sigma`, the simplest form of an EBM is described by:
+with the albedo :math:`\alpha`, the solar insolation :math:`Q`, the Stefan-Boltzmann constant :math:`\sigma`, and the emissivity :math`\espilon`, the simplest form of an EBM is described by:
 
 .. math::
 
-    C \cdot \frac{dT}{dt} = R_{in}(t) + R_{out}(t) = (1-\alpha(t)) \cdot Q(t) - \sigma T^4(t)
+    C \cdot \frac{dT}{dt} = R_{in} + R_{out} = (1-\alpha) \cdot Q - \epsilon\sigma T^4
 
 This equation can easily be solved analytically, but to observe the behaviour of the energy balance over time a numerical algorithm can be used to solve this equation.
 With the chapter :doc:`How to use <howtouse>` it will be investigated in detail how this project implements such an EBM. Additionally there is a tutorial given once you have :doc:`installed <installation>` this project.
+
+.. Note::
+
+    The dependencies of parameters like :math:`\alpha` on variables like the temperature :math:`T` is strongly related to the inbound type of :doc:`Functions <code/functions>` and is therefore not specified while formulating this model equations.
 
 1D-EBM
 ------
@@ -66,7 +70,7 @@ By indentifying each latitudinal band and all its parameters with an index i, th
 
 .. math::
 
-    C \cdot \frac{dT_i}{dt} = R_{in,i}(t) + R_{out,i}(t) + F_{transfer,i} (t)
+    C \cdot \frac{dT_i}{dt} = R_{in,i} + R_{out,i} + F_{transfer,i}
 
 There are many different approaches to discretize these terms in 1D. Because this project was started to implement two specific EBMs, one created by :doc:`Michail Budyko <references>` and one by :doc:`William Seller  <references>`, both published in the late 1960s, these two discretizations will be shown. 
 
