@@ -42,9 +42,8 @@ If one is interested in the 0D case, the model equation above suffices to descri
 
 .. math::
 
-    R_{in}(t) = (1-\alpha(t))\cdot Q(t)
-
-    R_{out}(t) = - \sigma T^4(t)
+    R_{in}(t) & = (1-\alpha(t))\cdot Q(t) \\
+    R_{out}(t) & = - \sigma T^4(t)
 
 with the albedo :math:`\alpha`, the solar insolation :math:`Q`, and the Stefan-Boltzmann constant :math:`\sigma`, the simplest form of an EBM is described by:
 
@@ -100,8 +99,7 @@ The EBM constructed :doc:`William Seller  <references>` is adapted even more to 
 
 - An albedo described by an empircal law with linear dependence on temperature and surface elevation.
 
-- A transfer energy flux seperated into three different components, the atmospheric water vapour transfer, the atmospheric sensible heat transfer
- and the oceanic sensible heat transfer. The total transfer energy flux of one gridbox is given by the difference of northward and southward transfer energy flux (the sum of those three components from the northern/southern boundary).
+- A transfer energy flux seperated into three different components, the atmospheric water vapour transfer, the atmospheric sensible heat transfer and the oceanic sensible heat transfer. The total transfer energy flux of one gridbox is given by the difference of northward and southward transfer energy flux (the sum of those three components from the northern/southern boundary).
 
 - A grid resolving the earth with latitudinal bands of 10° width. Hence, the earth is resolved by 18 latitudinal bands.
 
