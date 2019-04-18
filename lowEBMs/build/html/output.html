@@ -35,6 +35,7 @@
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Tutorials" href="tutorials.html" />
     <link rel="prev" title="Input" href="input.html" /> 
 </head>
 
@@ -80,11 +81,14 @@
             
             
               <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="models.html">Physical Background / Model Types</a></li>
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="howtouse.html">How to use</a></li>
 <li class="toctree-l1"><a class="reference internal" href="input.html">Input</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Output</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorials.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="sourcecode.html">Source Code</a></li>
+<li class="toctree-l1"><a class="reference internal" href="references.html">References</a></li>
 </ul>
 
             
@@ -151,7 +155,39 @@
             
   <div class="section" id="output">
 <h1>Output<a class="headerlink" href="#output" title="Permalink to this headline">¶</a></h1>
-<p>There are several variables which can be accessed to investigate the behaviour of the implemented model.</p>
+<p>This chapter describes which variables can be printed out and how.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Since longer model runs can be heavily memory-consuming the general frequency of data-readout can be adjusted in the cofiguration.ini.
+The parameter <em>data_readout</em> (in <code class="docutils literal notranslate"><span class="pre">rk4input</span></code>) indicates on which step the data is read. 1 for every, 2 for every second …</p>
+</div>
+<p>There are two types of data to print.</p>
+<p>The first type are the primary variables <em>time</em> and <em>temperature</em>. They are returned directly by the algorithm (for details see <a class="reference internal" href="howtouse.html"><span class="doc">How to use</span></a> or <a class="reference internal" href="code/rk4.html"><span class="doc">RK4</span></a>.</p>
+<p>The second type are secondary variables, such as the albedo or the insolation, which might be of interest to observe. They are stored by the <a class="reference internal" href="code/variables.html"><span class="doc">Variables</span></a> package within the class <code class="docutils literal notranslate"><span class="pre">Vars</span></code>.
+Most of them are written into a specific array which is labeled as <strong>Read</strong> and callable by:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">Variables</span> <span class="k">import</span> <span class="n">Vars</span>
+<span class="n">Vars</span><span class="o">.</span><span class="n">Read</span>
+</pre></div>
+</div>
+<p>and contains the following variables:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Read</span><span class="o">=</span><span class="p">[</span><span class="n">cL</span><span class="p">,</span><span class="n">C</span><span class="p">,</span><span class="n">F</span><span class="p">,</span><span class="n">v</span><span class="p">,</span><span class="n">P</span><span class="p">,</span><span class="n">Transfer</span><span class="p">,</span><span class="n">alpha</span><span class="p">,</span><span class="n">BudTransfer</span><span class="p">,</span><span class="n">Solar</span><span class="p">,</span><span class="n">Noise</span><span class="p">,</span><span class="n">Rin</span><span class="p">,</span><span class="n">Rout</span><span class="p">,</span><span class="n">ExternalOutput</span><span class="p">,</span><span class="n">CO2Forcing</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>Beneath the variables in the <code class="docutils literal notranslate"><span class="pre">Read</span></code>-array, there are additional variables which can be printed, for example the following static variables:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Solar</span><span class="o">=</span><span class="nb">list</span>
+<span class="n">Area</span><span class="o">=</span><span class="nb">list</span>
+<span class="n">bounds</span><span class="o">=</span><span class="nb">list</span>
+<span class="n">latlength</span><span class="o">=</span><span class="nb">list</span>
+<span class="n">External_time_start</span><span class="o">=</span><span class="nb">float</span>
+<span class="n">CO2_time_start</span><span class="o">=</span><span class="nb">float</span>
+</pre></div>
+</div>
+<p>All of them are callable by:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">Variables</span> <span class="k">import</span> <span class="n">Vars</span>
+<span class="n">Vars</span><span class="o">.</span><span class="n">VARIABLENAME</span>
+</pre></div>
+</div>
+<p>The description of all output variables is given in chapter <a class="reference internal" href="code/variables.html"><span class="doc">Variables</span></a>.</p>
 </div>
 
 
@@ -161,6 +197,8 @@
           <footer>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="tutorials.html" class="btn btn-neutral float-right" title="Tutorials" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
         <a href="input.html" class="btn btn-neutral float-left" title="Input" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>

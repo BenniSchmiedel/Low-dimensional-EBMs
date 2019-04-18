@@ -81,11 +81,22 @@
             
             
               <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="models.html">Physical Background / Model Types</a></li>
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">How to use</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">How to use</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#step-0-import-packages">Step 0: Import packages</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#first-step-import-model-configuration">First Step: Import model configuration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#second-step-import-variables">Second Step: Import variables</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#third-step-let-the-model-algorithm-run">Third Step: Let the model/algorithm run</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#final-step-evaluating-the-output">Final Step: Evaluating the output</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#putting-it-together">Putting it together</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="input.html">Input</a></li>
 <li class="toctree-l1"><a class="reference internal" href="output.html">Output</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorials.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="sourcecode.html">Source Code</a></li>
+<li class="toctree-l1"><a class="reference internal" href="references.html">References</a></li>
 </ul>
 
             
@@ -152,7 +163,113 @@
             
   <div class="section" id="how-to-use">
 <h1>How to use<a class="headerlink" href="#how-to-use" title="Permalink to this headline">¶</a></h1>
-<p>The way the project is built up enables to take any physical function implemented here and merge them to create the basis of a desired EBM.</p>
+<p>Here a brief introduction is given on how to get from a given input, which initializes the EBM you want to run, to an output, e.g. the global temperature propagation over time or the temperature distribution over a spatial grid representing the earth.</p>
+<p>We will write a small python script, which will do this in a few steps. As it is easier to visualize the output in a plot and modify it, I recommend to perform this steps in a jupyter notebook.</p>
+<div class="section" id="step-0-import-packages">
+<h2>Step 0: Import packages<a class="headerlink" href="#step-0-import-packages" title="Permalink to this headline">¶</a></h2>
+<p>Before you can use any module of this package you have to import the core modules:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">matplotlib</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span><span class="s1">&#39;/insert/your/path/to/the/project/here&#39;</span><span class="o">+</span><span class="s1">&#39;/Packages&#39;</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">Configuration</span> <span class="k">import</span> <span class="n">importer</span>
+<span class="kn">from</span> <span class="nn">Variables</span> <span class="k">import</span> <span class="n">variable_importer</span>
+<span class="kn">from</span> <span class="nn">ModelEquation</span> <span class="k">import</span> <span class="n">model_equation</span>
+<span class="kn">from</span> <span class="nn">RK4</span> <span class="k">import</span> <span class="n">rk4alg</span>
+</pre></div>
+</div>
+<p>This will import all needed modules. Important is that you insert your path to the project so the packages are correctly loaded.
+If you dont know the path, go to the command line, locate your project with <strong>cd</strong> and type <strong>pwd</strong>. This will print the current path which you can copy.
+(I try to fix this soon so it will do this automatically).</p>
+</div>
+<div class="section" id="first-step-import-model-configuration">
+<h2>First Step: Import model configuration<a class="headerlink" href="#first-step-import-model-configuration" title="Permalink to this headline">¶</a></h2>
+<p>The way this project is built up enables to take any physical function implemented and merge them to create the basis of a desired EBM, which will be our input.
+The input will be created manually and is stored in a <strong>configuration.ini</strong> file. Details on how to create and structure this <strong>.ini</strong> file will be given in the <a class="reference internal" href="input.html"><span class="doc">input</span></a>-section.</p>
+<div class="admonition important">
+<p class="first admonition-title">Important</p>
+<p class="last">The configuration.ini file will provide the physical sense of the EBM!</p>
+</div>
+<p>For now you can simply use the <strong>0DEBM_Config.ini</strong> file which imports a 0D EBM with a model run over 10 year and a stepsize of integration of 1 day.
+To import this file use the <code class="docutils literal notranslate"><span class="pre">importer</span></code>-function:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">configuration</span><span class="o">=</span><span class="n">importer</span><span class="p">(</span><span class="s1">&#39;/insert/path/where/your/configurationfiles/are/stored/&#39;</span><span class="p">,</span><span class="s1">&#39;filename&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">configuration</span></code> is an dictionary which contains all required input parameters. To seperate them for a clearer structure you can use:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">eq</span><span class="o">=</span><span class="n">configuration</span><span class="p">[</span><span class="s1">&#39;eqparam&#39;</span><span class="p">]</span>
+<span class="n">rk4</span><span class="o">=</span><span class="n">configuration</span><span class="p">[</span><span class="s1">&#39;rk4input&#39;</span><span class="p">]</span>
+<span class="n">fun</span><span class="o">=</span><span class="n">configuration</span><span class="p">[</span><span class="s1">&#39;funccomb&#39;</span><span class="p">]</span>
+<span class="n">ini</span><span class="o">=</span><span class="n">configuration</span><span class="p">[</span><span class="s1">&#39;initials&#39;</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>These are four dictionaries which contain the information needed for the base equation, the runge-kutta algorithm, the functions used and the initial conditions.</p>
+</div>
+<div class="section" id="second-step-import-variables">
+<h2>Second Step: Import variables<a class="headerlink" href="#second-step-import-variables" title="Permalink to this headline">¶</a></h2>
+<p>As next step the configuration we just imported has to be distributed on different variables. For example arrays of initals conditions are calculated or arrays for the output will be created. To do so we can simply use the <code class="docutils literal notranslate"><span class="pre">variable_importer</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">variable_importer</span><span class="p">(</span><span class="n">configuration</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="third-step-let-the-model-algorithm-run">
+<h2>Third Step: Let the model/algorithm run<a class="headerlink" href="#third-step-let-the-model-algorithm-run" title="Permalink to this headline">¶</a></h2>
+<p>Now we are ready to run the algorithm with the <code class="docutils literal notranslate"><span class="pre">rk4alg</span></code> function. It requires the <code class="docutils literal notranslate"><span class="pre">model_equation</span></code> function and the dictionaries we seperated before (maintain the order):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">outputdata</span><span class="o">=</span><span class="n">rk4alg</span><span class="p">(</span><span class="n">model_equation</span><span class="p">,</span><span class="n">eq</span><span class="p">,</span><span class="n">rk4</span><span class="p">,</span><span class="n">fun</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Depending on your settings the algorithm will need some time until it prints <em>Finished!</em>.</p>
+</div>
+<div class="section" id="final-step-evaluating-the-output">
+<h2>Final Step: Evaluating the output<a class="headerlink" href="#final-step-evaluating-the-output" title="Permalink to this headline">¶</a></h2>
+<p>From the algorithm you will directly get the <code class="docutils literal notranslate"><span class="pre">outputdata</span></code> array. It is a three-dimensional array with <strong>outputdata=[time, zonal mean temperature, global mean temperature]</strong>. Other variables which are of interest, for example the grid specifications, can be accessed by importing the <a class="reference internal" href="code/variables.html"><span class="doc">variables</span></a> package:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">Variables</span> <span class="k">as</span> <span class="nn">Vars</span>
+</pre></div>
+</div>
+<p>and then call the desired variables by their name, for example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">latitudinal_grid</span><span class="o">=</span><span class="n">Vars</span><span class="o">.</span><span class="n">Lat</span>
+</pre></div>
+</div>
+<p>For detailed information about output variables see section <a class="reference internal" href="output.html"><span class="doc">output</span></a>.</p>
+<p>If you look at the output of the algorithm (initialized with the <strong>0DEBM_Config.ini</strong> file) and plot the global temperature over time with:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">outputdata</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">/</span><span class="n">stepsize_of_integration</span><span class="o">/</span><span class="mi">365</span><span class="p">,</span><span class="n">outputdata</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;time [years]&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;GMT [K]&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>you get something like this:</p>
+<div class="figure align-center" id="id1">
+<a class="reference internal image-reference" href="_images/GMT12.png"><img alt="_images/GMT12.png" src="_images/GMT12.png" style="width: 70%;" /></a>
+<p class="caption"><span class="caption-text">with an initial temperature of 12°C (285K)</span></p>
+</div>
+<div class="figure align-center" id="id2">
+<a class="reference internal image-reference" href="_images/GMT17.png"><img alt="_images/GMT17.png" src="_images/GMT17.png" style="width: 70%;" /></a>
+<p class="caption"><span class="caption-text">with an initial temperature of 17°C (290K)</span></p>
+</div>
+</div>
+<div class="section" id="putting-it-together">
+<h2>Putting it together<a class="headerlink" href="#putting-it-together" title="Permalink to this headline">¶</a></h2>
+<p>The summary of what you need to get the model running. Import package:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">matplotlib</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span><span class="s1">&#39;/insert/your/path/to/the/project/here&#39;</span><span class="o">+</span><span class="s1">&#39;/Packages&#39;</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">Configuration</span> <span class="k">import</span> <span class="n">importer</span>
+<span class="kn">from</span> <span class="nn">Variables</span> <span class="k">import</span> <span class="n">variable_importer</span>
+<span class="kn">from</span> <span class="nn">ModelEquation</span> <span class="k">import</span> <span class="n">model_equation</span>
+<span class="kn">from</span> <span class="nn">RK4</span> <span class="k">import</span> <span class="n">rk4alg</span>
+</pre></div>
+</div>
+<p>and run the specific functions:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">configuration</span><span class="o">=</span><span class="n">importer</span><span class="p">(</span><span class="s1">&#39;/insert/path/where/your/configurationfiles/are/stored/&#39;</span><span class="p">,</span><span class="s1">&#39;filename&#39;</span><span class="p">)</span>
+<span class="n">eq</span><span class="o">=</span><span class="n">configuration</span><span class="p">[</span><span class="s1">&#39;eqparam&#39;</span><span class="p">]</span>
+<span class="n">rk4</span><span class="o">=</span><span class="n">configuration</span><span class="p">[</span><span class="s1">&#39;rk4input&#39;</span><span class="p">]</span>
+<span class="n">fun</span><span class="o">=</span><span class="n">configuration</span><span class="p">[</span><span class="s1">&#39;funccomb&#39;</span><span class="p">]</span>
+<span class="n">variable_importer</span><span class="p">(</span><span class="n">configuration</span><span class="p">)</span>
+<span class="n">outputdata</span><span class="o">=</span><span class="n">rk4alg</span><span class="p">(</span><span class="n">model_equation</span><span class="p">,</span><span class="n">eq</span><span class="p">,</span><span class="n">rk4</span><span class="p">,</span><span class="n">fun</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>This demonstration also exists as a jupyter notebook in the <em>Tutorials/</em> directive of the project.</p>
+</div>
 </div>
 
 

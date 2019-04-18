@@ -81,11 +81,14 @@
             
             
               <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="models.html">Physical Background / Model Types</a></li>
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="howtouse.html">How to use</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Input</a></li>
 <li class="toctree-l1"><a class="reference internal" href="output.html">Output</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorials.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="sourcecode.html">Source Code</a></li>
+<li class="toctree-l1"><a class="reference internal" href="references.html">References</a></li>
 </ul>
 
             
@@ -152,7 +155,101 @@
             
   <div class="section" id="input">
 <h1>Input<a class="headerlink" href="#input" title="Permalink to this headline">¶</a></h1>
-<p>To run an EBM, a specific input is required.</p>
+<p>All the input required to run an EBM with this source code is provided by a <strong>configuration.ini</strong> file which you have to create.
+As already mentioned in the section <a class="reference internal" href="howtouse.html"><span class="doc">How to use</span></a>:</p>
+<div class="admonition important">
+<p class="first admonition-title">Important</p>
+<p class="last">The configuration.ini file will provide the physical sense of the EBM!</p>
+</div>
+<p>Here shown is, how this file is structured and which syntax has to be maintained to make it readable to the <code class="docutils literal notranslate"><span class="pre">importer</span></code> function.</p>
+<p>There are four main components of the file, the modelequation parameters <code class="docutils literal notranslate"><span class="pre">eqparam</span></code>, the runge-kutta parameters <code class="docutils literal notranslate"><span class="pre">rk4input</span></code>, the initial condition parameters <code class="docutils literal notranslate"><span class="pre">initials</span></code> and a compilation of physical functions with their specific parameters <code class="docutils literal notranslate"><span class="pre">funccomp</span></code>.</p>
+<p>If you want to put together a new model simply create a textfile with the suffix <strong>.ini</strong>. These four main components will be used as header of a section, whereas the headers the <code class="docutils literal notranslate"><span class="pre">funccomp</span></code> has to be replaced by <code class="docutils literal notranslate"><span class="pre">func0</span></code>, <code class="docutils literal notranslate"><span class="pre">func1</span></code>,… depending on how many functions you want to include. It will look like this:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">eqparam</span><span class="p">]</span>
+
+<span class="p">[</span><span class="n">rk4input</span><span class="p">]</span>
+
+<span class="p">[</span><span class="n">initials</span><span class="p">]</span>
+
+<span class="p">[</span><span class="n">func1</span><span class="p">]</span>
+
+<span class="p">[</span><span class="n">func2</span><span class="p">]</span>
+<span class="o">.</span>
+<span class="o">.</span>
+<span class="p">[</span><span class="n">func_</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>Now each section has to be filled with parameters. <code class="docutils literal notranslate"><span class="pre">eqparam</span></code>, <code class="docutils literal notranslate"><span class="pre">rk4input</span></code> and <code class="docutils literal notranslate"><span class="pre">initials</span></code> always contain the same parameters since they define <strong>how</strong> the algorithm runs. The func-sections have to be modified since they define <strong>which</strong> model equation the algorithm solves.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">The order of your sections doesn’t matter as long as the headers are correctly labeled.</p>
+</div>
+<p>The parameters of the sections look like this (which is the configuration of the 0D-EBM given as demo):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">eqparam</span><span class="p">]</span>
+<span class="n">C_ao</span><span class="o">=</span><span class="mi">70</span><span class="o">*</span><span class="mf">4.2e6</span>
+
+<span class="p">[</span><span class="n">rk4input</span><span class="p">]</span>
+<span class="n">number_of_integration</span><span class="o">=</span><span class="mi">365</span><span class="o">*</span><span class="mi">10</span>
+<span class="n">stepsize_of_integration</span><span class="o">=</span><span class="mi">60</span><span class="o">*</span><span class="mi">60</span><span class="o">*</span><span class="mi">24</span>
+<span class="n">spatial_resolution</span><span class="o">=</span><span class="mi">0</span>
+<span class="n">both_hemispheres</span><span class="o">=</span><span class="kc">True</span>
+<span class="n">latitudinal_circle</span><span class="o">=</span><span class="kc">True</span>
+<span class="n">latitudinal_belt</span><span class="o">=</span><span class="kc">False</span>
+
+<span class="n">eq_condition</span><span class="o">=</span><span class="kc">False</span>
+<span class="n">eq_condition_length</span><span class="o">=</span><span class="mi">100</span>
+<span class="n">eq_condition_amplitude</span><span class="o">=</span><span class="mf">1e-3</span>
+
+<span class="n">data_readout</span><span class="o">=</span><span class="mi">1</span>
+<span class="n">number_of_externals</span><span class="o">=</span><span class="mi">0</span>
+
+<span class="p">[</span><span class="n">initials</span><span class="p">]</span>
+<span class="n">time</span><span class="o">=</span><span class="mi">0</span>
+<span class="n">zmt</span><span class="o">=</span><span class="mi">273</span><span class="o">+</span><span class="mi">17</span>
+<span class="n">gmt</span><span class="o">=</span><span class="mi">273</span><span class="o">+</span><span class="mi">17</span>
+<span class="n">latitude_c</span><span class="o">=</span><span class="mi">0</span>
+<span class="n">latitude_b</span><span class="o">=</span><span class="mi">0</span>
+<span class="n">initial_temperature_cosine</span><span class="o">=</span><span class="kc">True</span>
+<span class="n">initial_temperature_amplitude</span><span class="o">=</span><span class="mi">30</span>
+<span class="n">initial_temperature_noise</span><span class="o">=</span><span class="kc">True</span>
+<span class="n">initial_temperature_noise_amplitude</span><span class="o">=</span><span class="mi">5</span>
+</pre></div>
+</div>
+<p>If the meaning of parameters is unclear, there is a detailed definition of the parameters given in the attached Readme.txt.</p>
+<p>If you now want to add functions you can write them into the configfile with the scheme shown above. If we want to add two functions, one for incoming radiative energy flux and one for outgoing radiative energy flux, this might look like this:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">func0</span><span class="p">]</span>
+<span class="n">func</span><span class="o">=</span><span class="n">R_ininsolalbedo</span>
+<span class="n">Q</span><span class="o">=</span><span class="mi">342</span>
+<span class="n">m</span><span class="o">=</span><span class="mi">1</span>
+<span class="n">dQ</span><span class="o">=</span><span class="mi">0</span>
+
+<span class="n">albedo</span><span class="o">=</span><span class="n">Albedo0D</span>
+<span class="n">albedoread</span><span class="o">=</span><span class="kc">True</span>
+<span class="n">albedoparam</span><span class="o">=</span><span class="p">[</span><span class="mf">0.3</span><span class="p">]</span>
+
+<span class="n">noise</span><span class="o">=</span><span class="kc">False</span>
+<span class="n">noiseamp</span><span class="o">=</span><span class="mi">342</span><span class="o">*</span><span class="mf">0.03</span>
+<span class="n">noisedelay</span><span class="o">=</span><span class="mi">1</span>
+<span class="n">seed</span><span class="o">=</span><span class="kc">True</span>
+<span class="n">seedmanipulation</span><span class="o">=</span><span class="mi">0</span>
+
+<span class="n">sinusodial</span><span class="o">=</span><span class="kc">False</span>
+<span class="n">convfactor</span><span class="o">=</span><span class="mi">1</span>
+<span class="n">timeunit</span><span class="o">=</span><span class="s1">&#39;annualmean&#39;</span>
+<span class="n">orbital</span><span class="o">=</span><span class="kc">False</span>
+<span class="n">orbitalyear</span><span class="o">=</span><span class="mi">0</span>
+
+<span class="p">[</span><span class="n">func1</span><span class="p">]</span>
+<span class="n">func</span><span class="o">=</span><span class="n">R_outplanck</span>
+<span class="n">grey</span><span class="o">=</span><span class="mf">0.612</span>
+<span class="n">sigma</span><span class="o">=</span><span class="n">const</span><span class="o">.</span><span class="n">sigma</span>
+</pre></div>
+</div>
+<div class="admonition important">
+<p class="first admonition-title">Important</p>
+<p class="last">To define which function you add, insert the name at <em>func=</em>, then add the parameters below.</p>
+</div>
+<p>A detailed description of the function parameters is given along with the implementation of the <a class="reference internal" href="code/functions.html"><span class="doc">Functions</span></a>.</p>
+<p>With this content the <strong>0DEBM_Config.ini</strong> is complete and the OD-EBM can be run the way it is described in <a class="reference internal" href="howtouse.html"><span class="doc">How to use</span></a>.</p>
 </div>
 
 

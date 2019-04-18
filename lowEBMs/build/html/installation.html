@@ -36,7 +36,7 @@
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="How to use" href="howtouse.html" />
-    <link rel="prev" title="Introduction" href="introduction.html" /> 
+    <link rel="prev" title="Physical Background / Model Types" href="models.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -81,14 +81,18 @@
             
             
               <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="models.html">Physical Background / Model Types</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Installation</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#via-python-package">Via Python Package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#python-package">Python Package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#dependecies">Dependecies</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="howtouse.html">How to use</a></li>
 <li class="toctree-l1"><a class="reference internal" href="input.html">Input</a></li>
 <li class="toctree-l1"><a class="reference internal" href="output.html">Output</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorials.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="sourcecode.html">Source Code</a></li>
+<li class="toctree-l1"><a class="reference internal" href="references.html">References</a></li>
 </ul>
 
             
@@ -155,8 +159,35 @@
             
   <div class="section" id="installation">
 <h1>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="via-python-package">
-<h2>Via Python Package<a class="headerlink" href="#via-python-package" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="python-package">
+<h2>Python Package<a class="headerlink" href="#python-package" title="Permalink to this headline">¶</a></h2>
+<p>The simplest way to install <code class="docutils literal notranslate"><span class="pre">lowEBMs</span></code> is from source.
+To download and install <code class="docutils literal notranslate"><span class="pre">lowEBMs</span></code> with all its dependencies, go to the command line and type:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">lowEBMs</span>
+</pre></div>
+</div>
+<p>Alternatively, you can clone the git repository of the source code with:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">git</span> <span class="n">clone</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">BenniSchmiedel</span><span class="o">/</span><span class="n">Climate</span><span class="o">-</span><span class="n">Modelling</span>
+</pre></div>
+</div>
+<p>and manually run the setup.py which installs the package with all its dependencies:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">python</span> <span class="n">setup</span><span class="o">.</span><span class="n">py</span> <span class="n">install</span>
+</pre></div>
+</div>
+<p>(keep in mind to change to the directory where you cloned the repository to).</p>
+</div>
+<div class="section" id="dependecies">
+<h2>Dependecies<a class="headerlink" href="#dependecies" title="Permalink to this headline">¶</a></h2>
+<p>To properly use this package there are several other packages required:</p>
+<ul class="simple">
+<li>Python (2.7 should work but I recommend higher versions, 3.5, 3.6 …)</li>
+<li><code class="docutils literal notranslate"><span class="pre">numpy</span></code> (for mathematical calculations)</li>
+<li><code class="docutils literal notranslate"><span class="pre">climlab</span></code> (to import distributions of solar radiation)</li>
+<li><code class="docutils literal notranslate"><span class="pre">xarray</span></code> (required by climlab)</li>
+<li><code class="docutils literal notranslate"><span class="pre">attrdict</span></code> (required by climlab)</li>
+<li><code class="docutils literal notranslate"><span class="pre">matplotlib</span></code> (for plotting)</li>
+<li><code class="docutils literal notranslate"><span class="pre">netCDF4</span></code> (for comparison to observational data stored as netCDF-files)</li>
+</ul>
 </div>
 </div>
 
@@ -171,7 +202,7 @@
         <a href="howtouse.html" class="btn btn-neutral float-right" title="How to use" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="introduction.html" class="btn btn-neutral float-left" title="Introduction" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="models.html" class="btn btn-neutral float-left" title="Physical Background / Model Types" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

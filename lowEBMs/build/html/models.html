@@ -1,0 +1,296 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Physical Background / Model Types &mdash; Low-dimensional Energybalance models  documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Installation" href="installation.html" />
+    <link rel="prev" title="Low-dimensional Energybalance models" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> Low-dimensional Energybalance models
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Physical Background / Model Types</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#physical-background">Physical Background</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#model-types">Model Types</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#d-ebm">0D-EBM</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id1">1D-EBM</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#budyko-type-model">Budyko-type model</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#sellers-type-model">Sellers-type model</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="howtouse.html">How to use</a></li>
+<li class="toctree-l1"><a class="reference internal" href="input.html">Input</a></li>
+<li class="toctree-l1"><a class="reference internal" href="output.html">Output</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorials.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="sourcecode.html">Source Code</a></li>
+<li class="toctree-l1"><a class="reference internal" href="references.html">References</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Low-dimensional Energybalance models</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>Physical Background / Model Types</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/models.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="physical-background-model-types">
+<h1>Physical Background / Model Types<a class="headerlink" href="#physical-background-model-types" title="Permalink to this headline">¶</a></h1>
+<p>With this project different types of EBMs can be used to run simulations.
+However, the versatility of the resolution is limited to low dimensional EBMs from zero to one dimensionsal EBMs and additionally one dimensional EBMs that are resolved over the latitudes. It would be nice and is planned by me to extent this project to higher resolutions (for more information see <a class="reference internal" href="todo.html"><span class="doc">ToDo</span></a>)</p>
+<div class="section" id="physical-background">
+<h2>Physical Background<a class="headerlink" href="#physical-background" title="Permalink to this headline">¶</a></h2>
+<p>In general, energy balance models describe the behaviour of a planet’s energy balance over time. Here, the focus is obviously on the earth’s energy balance, but EBMs can simulate the climate of other planets as well, which is done by the <a class="reference external" href="https://www.mi.uni-hamburg.de/en/arbeitsgruppen/theoretische-meteorologie/modelle/plasim.html">PlaSIM</a> model for example.</p>
+<div class="figure align-center" id="id2">
+<a class="reference internal image-reference" href="_images/EB.png"><img alt="_images/EB.png" src="_images/EB.png" style="width: 80%;" /></a>
+<p class="caption"><span class="caption-text">Earth’s energy balance [<a class="reference internal" href="references.html"><span class="doc">IPCC, 2013</span></a>]</span></p>
+</div>
+<p>Here shown is a 0D schematic of the earth’s energy balance like it is often given in the standard literature. The radiative energy fluxes (in <span class="math notranslate nohighlight">\(Wm^{-2}\)</span>) of the earth are indicated with their strength and direction. However, EBMs describe the energy balance mostly with the crucial parts only, which means that small or strongly regional energy fluxes are neglected.</p>
+<p>EBMs are commonly restricted to the <strong>incoming radiative energy flux</strong> (<span class="math notranslate nohighlight">\(R_{in}\)</span>), the <strong>outgoing radiative energy flux</strong> (<span class="math notranslate nohighlight">\(R_{out}\)</span>) and in some cases of 0D-EBMs an <strong>external forcing energy flux</strong> (<span class="math notranslate nohighlight">\(F_{ext}\)</span>) (e.g. Carbon Dioxide forcing), or in cases of 1D-EBMs to <strong>latitudinal transfer energy fluxes</strong> (<span class="math notranslate nohighlight">\(F_{transfer}\)</span>). This is of course no necessity rather than a general identification of EBMs since they are specifically characterized by their simplicity.</p>
+<p>The physical basis of EBMs can be expressed in a model equation which commonly has the following form:</p>
+<div class="math notranslate nohighlight" id="above">
+\[C \cdot \frac{dT}{dt} = R_{in}(t) + R_{out}(t) + F (t)\]</div>
+<p>where C is the heatcapacity, <span class="math notranslate nohighlight">\(\frac{dT}{dt}\)</span> the term to consider that the system is dynamical and <span class="math notranslate nohighlight">\(R_{in}\)</span>, <span class="math notranslate nohighlight">\(R_{out}\)</span>, <span class="math notranslate nohighlight">\(F\)</span> the energy fluxes which are commonly included.</p>
+</div>
+<div class="section" id="model-types">
+<h2>Model Types<a class="headerlink" href="#model-types" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="d-ebm">
+<h3>0D-EBM<a class="headerlink" href="#d-ebm" title="Permalink to this headline">¶</a></h3>
+<p>If one is interested in the 0D case, the model equation above suffices to describe the energy balance over time. However, <span class="math notranslate nohighlight">\(F\)</span> is neglected in general and only used in specific cases. By using the following discretizations:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}R_{in} &amp; = (1-\alpha)\cdot \\
+R_{out} &amp; = - \epsilon\sigma T^4\end{split}\]</div>
+<p>with the albedo <span class="math notranslate nohighlight">\(\alpha\)</span>, the solar insolation <span class="math notranslate nohighlight">\(Q\)</span>, the Stefan-Boltzmann constant <span class="math notranslate nohighlight">\(\sigma\)</span>, and the emissivity :math`espilon`, the simplest form of an EBM is described by:</p>
+<div class="math notranslate nohighlight">
+\[C \cdot \frac{dT}{dt} = R_{in} + R_{out} = (1-\alpha) \cdot Q - \epsilon\sigma T^4\]</div>
+<p>This equation can easily be solved analytically, but to observe the behaviour of the energy balance over time a numerical algorithm can be used to solve this equation.
+With the chapter <a class="reference internal" href="howtouse.html"><span class="doc">How to use</span></a> it will be investigated in detail how this project implements such an EBM. Additionally there is a tutorial given once you have <a class="reference internal" href="installation.html"><span class="doc">installed</span></a> this project.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">The dependencies of parameters like <span class="math notranslate nohighlight">\(\alpha\)</span> on variables like the temperature <span class="math notranslate nohighlight">\(T\)</span> is strongly related to the inbound type of <a class="reference internal" href="code/functions.html"><span class="doc">Functions</span></a> and is therefore not specified while formulating this model equations.</p>
+</div>
+</div>
+<div class="section" id="id1">
+<h3>1D-EBM<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
+<p>1D EBMs do not differ much from 0D ones. In 1D EBMs the earth is commonly described by a grid of latitudinal bands.
+The model equation as introduced <a class="reference internal" href="#above">above</a> can directly be transfered to be valid for each latitudinal band seperately.</p>
+<p>As already mentioned, 1D EBMs use latitudinal transfer energy fluxes <span class="math notranslate nohighlight">\(F_{transfer}\)</span> which consider an exchange of energy between those latitudinal bands. This term is crucial, because the energy balance resolved over the latitudes shows strong differences between equator and poles, which is logical due to the stronger insolation at the equator.</p>
+<p>By indentifying each latitudinal band and all its parameters with an index i, the simplest form of an 1D-EBM is described by:</p>
+<div class="math notranslate nohighlight">
+\[C \cdot \frac{dT_i}{dt} = R_{in,i} + R_{out,i} + F_{transfer,i}\]</div>
+<p>There are many different approaches to discretize these terms in 1D. Because this project was started to implement two specific EBMs, one created by <a class="reference internal" href="references.html"><span class="doc">Michail Budyko</span></a> and one by <a class="reference internal" href="references.html"><span class="doc">William Seller</span></a>, both published in the late 1960s, these two discretizations will be shown.</p>
+<div class="section" id="budyko-type-model">
+<h4>Budyko-type model<a class="headerlink" href="#budyko-type-model" title="Permalink to this headline">¶</a></h4>
+<p>This EBM constructed by <a class="reference internal" href="references.html"><span class="doc">Michail Budyko</span></a> uses various assumptions, supported by global earth observation data. The key features of this model are:</p>
+<ul class="simple">
+<li>An empirically determined outgoing radiation flux with linear dependence on temperature, in its simplest form described by <em>:math:`R_{out}=A+Bcdot T`</em>.</li>
+<li>An albedo seperated into three different regions with dependence on latitude (or by customization on temperature), with high albedo values towards the polar regions and low albedo values in the equatorial regions.</li>
+<li>A symmetric transfer energy flux with dependence on the difference of zonal (ZMT) to global (GMT) mean temperature.</li>
+<li>A grid resolving latitudinal bands of any width (in this project mostly used is a width of 1°)</li>
+</ul>
+<p>The detailed physical formulation of the terms (and additional extensions) can be viewed along with the implementations (<a class="reference internal" href="code/functions.html"><span class="doc">Functions</span></a>).</p>
+<p>An example zonal mean temperature distribution:</p>
+<div class="figure">
+<img alt="_static/Budyko_ZMT.png" src="_static/Budyko_ZMT.png" />
+</div>
+</div>
+<div class="section" id="sellers-type-model">
+<h4>Sellers-type model<a class="headerlink" href="#sellers-type-model" title="Permalink to this headline">¶</a></h4>
+<p>The EBM constructed <a class="reference internal" href="references.html"><span class="doc">William Seller</span></a> is adapted even more to global earth observation data and thereby is constructed with more complex terms than the EBM from Budyko. The key features of this model are:</p>
+<ul class="simple">
+<li>The Stefan-Boltzmann radiation law as outgoing radiation flux extended with a term considering atmospheric attenuation.</li>
+<li>An albedo described by an empircal law with linear dependence on temperature and surface elevation.</li>
+<li>A transfer energy flux <em>P</em> seperated into three different components, the atmospheric water vapour transfer, the atmospheric sensible heat transfer and the oceanic sensible heat transfer. The total transfer energy flux <em>F</em> of one gridbox is given by the difference of northward and southward transfer energy flux <em>P</em> (the sum of those three components from the northern/southern boundary).</li>
+<li>A grid resolving the earth with latitudinal bands of 10° width. Hence, the earth is resolved by 18 latitudinal bands.</li>
+</ul>
+<p>The detailed physical formulation of the terms (and additional extensions) can be viewed along with the implementations (<a class="reference internal" href="code/functions.html"><span class="doc">Functions</span></a>).</p>
+<p>An example zonal mean temperature distribution:</p>
+<div class="figure">
+<img alt="_static/Sellers_ZMT.png" src="_static/Sellers_ZMT.png" />
+</div>
+</div>
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="installation.html" class="btn btn-neutral float-right" title="Installation" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="index.html" class="btn btn-neutral float-left" title="Low-dimensional Energybalance models" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, benni
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
