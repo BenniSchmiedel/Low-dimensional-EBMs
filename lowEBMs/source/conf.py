@@ -40,7 +40,9 @@ release = ''
 # ones.
 extensions = [
     'sphinx.ext.autodoc',
+    'sphinx.ext.autosectionlabel'
 ]
+autosectionlabel_prefix_document = True
 
 
 language = 'en'
