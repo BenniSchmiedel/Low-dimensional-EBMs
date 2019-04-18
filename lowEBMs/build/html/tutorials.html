@@ -1,0 +1,270 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Tutorials &mdash; Low-dimensional Energybalance models  documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Source Code" href="sourcecode.html" />
+    <link rel="prev" title="Output" href="output.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> Low-dimensional Energybalance models
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="models.html">Physical Background / Model Types</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="howtouse.html">How to use</a></li>
+<li class="toctree-l1"><a class="reference internal" href="input.html">Input</a></li>
+<li class="toctree-l1"><a class="reference internal" href="output.html">Output</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Tutorials</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#d-ebm-simple">0D EBM (simple)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#d-ebm-co-2-forced">0D EBM (<span class="math notranslate nohighlight">\(CO_2\)</span> forced)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#d-ebm-volcanic-forced">0D EBM (volcanic forced)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#d-ebm-budyko-type-static-albedo">1D EBM Budyko-type (static albedo)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#d-ebm-budyko-type-temperature-dependant-albedo">1D EBM Budyko-type (temperature-dependant albedo)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#d-ebm-sellers-type-static-albedo">1D EBM Sellers-type (static albedo)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#d-ebm-sellers-type-temperature-dependant-albedo">1D EBM Sellers-type (temperature-dependant albedo)</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="sourcecode.html">Source Code</a></li>
+<li class="toctree-l1"><a class="reference internal" href="references.html">References</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Low-dimensional Energybalance models</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>Tutorials</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/tutorials.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="tutorials">
+<h1><a class="toc-backref" href="#id1">Tutorials</a><a class="headerlink" href="#tutorials" title="Permalink to this headline">¶</a></h1>
+<p>Here given are tutorials/demonstrations of the EBMs listed below.</p>
+<p>All of them are supplemented within the installation directory under <em>~/lowEBMs/Tutorials/</em> or can otherwise be accessed from the git repository under
+<a class="reference external" href="https://github.com/BenniSchmiedel/Climate-Modelling/tree/master/lowEBMs/Tutorials">https://github.com/BenniSchmiedel/Climate-Modelling/tree/master/lowEBMs/Tutorials</a>.</p>
+<div class="contents topic" id="ebm-tutorial-files">
+<p class="topic-title first">EBM tutorial files:</p>
+<ul class="simple">
+<li><a class="reference internal" href="#tutorials" id="id1">Tutorials</a><ul>
+<li><a class="reference internal" href="#d-ebm-simple" id="id2">0D EBM (simple)</a></li>
+<li><a class="reference internal" href="#d-ebm-co-2-forced" id="id3">0D EBM (<span class="math notranslate nohighlight">\(CO_2\)</span> forced)</a></li>
+<li><a class="reference internal" href="#d-ebm-volcanic-forced" id="id4">0D EBM (volcanic forced)</a></li>
+<li><a class="reference internal" href="#d-ebm-budyko-type-static-albedo" id="id5">1D EBM Budyko-type (static albedo)</a></li>
+<li><a class="reference internal" href="#d-ebm-budyko-type-temperature-dependant-albedo" id="id6">1D EBM Budyko-type (temperature-dependant albedo)</a></li>
+<li><a class="reference internal" href="#d-ebm-sellers-type-static-albedo" id="id7">1D EBM Sellers-type (static albedo)</a></li>
+<li><a class="reference internal" href="#d-ebm-sellers-type-temperature-dependant-albedo" id="id8">1D EBM Sellers-type (temperature-dependant albedo)</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<p>For the physical background see <a class="reference internal" href="models.html"><span class="doc">Model types</span></a> and the explanation of usage see <a class="reference internal" href="howtouse.html"><span class="doc">How to use</span></a>. The explanation of additional functions and ther usage can be looked up in the <a class="reference internal" href="code/functions.html"><span class="doc">functions’ definitions</span></a>.</p>
+<div class="section" id="d-ebm-simple">
+<h2><a class="toc-backref" href="#id2">0D EBM (simple)</a><a class="headerlink" href="#d-ebm-simple" title="Permalink to this headline">¶</a></h2>
+<p>A 0D EBM equiped with:</p>
+<ul class="simple">
+<li>constant incoming solar radiation flux</li>
+<li>outgoing radiation flux according to the Stefan-Boltzmann law</li>
+</ul>
+</div>
+<div class="section" id="d-ebm-co-2-forced">
+<h2><a class="toc-backref" href="#id3">0D EBM (<span class="math notranslate nohighlight">\(CO_2\)</span> forced)</a><a class="headerlink" href="#d-ebm-co-2-forced" title="Permalink to this headline">¶</a></h2>
+<p>A 0D EBM equiped with:</p>
+<ul class="simple">
+<li>constant incoming solar radiation flux</li>
+<li>outgoing radiation flux according to the Stefan-Boltzmann law</li>
+<li><span class="math notranslate nohighlight">\(CO_2\)</span>-forcing according to radiative forcing estimates by <a class="reference internal" href="references.html"><span class="doc">Myhre</span></a></li>
+</ul>
+<p>The tutorial-file of this EBM uses a <span class="math notranslate nohighlight">\(CO_2\)</span>-forcing based on 1958 - present atmospheric <span class="math notranslate nohighlight">\(CO_2\)</span>-concentrations (the <span class="xref std std-ref">Keeling-curve</span> <span class="xref std std-ref">references:Keeling-curve&gt;</span>)</p>
+</div>
+<div class="section" id="d-ebm-volcanic-forced">
+<h2><a class="toc-backref" href="#id4">0D EBM (volcanic forced)</a><a class="headerlink" href="#d-ebm-volcanic-forced" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="d-ebm-budyko-type-static-albedo">
+<h2><a class="toc-backref" href="#id5">1D EBM Budyko-type (static albedo)</a><a class="headerlink" href="#d-ebm-budyko-type-static-albedo" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="d-ebm-budyko-type-temperature-dependant-albedo">
+<h2><a class="toc-backref" href="#id6">1D EBM Budyko-type (temperature-dependant albedo)</a><a class="headerlink" href="#d-ebm-budyko-type-temperature-dependant-albedo" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="d-ebm-sellers-type-static-albedo">
+<h2><a class="toc-backref" href="#id7">1D EBM Sellers-type (static albedo)</a><a class="headerlink" href="#d-ebm-sellers-type-static-albedo" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="d-ebm-sellers-type-temperature-dependant-albedo">
+<h2><a class="toc-backref" href="#id8">1D EBM Sellers-type (temperature-dependant albedo)</a><a class="headerlink" href="#d-ebm-sellers-type-temperature-dependant-albedo" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="sourcecode.html" class="btn btn-neutral float-right" title="Source Code" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="output.html" class="btn btn-neutral float-left" title="Output" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, benni
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Welcome! &mdash; Low-dimensional Energybalance models  documentation</title>
+  <title>Low-dimensional Energybalance models &mdash; Low-dimensional Energybalance models  documentation</title>
   
 
   
@@ -35,7 +35,7 @@
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Introduction" href="introduction.html" /> 
+    <link rel="next" title="Physical Background / Model Types" href="models.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -80,11 +80,14 @@
             
             
               <ul>
-<li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="models.html">Physical Background / Model Types</a></li>
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="howtouse.html">How to use</a></li>
 <li class="toctree-l1"><a class="reference internal" href="input.html">Input</a></li>
 <li class="toctree-l1"><a class="reference internal" href="output.html">Output</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorials.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="sourcecode.html">Source Code</a></li>
+<li class="toctree-l1"><a class="reference internal" href="references.html">References</a></li>
 </ul>
 
             
@@ -130,7 +133,7 @@
     
       <li><a href="#">Docs</a> &raquo;</li>
         
-      <li>Welcome!</li>
+      <li>Low-dimensional Energybalance models</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -149,162 +152,63 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="welcome">
-<h1>Welcome!<a class="headerlink" href="#welcome" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="low-dimensional-energybalance-models">
+<h1>Low-dimensional Energybalance models<a class="headerlink" href="#low-dimensional-energybalance-models" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="introduction">
+<h2>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h2>
+<p>This project is a python-implementation of low-dimensional energy balance models (EBMs), built up from a set of physical functions, combined to represent the behaviour of earth’s climate through space and time.
+EBMs are one of the most basic climate models, able to reconstruct past climate conditions and predict future ones aswell. (some Examples)</p>
+<p>The implementations of this project are based on a set of publications, especially from Michail Budyko () and William Sellers (). (For the full list see References).</p>
+<p>This documentation primarily aims on explaining the structure of the sourcecode and show how to use it four your own purpose.
+It is now the most well documented sourcecode, so if questions or concerns about implementations come up, please contact me (contact).</p>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction</a></li>
-<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="installation.html#via-python-package">Via Python Package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="models.html">Physical Background / Model Types</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="models.html#physical-background">Physical Background</a></li>
+<li class="toctree-l2"><a class="reference internal" href="models.html#model-types">Model Types</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="howtouse.html">How to use</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#python-package">Python Package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#dependecies">Dependecies</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="howtouse.html">How to use</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="howtouse.html#step-0-import-packages">Step 0: Import packages</a></li>
+<li class="toctree-l2"><a class="reference internal" href="howtouse.html#first-step-import-model-configuration">First Step: Import model configuration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="howtouse.html#second-step-import-variables">Second Step: Import variables</a></li>
+<li class="toctree-l2"><a class="reference internal" href="howtouse.html#third-step-let-the-model-algorithm-run">Third Step: Let the model/algorithm run</a></li>
+<li class="toctree-l2"><a class="reference internal" href="howtouse.html#final-step-evaluating-the-output">Final Step: Evaluating the output</a></li>
+<li class="toctree-l2"><a class="reference internal" href="howtouse.html#putting-it-together">Putting it together</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="input.html">Input</a></li>
 <li class="toctree-l1"><a class="reference internal" href="output.html">Output</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorials.html">Tutorials</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="tutorials.html#d-ebm-simple">0D EBM (simple)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorials.html#d-ebm-co-2-forced">0D EBM (<span class="math notranslate nohighlight">\(CO_2\)</span> forced)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorials.html#d-ebm-volcanic-forced">0D EBM (volcanic forced)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorials.html#d-ebm-budyko-type-static-albedo">1D EBM Budyko-type (static albedo)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorials.html#d-ebm-budyko-type-temperature-dependant-albedo">1D EBM Budyko-type (temperature-dependant albedo)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorials.html#d-ebm-sellers-type-static-albedo">1D EBM Sellers-type (static albedo)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorials.html#d-ebm-sellers-type-temperature-dependant-albedo">1D EBM Sellers-type (temperature-dependant albedo)</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="sourcecode.html">Source Code</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="code/rk4.html">The numerical integrator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="code/modelequation.html">The basic model equation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="code/functions.html">Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="code/configuration.html">Configuration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="code/variables.html">Variables</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="references.html">References</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="references.html#keeling-curve">Keeling-curve</a></li>
+</ul>
+</li>
 </ul>
 </div>
-<span class="target" id="module-Packages.Configuration"></span><p>Package for importing system configuration.
-The needed data is imported from a specific config.ini and placed in different arrays
-which can be called</p>
-<dl class="function">
-<dt id="Packages.Configuration.importer">
-<code class="descclassname">Packages.Configuration.</code><code class="descname">importer</code><span class="sig-paren">(</span><em>filename</em><span class="sig-paren">)</span><a class="headerlink" href="#Packages.Configuration.importer" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">importer</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span> 
-    
-    <span class="c1">#Importing the configfile.ini</span>
-    <span class="n">config</span><span class="o">=</span><span class="n">configparser</span><span class="o">.</span><span class="n">ConfigParser</span><span class="p">()</span>                      
-    <span class="n">config</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s1">&#39;Config/&#39;</span><span class="o">+</span><span class="n">filename</span><span class="p">)</span>    
-                         
-    <span class="c1">#Creating arrays for the sections in the configfile </span>
-    <span class="n">keys</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">options</span><span class="p">(</span><span class="s1">&#39;eqparam&#39;</span><span class="p">)</span>  
-    <span class="n">values</span><span class="o">=</span><span class="p">[]</span>      
-    <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">keys</span><span class="p">)):</span>        
-        <span class="n">values</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">eval</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;eqparam&#39;</span><span class="p">][</span><span class="n">keys</span><span class="p">[</span><span class="n">j</span><span class="p">]]))</span>
-    <span class="n">eqparamd</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">keys</span><span class="p">,</span><span class="n">values</span><span class="p">))</span>
-    
-    <span class="n">keys</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">options</span><span class="p">(</span><span class="s1">&#39;rk4input&#39;</span><span class="p">)</span>  
-    <span class="n">values</span><span class="o">=</span><span class="p">[]</span>      
-    <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">keys</span><span class="p">)):</span>        
-        <span class="n">values</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">eval</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;rk4input&#39;</span><span class="p">][</span><span class="n">keys</span><span class="p">[</span><span class="n">j</span><span class="p">]]))</span>
-    <span class="n">rk4inputd</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">keys</span><span class="p">,</span><span class="n">values</span><span class="p">))</span>
-
-    <span class="n">keys</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">options</span><span class="p">(</span><span class="s1">&#39;initials&#39;</span><span class="p">)</span>  
-    <span class="n">values</span><span class="o">=</span><span class="p">[]</span>      
-    <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">keys</span><span class="p">)):</span>        
-        <span class="n">values</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">eval</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;initials&#39;</span><span class="p">][</span><span class="n">keys</span><span class="p">[</span><span class="n">j</span><span class="p">]]))</span>
-    <span class="n">initialsd</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">keys</span><span class="p">,</span><span class="n">values</span><span class="p">))</span>
-
-    <span class="c1">#Creating a dictionary of functions included </span>
-    <span class="n">funclistd</span><span class="o">=</span><span class="p">{}</span>
-    <span class="n">funcparamd</span><span class="o">=</span><span class="p">{}</span>
-    <span class="n">i</span><span class="o">=</span><span class="mi">0</span>
-    <span class="k">while</span> <span class="s1">&#39;func&#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="ow">in</span> <span class="n">config</span><span class="p">:</span>
-        <span class="n">funclistd</span><span class="p">[</span><span class="s1">&#39;func&#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)]</span><span class="o">=</span><span class="nb">eval</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;func&#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)][</span><span class="s1">&#39;func&#39;</span><span class="p">])</span>
-
-        <span class="n">keys</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">options</span><span class="p">(</span><span class="s1">&#39;func&#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">))[</span><span class="mi">1</span><span class="p">:]</span>  
-        <span class="n">values</span><span class="o">=</span><span class="p">[]</span>      
-        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">keys</span><span class="p">)):</span>        
-            <span class="n">values</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">eval</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;func&#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)][</span><span class="n">keys</span><span class="p">[</span><span class="n">j</span><span class="p">]]))</span>
-        <span class="n">funcparamd</span><span class="p">[</span><span class="s1">&#39;func&#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)]</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">keys</span><span class="p">,</span><span class="n">values</span><span class="p">))</span>
-        <span class="n">i</span><span class="o">+=</span><span class="mi">1</span>
-    
-    <span class="c1">#packing the function components into one dictionary</span>
-    <span class="n">funccompd</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;funclist&#39;</span><span class="p">:</span><span class="n">funclistd</span><span class="p">,</span><span class="s1">&#39;funcparam&#39;</span><span class="p">:</span><span class="n">funcparamd</span><span class="p">}</span> 
-    <span class="c1">#converting to list-type to allow indexing</span>
-    <span class="n">funccomp</span><span class="o">=</span><span class="n">dict_to_list</span><span class="p">(</span><span class="n">funccompd</span><span class="p">)</span>     
-    <span class="n">eqparam</span><span class="o">=</span><span class="n">dict_to_list</span><span class="p">(</span><span class="n">eqparamd</span><span class="p">)</span>     
-    <span class="n">rk4input</span><span class="o">=</span><span class="n">dict_to_list</span><span class="p">(</span><span class="n">rk4inputd</span><span class="p">)</span>
-    <span class="n">initials</span><span class="o">=</span><span class="n">dict_to_list</span><span class="p">(</span><span class="n">initialsd</span><span class="p">)</span>     
-    <span class="c1">#creating output array</span>
-    <span class="n">configa</span><span class="o">=</span><span class="p">[</span><span class="n">eqparam</span><span class="p">,</span> <span class="n">rk4input</span><span class="p">,</span> <span class="n">funccomp</span><span class="p">,</span> <span class="n">initials</span><span class="p">]</span>
-    <span class="n">configad</span><span class="o">=</span><span class="p">[</span><span class="n">eqparamd</span><span class="p">,</span> <span class="n">rk4inputd</span><span class="p">,</span> <span class="n">funccompd</span><span class="p">,</span> <span class="n">initialsd</span><span class="p">]</span>
-    <span class="c1">#creating array with the names of configa</span>
-    <span class="n">configdicnames</span><span class="o">=</span><span class="n">lna</span><span class="p">([</span><span class="s1">&#39;eqparam&#39;</span><span class="p">,</span><span class="s1">&#39;rk4input&#39;</span><span class="p">,</span><span class="s1">&#39;funccomp&#39;</span><span class="p">,</span><span class="s1">&#39;initials&#39;</span><span class="p">])</span>
-    <span class="n">configdic</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">configdicnames</span><span class="p">,</span><span class="n">configad</span><span class="p">))</span>
-    
-    <span class="c1">#Importing the Variables and initial conditions    </span>
-    <span class="c1">#Variable_importer()</span>
-
-    <span class="c1">#returning the arrays with all needed system parameters and variables</span>
-    <span class="k">return</span> <span class="n">configa</span><span class="p">,</span> <span class="n">configdic</span><span class="p">,</span> <span class="n">funccompd</span>
-</pre></div>
 </div>
-<div class="section" id="module-Packages.RK4">
-<span id="numerical-method-runge-kutta-4th-order"></span><h2>Numerical Method (Runge Kutta 4th order)<a class="headerlink" href="#module-Packages.RK4" title="Permalink to this headline">¶</a></h2>
-</div>
-<div class="section" id="module-Packages.Functions">
-<span id="functions"></span><h2>Functions<a class="headerlink" href="#module-Packages.Functions" title="Permalink to this headline">¶</a></h2>
-<dl class="function">
-<dt id="Packages.Functions.R_ininsolalbedo">
-<code class="descclassname">Packages.Functions.</code><code class="descname">R_ininsolalbedo</code><span class="sig-paren">(</span><em>funcparam</em><span class="sig-paren">)</span><a class="headerlink" href="#Packages.Functions.R_ininsolalbedo" title="Permalink to this definition">¶</a></dt>
-<dd><p>Hello</p>
-</dd></dl>
-
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">R_ininsolalbedo</span><span class="p">(</span><span class="n">funcparam</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Hello&quot;&quot;&quot;</span>
-    <span class="c1">#Incoming radiation with latitudal dependence, albedo transition for T&lt;T_ice, without noise</span>
-    <span class="c1">#R_ininsolalbedo=[Conversion,alpha_p,T_ice,m]</span>
-    <span class="n">key</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="n">funcparam</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
-    <span class="n">list_parameters</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="n">funcparam</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
-    <span class="c1">#Loading inputparameters</span>
-    <span class="n">Q</span><span class="p">,</span><span class="n">factor_solar</span><span class="p">,</span><span class="n">dQ</span><span class="p">,</span><span class="n">albedofunc</span><span class="p">,</span><span class="n">albedoread</span><span class="p">,</span><span class="n">albedofuncparam</span><span class="p">,</span><span class="n">noise</span><span class="p">,</span><span class="n">noiseamp</span><span class="p">,</span><span class="n">noisedelay</span><span class="p">,</span>    <span class="n">seed</span><span class="p">,</span><span class="n">seedmanipulation</span><span class="p">,</span><span class="n">solarinput</span><span class="p">,</span><span class="n">convfactor</span><span class="p">,</span><span class="n">timeunit</span><span class="p">,</span><span class="n">orbital</span><span class="p">,</span><span class="n">orbitalyear</span><span class="o">=</span><span class="n">list_parameters</span><span class="c1">#R_ininsolalbedoparam</span>
-    
-    <span class="c1">#Calculating albedo from given albedofunction</span>
-    <span class="n">alpha</span><span class="o">=</span><span class="n">albedofunc</span><span class="p">(</span><span class="o">*</span><span class="n">albedofuncparam</span><span class="p">)</span> 
-    <span class="c1">#Readout to give albedo as output</span>
-    <span class="k">if</span> <span class="n">albedoread</span><span class="o">==</span><span class="kc">True</span><span class="p">:</span> 
-        <span class="k">if</span> <span class="n">Runtime_Tracker</span> <span class="o">%</span> <span class="mi">4</span><span class="o">*</span><span class="n">data_readout</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>    <span class="c1">#Only on 4th step (due to rk4)</span>
-            <span class="n">Vars</span><span class="o">.</span><span class="n">Read</span><span class="p">[</span><span class="mi">6</span><span class="p">][</span><span class="nb">int</span><span class="p">(</span><span class="n">Runtime_Tracker</span><span class="o">/</span><span class="p">(</span><span class="mi">4</span><span class="o">*</span><span class="n">data_readout</span><span class="p">))]</span><span class="o">=</span><span class="n">alpha</span>
-
-    <span class="c1">#Noise factor z on the solar insolation        </span>
-    <span class="n">z</span><span class="o">=</span><span class="mi">0</span>
-    <span class="k">if</span> <span class="n">noise</span><span class="o">==</span><span class="kc">True</span><span class="p">:</span>
-        <span class="c1">#possible noisedelay which indicates a gap between updating the noise factor</span>
-        <span class="k">if</span> <span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">Vars</span><span class="o">.</span><span class="n">t</span><span class="o">/</span><span class="n">stepsize_of_integration</span><span class="p">)</span> <span class="o">%</span> <span class="n">noisedelay</span><span class="p">)</span><span class="o">==</span><span class="mi">0</span><span class="p">:</span> 
-            <span class="k">if</span> <span class="p">(</span><span class="n">Runtime_Tracker</span> <span class="o">%</span> <span class="mi">4</span><span class="o">*</span><span class="n">data_readout</span><span class="p">)</span><span class="o">==</span><span class="mi">0</span><span class="p">:</span>
-                <span class="c1">#seed if same noise is desired</span>
-                <span class="k">if</span> <span class="n">seed</span><span class="o">==</span><span class="kc">True</span><span class="p">:</span>
-                    <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">Vars</span><span class="o">.</span><span class="n">t</span><span class="p">)</span><span class="o">+</span><span class="n">seedmanipulation</span><span class="p">)</span>
-                <span class="n">z</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">noiseamp</span><span class="p">)</span>
-                <span class="c1">#write to builtins and output</span>
-                <span class="n">builtins</span><span class="o">.</span><span class="n">Noise_Tracker</span><span class="o">=</span><span class="n">z</span>
-                <span class="n">Vars</span><span class="o">.</span><span class="n">Read</span><span class="p">[</span><span class="mi">9</span><span class="p">][</span><span class="nb">int</span><span class="p">(</span><span class="n">Runtime_Tracker</span><span class="o">/</span><span class="p">(</span><span class="mi">4</span><span class="o">*</span><span class="n">data_readout</span><span class="p">))]</span><span class="o">=</span><span class="n">z</span>
-    <span class="n">z</span><span class="o">=</span><span class="n">builtins</span><span class="o">.</span><span class="n">Noise_Tracker</span>
-    
-    <span class="c1">#Calculating solar insolation distribution from functions using climlab</span>
-    
-    <span class="k">if</span> <span class="n">spatial_resolution</span><span class="o">==</span><span class="mi">0</span><span class="p">:</span>
-        <span class="n">Vars</span><span class="o">.</span><span class="n">Solar</span><span class="o">=</span><span class="n">Q</span>
-    <span class="k">if</span> <span class="n">solarinput</span><span class="o">==</span><span class="kc">True</span><span class="p">:</span>
-        <span class="c1">#with orbital variations (if False by default present day)</span>
-        <span class="k">if</span> <span class="n">orbital</span><span class="o">==</span><span class="kc">True</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">Runtime_Tracker</span> <span class="o">%</span> <span class="mi">4</span><span class="o">*</span><span class="n">data_readout</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-                <span class="n">Vars</span><span class="o">.</span><span class="n">Solar</span><span class="o">=</span><span class="n">Solarradiation_orbital</span><span class="p">(</span><span class="n">convfactor</span><span class="p">,</span><span class="n">orbitalyear</span><span class="p">)</span>
-                <span class="n">Vars</span><span class="o">.</span><span class="n">Read</span><span class="p">[</span><span class="mi">8</span><span class="p">][</span><span class="nb">int</span><span class="p">(</span><span class="n">Runtime_Tracker</span><span class="o">/</span><span class="p">(</span><span class="mi">4</span><span class="o">*</span><span class="n">data_readout</span><span class="p">))]</span><span class="o">=</span><span class="n">Vars</span><span class="o">.</span><span class="n">Solar</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">Runtime_Tracker</span><span class="o">==</span><span class="mi">0</span><span class="p">:</span>
-                <span class="n">Vars</span><span class="o">.</span><span class="n">Solar</span><span class="o">=</span><span class="n">Solarradiation</span><span class="p">(</span><span class="n">convfactor</span><span class="p">,</span><span class="n">timeunit</span><span class="p">,</span><span class="n">orbitalyear</span><span class="p">)</span>
-    <span class="c1">#total solar insolation with possible offset</span>
-    <span class="n">Q_total</span><span class="o">=</span><span class="n">Vars</span><span class="o">.</span><span class="n">Solar</span><span class="o">+</span><span class="n">dQ</span>
-    
-    <span class="c1">#Equation of incoming radiation</span>
-    <span class="n">R_in</span><span class="o">=</span><span class="p">(</span><span class="n">Q_total</span><span class="o">+</span><span class="n">z</span><span class="p">)</span><span class="o">*</span><span class="n">factor_solar</span><span class="o">*</span><span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">lna</span><span class="p">(</span><span class="n">alpha</span><span class="p">))</span>
-    <span class="k">if</span> <span class="n">Runtime_Tracker</span> <span class="o">%</span> <span class="mi">4</span><span class="o">*</span><span class="n">data_readout</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>    <span class="c1">#Only on 4th step (due to rk4)</span>
-        <span class="n">Vars</span><span class="o">.</span><span class="n">Read</span><span class="p">[</span><span class="mi">10</span><span class="p">][</span><span class="nb">int</span><span class="p">(</span><span class="n">Runtime_Tracker</span><span class="o">/</span><span class="p">(</span><span class="mi">4</span><span class="o">*</span><span class="n">data_readout</span><span class="p">))]</span><span class="o">=</span><span class="n">R_in</span>
-    <span class="k">return</span> <span class="n">R_in</span>
-</pre></div>
-</div>
-</div>
-</div>
-<div class="section" id="indices-and-tables">
-<h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h1>
-<ul class="simple">
-<li><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></li>
-<li><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></li>
-<li><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></li>
-</ul>
 </div>
 
 
@@ -315,7 +219,7 @@ which can be called</p>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="introduction.html" class="btn btn-neutral float-right" title="Introduction" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="models.html" class="btn btn-neutral float-right" title="Physical Background / Model Types" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
     </div>
