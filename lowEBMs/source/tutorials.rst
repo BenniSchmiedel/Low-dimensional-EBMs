@@ -69,12 +69,11 @@ The parameters of the tutorial-file are chosen to reproduce the EBM as it was in
 A 1D EBM equipped with:
 
 - temperature dependant albedo distribution with three regions of albedo regions 
+  |rarr| dynamic incoming solar radiation flux  
 
-| |rarr| dynamic incoming solar radiation flux  
+- outgoing radiation flux given by the empirical law according to :ref:`Budyko <Budyko>`
 
-- outgoing radiation flux according to Budyko's radiation law
-
-- a symmetric diffusive transfer energy flux according to Budyko
+- a symmetric diffusive transfer energy flux according to :ref:`Budyko <Budyko>`
 
 The parameters of the tutorial-file are chosen to reproduce the EBM as it was introduced by :ref:`Budyko 1968 <Budyko>`.
 The temperature dependence of the albedo is defined in :doc:`Functions <code/functions>`.
@@ -87,14 +86,28 @@ A 1D EBM equipped with:
 
 - static albedo distribution with a continuous albedo function |rarr| constant incoming solar radiation flux  
 
-- outgoing radiation flux according to Budyko's radiation law
+- outgoing radiation flux given by an edited Stefan-Boltzmann radiation law according to :ref:`Sellers <Sellers>`
 
-- a symmetric diffusive transfer energy flux according to Budyko
+- transfer energy flux according to :ref:`Sellers <Sellers>`
 
-The parameters of the tutorial-file are chosen to reproduce the EBM as it was introduced by :ref:`Budyko 1968 <Budyko>`.
+- temperature distributions corrected by the average latitudinal band elevation
 
+The parameters of the tutorial-file are chosen to reproduce the EBM as it was introduced by :ref:`Sellers 1969 <Sellers>`.
 
 
 1D EBM Sellers-type (temperature-dependant albedo)
 ==================================================
+
+A 1D EBM equipped with:
+
+- dynamic albedo distribution with a continuous temperature dependant albedo function |rarr| constant incoming solar radiation flux  
+
+- outgoing radiation flux given by an edited Stefan-Boltzmann radiation law according to :ref:`Sellers <Sellers>`
+
+- transfer energy flux according to :ref:`Sellers <Sellers>`
+
+- temperature distributions corrected by the average latitudinal band elevation
+
+The parameters of the tutorial-file are chosen to reproduce the EBM as it was introduced by :ref:`Sellers 1969 <Sellers>`.
+
 
