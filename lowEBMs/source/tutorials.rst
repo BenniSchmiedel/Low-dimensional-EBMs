@@ -68,8 +68,24 @@ The parameters of the tutorial-file are chosen to reproduce the EBM as it was in
 
 A 1D EBM equipped with:
 
-- |temperature dependant albedo distribution with three regions of albedo regions 
-  | |rarr| dynamic incoming solar radiation flux  
+- temperature dependant albedo distribution with three regions of albedo regions 
+
+| |rarr| dynamic incoming solar radiation flux  
+
+- outgoing radiation flux according to Budyko's radiation law
+
+- a symmetric diffusive transfer energy flux according to Budyko
+
+The parameters of the tutorial-file are chosen to reproduce the EBM as it was introduced by :ref:`Budyko 1968 <Budyko>`.
+The temperature dependence of the albedo is defined in :doc:`Functions <code/functions>`.
+
+
+1D EBM Sellers-type (static albedo)
+===================================
+
+A 1D EBM equipped with:
+
+- static albedo distribution with a continuous albedo function |rarr| constant incoming solar radiation flux  
 
 - outgoing radiation flux according to Budyko's radiation law
 
@@ -78,8 +94,6 @@ A 1D EBM equipped with:
 The parameters of the tutorial-file are chosen to reproduce the EBM as it was introduced by :ref:`Budyko 1968 <Budyko>`.
 
 
-1D EBM Sellers-type (static albedo)
-===================================
 
 1D EBM Sellers-type (temperature-dependant albedo)
 ==================================================
