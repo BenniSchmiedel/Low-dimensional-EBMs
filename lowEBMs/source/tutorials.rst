@@ -1,3 +1,5 @@
+..    include:: <isonum.txt>
+
 *********
 Tutorials
 *********
@@ -32,7 +34,7 @@ A 0D EBM equipped with:
 
 - :math:`CO_2` radiative forcing according to estimates by :doc:`Myhre <references>`
 
-The tutorial-file of this EBM uses a :math:`CO_2`-forcing based on 1958 - present atmospheric :math:`CO_2`-concentrations (the :cod:`Keeling-curve <references:Keeling-curve>`)
+The tutorial-file of this EBM uses a :math:`CO_2`-forcing based on 1958 - present atmospheric :math:`CO_2`-concentrations (the :doc:`Keeling-curve <references:Keeling-curve>`)
 
 0D EBM (volcanic forced)
 ========================
@@ -52,9 +54,7 @@ The tutorial-file of this EBM uses a randomly generated radiative forcing as vol
 
 A 1D EBM equipped with:
 
-- constant incoming solar radiation flux
-
-    - static albedo distribution with three regions of albedo regions 
+- static albedo distribution with three regions of albedo regions |rarr| constant incoming solar radiation flux  
 
 - outgoing radiation flux according to Budyko's radiation law
 
