@@ -4,14 +4,12 @@
 Tutorials
 *********
 
-Here given are tutorials/demonstrations of the EBMs listed below. 
-
-All of them are supplemented within the installation directory under *~/lowEBMs/Tutorials/* or can otherwise be accessed from the git repository under 
+Here given is a list of tutorial-/demonstration-EBMs which are supplemented within the installation directory under *~/lowEBMs/Tutorials/* or can otherwise be accessed from the git repository under 
 https://github.com/BenniSchmiedel/Climate-Modelling/tree/master/lowEBMs/Tutorials.
 
 .. contents:: EBM tutorial files:
 
-For the physical background see :doc:`Model types <models>` and the explanation of usage see :doc:`How to use <howtouse>`. The explanation of additional functions and ther usage can be looked up in the :doc:`functions' definitions <code/functions>`. 
+For the physical background see :doc:`Model types <models>` and the explanation of usage see :doc:`How to use <howtouse>`. The explanation of additional functions and ther usage can be looked up in the :doc:`functions' definitions <code/functions>` or in the referenced literature. 
 
 0D EBM (simple)
 ===============
