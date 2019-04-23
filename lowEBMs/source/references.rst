@@ -16,7 +16,9 @@ Sellers
 
 - W. D. Sellers. A Global Climatic Model Based on the Energy Balance of the Earth-Atmosphere System. Journal of Applied Meteorology, 8(3):392–400, 1969. ISSN 0021-8952. doi: 10.1175/1520-0450(1969)008<0392:AGCMBO>2.0.CO;2.
 
-Keeling-curve
-=============
+
+.. _Keeling:
+
+
 
 
