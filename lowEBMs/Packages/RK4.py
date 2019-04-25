@@ -1,5 +1,6 @@
-from ModelEquation import *
-from Functions import *
+from lowEBMs.Packages.ModelEquation import model_equation
+from lowEBMs.Packages.Functions import *
+from lowEBMs.Packages.Variables import Vars
 import numpy as np
 import builtins
 import time

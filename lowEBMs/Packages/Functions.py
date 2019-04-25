@@ -5,8 +5,8 @@ from climlab.solar.orbital import OrbitalTable
 #from climlab.solar.orbital import LongOrbitalTable
 import scipy
 import builtins
-from Variables import *
 import time
+from lowEBMs.Packages.Variables import Vars
 
 """Energy Flux from incoming radiation"""
 
@@ -195,8 +195,8 @@ def Transfer_bud(funcparam):
 def WV_Sel(funcparam):
     #Transfer flow of water vapour across latitudinal bands
     #WV_Selparam=[K_wv,g,a,eps,p,e0,L,Rd,dy,dp]
-    list_parameters=list(funcparam.values())
-    K_wv,g,a,eps,p,e0,L,Rd,dy,dp,factor_wv,factor_kwv=list_parameters
+    #list_parameters=list(funcparam.values())
+    K_wv,g,a,eps,p,e0,L,Rd,dy,dp,factor_wv,factor_kwv=funcparam
     
     #calculating the specific humidity q and its latitudinal difference dq
     q=SatSpecHum_Sel(e0,eps,L,Rd,p)
@@ -209,8 +209,8 @@ def WV_Sel(funcparam):
 def SH_airSel(funcparam):
     #Transfer flux due to atmosphere sensible heat transfer across latitudinal bands
     #SH_airSelparam=[K_h,g,a,dy,cp,dp]
-    list_parameters=list(funcparam.values())
-    K_h,g,a,dy,cp,dp,factor_air,factor_kair=list_parameters
+    #list_parameters=list(funcparam.values())
+    K_h,g,a,dy,cp,dp,factor_air,factor_kair=funcparam
     
     #equation of the atmosphere sensible heat transfer, with dependence on Temperature and Temperature difference
     C=(Vars.meridional*Vars.T[:-1]-K_h**factor_kair*(Vars.tempdif/(dy)))*(cp*dp*const.mb_to_Pa/g)*factor_air
@@ -219,8 +219,8 @@ def SH_airSel(funcparam):
 def SH_oceanSel(funcparam):
     #Transer flux due to sensible heat transfer from ocean currents
     #SH_oceanSelparam=[K_o,dz,l_cover,dy,re]
-    list_parameters=list(funcparam.values())
-    K_o,dz,l_cover,dy,cp_w,dens_w,factor_oc=list_parameters
+    #list_parameters=list(funcparam.values())
+    K_o,dz,l_cover,dy,cp_w,dens_w,factor_oc=funcparam
     
     #equation of ocean sensible heat transfer
     F=-K_o*dz*l_cover*Vars.tempdif/(dy)*cp_w*dens_w*factor_oc
@@ -234,6 +234,8 @@ def Transfer_Sel(funcparam):
     Readout,Activated,K_wv,K_h,K_o,g,a,eps,p,e0,L,Rd,dy,dp     ,cp,dz,l_cover,re,cp_w,dens_w,factor_wv,factor_air,factor_oc,factor_kwv,factor_kair=list_parameters
     if Activated==True:
         #Parameters for different transfer Fluxes+their calculation 
+
+        #WV_Selparam_keys=['K_wv','g','a','eps','p','e0','L','Rd','dy','dp','factor_wv','factor_kwv']
         WV_Selparam=[K_wv,g,a,eps,p,e0,L,Rd,dy,dp,factor_wv,factor_kwv]   
         SH_airSelparam=[K_h,g,a,dy,cp,dp,factor_air,factor_kair]
         SH_oceanSelparam=[K_o,dz,l_cover,dy,cp_w,dens_w,factor_oc]
@@ -277,6 +279,70 @@ def Transfer_Sel(funcparam):
 
 
 """External forcing terms"""
+def RandomForcing(funcparam):
+    list_parameters=list(funcparam.values())
+    forcingnumber,start,stop,steps,timeunit,strength,frequency,behaviour,lifetime,seed,sign=list_parameters
+    if Runtime_Tracker==0:
+        random_events_time=np.arange(start,stop+steps,steps)
+
+        #if BP==True:
+        #    random_events_time=-(lna(random_events_time)-start)
+        if timeunit=='minute':
+            random_events_time=lna(random_events_time)*60
+        if timeunit=='hour':
+            random_events_time=lna(random_events_time)*60*60
+        if timeunit=='day':
+            random_events_time=lna(random_events_time)*60*60*24
+        if timeunit=='week':
+            random_events_time=lna(random_events_time)*60*60*24*7
+        if timeunit=='month':
+            random_events_time=lna(random_events_time)*60*60*24*365/12
+        if timeunit=='year':
+            random_events_time=lna(random_events_time)*60*60*24*365
+
+        random_events=[0]*len(random_events_time)
+        i=0
+        np.random.seed(seed)
+        if frequency=='common':
+            freq=np.abs(start-stop)/steps*4/100
+        if frequency=='intermediate':
+            freq=np.abs(start-stop)/steps*12/100
+        if frequency=='rare':
+            freq=np.abs(start-stop)/steps*30/100
+        
+        while i<len(random_events):
+            current_event=np.random.uniform(0,strength)
+            #random_events[i]=current_event
+            if behaviour=='step':
+                for k in range(int(lifetime)):
+                    if i+k==len(random_events):
+                        break
+                    random_events[i+k]=current_event
+            if behaviour=='exponential':
+                for k in range(int(lifetime*4)):
+                    if i+k==len(random_events):
+                        break
+                    random_events[i+k]=current_event*np.exp(-k/lifetime)
+                    
+            next_event=np.random.randint(0,freq)
+            i=i+next_event
+        if sign=='negative':
+            Vars.ExternalInput[forcingnumber]=[random_events_time,-lna(random_events)]
+        elif sign=='positive':
+            Vars.ExternalInput[forcingnumber]=[random_events_time,lna(random_events)]
+
+    while Vars.t>Vars.ExternalInput[forcingnumber][0][Vars.ForcingTracker[forcingnumber][0]]:
+        if Vars.ForcingTracker[forcingnumber][0]==(len(Vars.ExternalInput[forcingnumber][0])-1):
+            Vars.ForcingTracker[forcingnumber][1]=0
+            break
+        else:
+            Vars.ForcingTracker[forcingnumber][1] = Vars.ExternalInput[forcingnumber][1][Vars.ForcingTracker[forcingnumber][0]]
+            Vars.ForcingTracker[forcingnumber][0] += 1
+    F=Vars.ForcingTracker[forcingnumber][1]
+    if Runtime_Tracker % 4*data_readout == 0:
+        Vars.ExternalOutput[forcingnumber][int(Runtime_Tracker/(4*data_readout))]=F
+    return F
+
 
 def PredefinedForcing(funcparam):
     list_parameters=list(funcparam.values())
@@ -316,9 +382,9 @@ def PredefinedForcing(funcparam):
 
 def CO2Forcing(funcparam):
     list_parameters=list(funcparam.values())
-    A,C_0,datapath,name,delimiter,header,col_time,col_conc,timeunit,BP,time_start=list_parameters
+    A,C_0,CO2_base,datapath,name,delimiter,header,footer,col_time,col_conc,timeunit,BP,time_start=list_parameters
     if Runtime_Tracker==0:
-        Vars.CO2=np.genfromtxt(str(datapath)+str(name),delimiter=str(delimiter),skip_header=header,usecols=(col_time,col_conc),unpack=True,encoding='ISO-8859-1')  
+        Vars.CO2=np.genfromtxt(str(datapath)+str(name),delimiter=str(delimiter),skip_header=header,skip_footer=footer,usecols=(col_time,col_conc),unpack=True,encoding='ISO-8859-1')  
         Vars.CO2_time_start=time_start    
         if BP==True:
             Vars.CO2[0]=-(lna(Vars.CO2[0])-Vars.CO2_time_start)
@@ -340,9 +406,10 @@ def CO2Forcing(funcparam):
         if Vars.CO2[0][0]>Vars.CO2[0][1]:
             Vars.CO2[0]=np.flip(Vars.CO2[0],axis=0)
             Vars.CO2[1]=np.flip(Vars.CO2[1],axis=0)
+        Vars.CO2Tracker[1]=A*(np.log(CO2_base/C_0))
     while Vars.t>Vars.CO2[0][Vars.CO2Tracker[0]]:
         if Vars.CO2Tracker[0]==(len(Vars.CO2[0])-1):
-            Vars.CO2Tracker[1]=0
+            Vars.CO2Tracker[1]=A*(np.log(CO2_base/C_0))
             break
         else:
             
@@ -506,13 +573,13 @@ def sind(Lat):
 def plotmeanstd(array):
     #calculation of an arrays mean value and standard deviation, with regard to the equilibrium condition chosen
     #Used to process the final output data
-    arraynew=list(map(list, zip(*array)))
-    arraymean=[]
-    arraystd=[]
-    for l in range(len(arraynew)):
-        arraymean.append(np.mean(arraynew[l][-eq_condition_length:]))
-        arraystd.append(np.std(arraynew[l][-eq_condition_length:]))
-    return arraynew, arraymean, arraystd
+    arraymean=np.mean(array[:][-int(eq_condition_length):],axis=0)
+    arraystd=np.std(array[:][-int(eq_condition_length):],axis=0)
+    
+    #for l in range(len(arraynew)):
+    #    arraymean.append(np.mean(arraynew[l][-eq_condition_length:]))
+    #    arraystd.append(np.std(arraynew[l][-eq_condition_length:]))
+    return arraymean, arraystd
 
 def datasetaverage(dataset):
     #error estimation of the final output data, for now limited to calculate mean values and standard deviations

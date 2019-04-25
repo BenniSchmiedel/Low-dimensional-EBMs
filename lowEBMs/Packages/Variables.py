@@ -136,7 +136,7 @@ def builtin_importer(rk4input):
     builtins.number_of_externals=rk4input[16]"""
 
 def var_importer(initials):
-    
+    from lowEBMs.Packages.Functions import cosd, lna
     ###filling the running variables with values depending on the systemconfiguration in rk4input###
 
     if spatial_resolution==0:
@@ -198,8 +198,11 @@ def var_importer(initials):
     Vars.Lat2=initials['latitude_b']
 
 def output_importer():
-    #Assigning dynamical variables in Variables Package with initial values from var
-    Vars.cL,Vars.C,Vars.F,Vars.v,Vars.P,Vars.Transfer,Vars.alpha,Vars.BudTransfer,Vars.Solar,Vars.Noise,Vars.Rin,Vars.Rout,Vars.ExternalOutput,Vars.CO2Forcing=    np.array([[0]*int(number_of_integration/data_readout)]*len(Vars.Read),dtype=object)
+    if (number_of_integration) % data_readout == 0:
+        #Assigning dynamical variables in Variables Package with initial values from var
+        Vars.cL,Vars.C,Vars.F,Vars.v,Vars.P,Vars.Transfer,Vars.alpha,Vars.BudTransfer,Vars.Solar,Vars.Noise,Vars.Rin,Vars.Rout,Vars.ExternalOutput,Vars.CO2Forcing=np.array([[0]*int(number_of_integration/data_readout)]*len(Vars.Read),dtype=object)
+    else: 
+        Vars.cL,Vars.C,Vars.F,Vars.v,Vars.P,Vars.Transfer,Vars.alpha,Vars.BudTransfer,Vars.Solar,Vars.Noise,Vars.Rin,Vars.Rout,Vars.ExternalOutput,Vars.CO2Forcing=np.array([[0]*(int(number_of_integration/data_readout)+1)]*len(Vars.Read),dtype=object)
     Vars.ExternalOutput=np.array([Vars.ExternalOutput for i in range(int(number_of_externals))],dtype=object)
     Vars.External_time_start=np.array([0 for i in range(int(number_of_externals))],dtype=object)
     Vars.ForcingTracker=np.array([[0,0] for i in range(int(number_of_externals))],dtype=object)

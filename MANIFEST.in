@@ -1,3 +1,5 @@
 include lowEBMs/Configuration.ini
-include lowEBMs/Tutorials/0DEBM_Tutorial_Config.ini
-include lowEBMs/Tutorials/0DEBM_Tutorial.ipynb
+include lowEBMs/Tutorials/*
+include lowEBMs/Tutorials/Config/*
+include lowEBMs/Tutorials/Config/Data/*
+include lowEBMs/Tutorials/Notebooks/*

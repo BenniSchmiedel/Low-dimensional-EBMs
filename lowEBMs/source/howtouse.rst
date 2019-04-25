@@ -14,17 +14,12 @@ Before you can use any module of this package you have to import the core module
 
     import matplotlib as plt
     import numpy as np
-    import os
-    os.chdir('/insert/your/path/to/the/project/here'+'/Packages')
-    from Configuration import importer
-    from Variables import variable_importer
-    from ModelEquation import model_equation
-    from RK4 import rk4alg
+    from lowEBMs.Packages.Configuration import importer 
+    from lowEBMs.Packages.Variables import variable_importer
+    from lowEBMs.Packages.RK4 import rk4alg
+    from lowEBMs.Packages.ModelEquation import model_equation
 
-This will import all needed modules. Important is that you insert your path to the project so the packages are correctly loaded.
-If you dont know the path, go to the command line, locate your project with **cd** and type **pwd**. This will print the current path which you can copy.
-(I try to fix this soon so it will do this automatically).
-
+This will import all needed modules.
 
 First Step: Import model configuration
 ======================================
@@ -35,10 +30,14 @@ The input will be created manually and is stored in a **configuration.ini** file
 .. Important::
     The configuration.ini file will provide the physical sense of the EBM!
 
-For now you can simply use the **0DEBM_Config.ini** file which imports a 0D EBM with a model run over 10 year and a stepsize of integration of 1 day.
+For now you can simply use the **0DEBM_simple_config.ini** file which imports a 0D EBM with a model run over 10 year and a stepsize of integration of 1 day.
 To import this file use the ``importer``-function::
 
-    configuration=importer('/insert/path/where/your/configurationfiles/are/stored/','filename')
+    configuration=importer('filename')
+
+.. Note::
+    Since you very likely work in another directory than the project directory you will have to add the path where your **configuration.ini** is located and add in the form of **importer('filename',path='path/to/your/configuration.ini')
+    Depending on the interface you use there are different way to find it. If you work with Linux/Debian, you can go to the terminal, locate your project with **cd** and type **pwd**. This will print the current path which you can copy.    
 
 ``configuration`` is an dictionary which contains all required input parameters. To seperate them for a clearer structure you can use::
 
