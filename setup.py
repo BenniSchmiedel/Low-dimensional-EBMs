@@ -1,4 +1,4 @@
-from setuptools import setup
+import setuptools
 
 
 #def readme():
@@ -6,13 +6,13 @@ from setuptools import setup
 #        return f.read()
 
 
-setup(name='lowEBMs',
+setuptools.setup(name='lowEBMs',
       version='0.1',
       description='A python implementation of low-dimensional EBMs',
       url='https://github.com/BenniSchmiedel/Climate-Modelling',
       author='Benjamin Schmiedel',
       license='MIT',
-      packages=['lowEBMs','lowEBMs.Packages','lowEBMs.Tutorials'],
+      packages=setuptools.find_packages(),
       install_requires=[
           'matplotlib',
           'numpy',

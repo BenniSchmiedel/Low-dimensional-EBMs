@@ -3,16 +3,37 @@
    which can be called """
 import configparser
 import os
-from Functions import *
-from Variables import *
+import sys
+from lowEBMs.Packages.Functions import *
+from lowEBMs.Packages.Variables import *
 
-def importer(path,filename): 
+def importer(filename,*args,**kwargs): 
+    path=kwargs.get('path',None)
     
+    #Importing the configfile.ini from path
+    if path == None:
+        possible_paths=['','Config/','../Config/']
+        for i in sys.path:
+            possible_paths.append(i+'/lowEBMs/Tutorials/Config/')
+        for trypath in possible_paths:
+            exists = os.path.isfile(trypath+filename)
+            if exists:
+                path=trypath
+                print('Loading Configuration from: '+path)
+                config=configparser.ConfigParser()  
+                config.read(path+filename)    
+                break 
+            if trypath==possible_paths[-1]:
+                sys.exit('Error: File not found, please specify the path of the configuration.ini.  importer(filename,path= " ... ")')
+    else:
     #Importing the configfile.ini
-    config=configparser.ConfigParser() 
-    os.chdir(path)                     
-    config.read(filename)    
-                         
+        exists = os.path.isfile(path+filename)
+        if exists:
+            print('Loading Configuration from: '+path)
+            config=configparser.ConfigParser()  
+            config.read(path+filename) 
+        else:         
+            sys.exit('Error: File not found, please specify the path of the configuration.ini.  importer(filename,path= " ... ")')                  
     #Creating arrays for the sections in the configfile 
     keys=config.options('eqparam')  
     values=[]      
@@ -92,11 +113,33 @@ def dict_to_list(dic):
 
 ###Function to import parameters for the Sellers-EBM from a configfile
 ###with arrays of values
-def parameterimporter(filename):
+def parameterimporter(filename,*args,**kwargs):
+    path=kwargs.get('path',None)
     
-    #Importing the configfile
-    paras=configparser.ConfigParser()
-    paras.read('Config/Parameters/'+filename+'.ini')
+    #Importing the configfile.ini from path
+    if path == None:
+        possible_paths=['','Config/Data/','../Config/Data/']
+        for i in sys.path:
+            possible_paths.append(i+'/lowEBMs/Tutorials/Config/Data/')
+        for trypath in possible_paths:
+            exists = os.path.isfile(trypath+filename)
+            if exists:
+                path=trypath
+                print('Loading Parameters from: '+path)
+                paras=configparser.ConfigParser()  
+                paras.read(path+filename)    
+                break 
+            if trypath==possible_paths[-1]:
+                sys.exit('Error: File not found, please specify the path of the configuration.ini.  parameterimporter(filename,path= " ... ")')
+    else:
+    #Importing the configfile.ini
+        exists = os.path.isfile(path+filename)
+        if exists:
+            print('Loading parameters from: '+path)
+            paras=configparser.ConfigParser()  
+            paras.read(path+filename) 
+        else:         
+            sys.exit('Error: File not found, please specify the path of the parameter.ini.  parameterimporter(filename,path= " ... ")')                  
     
     #Creating and filling arrays with values for latitudinal belts
     belt=paras.options('belt')
@@ -129,22 +172,22 @@ def parameterimporter(filename):
 
 ###Function to interpolate the parameterizations given from sellers, into an interpolated
 ####output with higher resolution
-def parameterinterpolator(filename):
-    
+def parameterinterpolator(filename,*args,**kwargs):
+    path=kwargs.get('path',None)
     #Importing parameters 
-    inputparas=parameterimporter(filename)
+    inputparas=parameterimporter(filename,path=path)
     
     #defining new latitudinal arrays
-    if latitude_NS==True:    
+    if both_hemispheres==True:    
         Latrange=180
-        latnewc=np.linspace(-90,90,int(Latrange/latitude_stepsize+1))
-        latnewb=np.linspace(-90,90-latitude_stepsize,                               int(Latrange/latitude_stepsize))+latitude_stepsize/2
+        latnewc=np.linspace(-90,90,int(Latrange/spatial_resolution+1))
+        latnewb=np.linspace(-90,90-spatial_resolution,                               int(Latrange/spatial_resolution))+spatial_resolution/2
         latnewb=np.insert(latnewb,0,-90)
         latnewb=np.append(latnewb,90)
     else:
         Latrange=90     
-        latnewc=np.linspace(0,90-latitude_stepsize,                                int(Latrange/latitude_stepsize))
-        latnewb=np.linspace(0,90-latitude_stepsize,                                int(Latrange/latitude_stepsize))+latitude_stepsize/2
+        latnewc=np.linspace(0,90-spatial_resolution,                                int(Latrange/spatial_resolution))
+        latnewb=np.linspace(0,90-spatial_resolution,                                int(Latrange/spatial_resolution))+spatial_resolution/2
         latnewb=np.insert(latnewb,0,0)
         latnewb=np.append(latnewb,90)
         
@@ -173,21 +216,21 @@ def parameterinterpolator(filename):
 
 ###Function to interpolate the parameterizations given from sellers, into an interpolated
 ####output with higher resolution with stepwise interpolation and averaging
-def parameterinterpolatorstepwise(filename):
-    
+def parameterinterpolatorstepwise(filename,*args,**kwargs):
+    path=kwargs.get('path',None)
     #Importing parameters 
-    inputparas=parameterimporter(filename)
+    inputparas=parameterimporter(filename,path=path)
 
     #Defining new latitudinal arrays
-    if latitude_NS==True:    
+    if both_hemispheres==True:    
         Latrange=180
-        latnewc=np.linspace(-90+latitude_stepsize,                            90-latitude_stepsize,int(Latrange/latitude_stepsize-1))
-        latnewb=np.linspace(-90,90-latitude_stepsize,                            int(Latrange/latitude_stepsize))+latitude_stepsize/2
+        latnewc=np.linspace(-90+spatial_resolution,                            90-spatial_resolution,int(Latrange/spatial_resolution-1))
+        latnewb=np.linspace(-90,90-spatial_resolution,                            int(Latrange/spatial_resolution))+spatial_resolution/2
             
     else:
         Latrange=90     
-        latnewc=np.linspace(0,90-latitude_stepsize,                                int(Latrange/latitude_stepsize))
-        latnewb=np.linspace(0,90-latitude_stepsize,                                int(Latrange/latitude_stepsize))+latitude_stepsize/2
+        latnewc=np.linspace(0,90-spatial_resolution,                                int(Latrange/spatial_resolution))
+        latnewb=np.linspace(0,90-spatial_resolution,                                int(Latrange/spatial_resolution))+spatial_resolution/2
         latnewb=np.insert(latnewb,0,0)
         latnewb=np.append(latnewb,90)
 
@@ -208,23 +251,23 @@ def parameterinterpolatorstepwise(filename):
             
             #Endpoints are set to the value of the inputparameter (no polyfit here)
             if i == 1:
-                for l in range(int(10/latitude_stepsize)):
+                for l in range(int(10/spatial_resolution)):
                     newcircle[k][l]=inputparas[0][k][0]
             if i == (len(lat10c)-2):
-                for l in range(int((i+2)*10/latitude_stepsize-1),int((i+3)*10/latitude_stepsize-1)):
+                for l in range(int((i+2)*10/spatial_resolution-1),int((i+3)*10/spatial_resolution-1)):
                     newcircle[k][l]=inputparas[0][k][-1]
             
             #Write for the new latitudal dependence the corresponding values 
             #from the polyfit into the given outputarray
             #Loop over the element to the right of i-1 to the element to left of i+1
-            for j in range(int(2*10/latitude_stepsize-1)):  
-                if newcircle[k][int(i*10/latitude_stepsize+j)] == 0:
-                    newcircle[k][int((i)*10/latitude_stepsize+j)]=                    fc(latnewc[int((i)*10/latitude_stepsize+j)])
+            for j in range(int(2*10/spatial_resolution-1)):  
+                if newcircle[k][int(i*10/spatial_resolution+j)] == 0:
+                    newcircle[k][int((i)*10/spatial_resolution+j)]=                    fc(latnewc[int((i)*10/spatial_resolution+j)])
                 
                 #The inbetween value are calculated twice (from left and right) which are now
                 #averaged to give a smooth new parameterization
                 else:
-                    newcircle[k][int((i)*10/latitude_stepsize+j)]=np.mean([fc(latnewc                    [int((i)*10/latitude_stepsize+j)]),newcircle[k][int((i)*10/latitude_stepsize+j)]])
+                    newcircle[k][int((i)*10/spatial_resolution+j)]=np.mean([fc(latnewc                    [int((i)*10/spatial_resolution+j)]),newcircle[k][int((i)*10/spatial_resolution+j)]])
                 
                    
     ###Interpolation of belt parameters###
@@ -244,23 +287,23 @@ def parameterinterpolatorstepwise(filename):
             
             #Endpoints are set to the value of the inputparameter (no polyfit here)
             if i == 1:
-                for l in range(int(0.5*10/latitude_stepsize)):
+                for l in range(int(0.5*10/spatial_resolution)):
                     newbelt[k][l]=inputparas[1][k][0]
             if i == (len(lat10b)-2):
-                for l in range(int((i+0.5)*10/latitude_stepsize),len(newbelt[k])):
+                for l in range(int((i+0.5)*10/spatial_resolution),len(newbelt[k])):
                     newbelt[k][l]=inputparas[1][k][-1]
             
             #Write for the new latitudal dependence the corresponding values 
             #from the polyfit into the given outputarray
             #Loop over the element to the right of i-1 to the element to left of i+1
-            for j in range(int(2*10/latitude_stepsize)):  
-                if newbelt[k][int((i-0.5)*10/latitude_stepsize+j)] == 0:
-                    newbelt[k][int((i-0.5)*10/latitude_stepsize+j)]=                    fb(latnewb[int((i-0.5)*10/latitude_stepsize+j)])
+            for j in range(int(2*10/spatial_resolution)):  
+                if newbelt[k][int((i-0.5)*10/spatial_resolution+j)] == 0:
+                    newbelt[k][int((i-0.5)*10/spatial_resolution+j)]=                    fb(latnewb[int((i-0.5)*10/spatial_resolution+j)])
                 
                 #The inbetween value are calculated twice (from left and right) which are now
                 #averaged to give a smooth new parameterization
                 else:
-                    newbelt[k][int((i-0.5)*10/latitude_stepsize+j)]=np.mean([fb(latnewb                    [int((i-0.5)*10/latitude_stepsize+j)]),newbelt[k][int((i-0.5)*10/latitude_stepsize+j)]])
+                    newbelt[k][int((i-0.5)*10/spatial_resolution+j)]=np.mean([fb(latnewb                    [int((i-0.5)*10/spatial_resolution+j)]),newbelt[k][int((i-0.5)*10/spatial_resolution+j)]])
                     
     return newcircle, newbelt
 
@@ -268,27 +311,33 @@ def parameterinterpolatorstepwise(filename):
 #Function to rewrite parameters with arrays of parameters from the Sellers parameterinterpolator
 #Hardcoded! So take care on which index the sellers functions are placed, standard is:
 #func0 = Incoming Radiation , func1 = Outgoing Radiation, func2 = Transfer, ...
-def add_sellersparameters(config,importer,file,solar,albedo): 
+def add_sellersparameters(config,importer,file,transfernumber,incomingnumber,solar,albedo,*args,**kwargs): 
+    from lowEBMs.Packages.Variables import Vars
     #solar and albedo are to be set to True or False 
-    
+
+    path=kwargs.get('path',None)
     #importing the new parameter arrays
-    paras=[[dp,dz,K_h,K_wv,K_o,a],[b,Z,Q]]=importer(file)
+    paras=[[dp,dz,K_h,K_wv,K_o,a],[b,Z,Q]]=importer(file,path=path)
     
     #rewriting the transfer parameters with conversion to SI units
-    config[2][1][2][2]=lna(K_wv)*10**5
-    config[2][1][2][3]=lna(K_h)*10**6
-    config[2][1][2][4]=lna(K_o)*10**2
-    config[2][1][2][6]=lna(a)/100
-    config[2][1][2][13]=lna(dp)
-    config[2][1][2][15]=lna(dz)*1000
+    funct=config['funccomp']['funcparam']['func'+str(transfernumber)]
+    funct['k_wv']=lna(K_wv)*10**5
+    funct['k_h']=lna(K_h)*10**6
+    funct['k_o']=lna(K_o)*10**2
+    funct['a']=lna(a)/100
+    funct['dp']=lna(dp)
+    funct['dz']=lna(dz)*1000
     
     #rewriting the incoming radiation parameters with conversion + choice to be activated or not
+    funcin=config['funccomp']['funcparam']['func'+str(incomingnumber)]
     if albedo==True:
-        config[2][1][0][5][0]=lna(Z)
-        config[2][1][0][5][1]=lna(b)
+        funcin['albedoparam'][0]=lna(Z)
+        funcin['albedoparam'][1]=lna(b)
     if solar==True:
         Vars.Solar=lna(Q)*1.327624658#1.2971#
-        
-    return config, paras
+    configout=config
+    configout['funccomp']['funcparam']['func'+str(transfernumber)]=funct
+    configout['funccomp']['funcparam']['func'+str(incomingnumber)]=funcin
+    return configout, paras
     
 

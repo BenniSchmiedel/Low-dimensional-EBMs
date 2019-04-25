@@ -16,7 +16,7 @@ For the physical background see :doc:`Model types <models>` and the explanation 
 
 A 0D EBM equipped with:
 
-- constant incoming solar radiation flux
+- constant absorbed incoming solar radiation flux
 
 - outgoing radiation flux according to the Stefan-Boltzmann law
 
@@ -26,7 +26,7 @@ A 0D EBM equipped with:
 
 A 0D EBM equipped with:
 
-- constant incoming solar radiation flux
+- constant absorbed incoming solar radiation flux
 
 - outgoing radiation flux according to the Stefan-Boltzmann law
 
@@ -52,7 +52,7 @@ The tutorial-file of this EBM uses a randomly generated radiative forcing as vol
 
 A 1D EBM equipped with:
 
-- static albedo distribution with three regions of albedo regions |rarr| constant incoming solar radiation flux  
+- static albedo distribution with three regions of albedo regions |rarr| constant absorbed incoming solar radiation flux  
 
 - outgoing radiation flux according to Budyko's radiation law
 
@@ -67,7 +67,7 @@ The parameters of the tutorial-file are chosen to reproduce the EBM as it was in
 A 1D EBM equipped with:
 
 - temperature dependant albedo distribution with three regions of albedo regions 
-  |rarr| dynamic incoming solar radiation flux  
+  |rarr| dynamic absorbed incoming solar radiation flux  
 
 - outgoing radiation flux given by the empirical law according to :ref:`Budyko <Budyko>`
 
@@ -77,28 +77,12 @@ The parameters of the tutorial-file are chosen to reproduce the EBM as it was in
 The temperature dependence of the albedo is defined in :doc:`Functions <code/functions>`.
 
 
-1D EBM Sellers-type (static albedo)
-===================================
-
-A 1D EBM equipped with:
-
-- static albedo distribution with a continuous albedo function |rarr| constant incoming solar radiation flux  
-
-- outgoing radiation flux given by an edited Stefan-Boltzmann radiation law according to :ref:`Sellers <Sellers>`
-
-- transfer energy flux according to :ref:`Sellers <Sellers>`
-
-- temperature distributions corrected by the average latitudinal band elevation
-
-The parameters of the tutorial-file are chosen to reproduce the EBM as it was introduced by :ref:`Sellers 1969 <Sellers>`.
-
-
 1D EBM Sellers-type (temperature-dependant albedo)
 ==================================================
 
 A 1D EBM equipped with:
 
-- dynamic albedo distribution with a continuous temperature dependant albedo function |rarr| constant incoming solar radiation flux  
+- dynamic albedo distribution with a continuous temperature dependant albedo function |rarr| dynamic absorbed incoming solar radiation flux  
 
 - outgoing radiation flux given by an edited Stefan-Boltzmann radiation law according to :ref:`Sellers <Sellers>`
 

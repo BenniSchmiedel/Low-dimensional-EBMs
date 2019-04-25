@@ -10,7 +10,7 @@ The coremodule is the numerical integrator, the Runge-Kutta 4th order scheme def
 The structure of the model is provided by the :doc:`modelequation <code/modelequation>` package. It builds up the physical model from a set of physical :doc:`functions <code/functions>` which are specified in the
 functions package. 
 
-In order to get a reasonable EBM structure you have to give a configurationfile (for details on how to create it, see Input) which is processed by the :doc:`configuration <code/configuration>` package. Along with the basic configuration of the model many required variables are introduced in the :doc:`variables <code/variables>` package, which can be running variables but also variables provided as output (for details on what to print out, see Output).
+In order to get a reasonable EBM structure you have to give a configurationfile (for details on how to create it, see :doc:`Input <input>`) which is processed by the :doc:`configuration <code/configuration>` package. Along with the basic configuration of the model many required variables are defined in the :doc:`variables <code/variables>` package, which may be running variables but also variables provided for later output (for details on what to print out, see :doc:`Output <output>`).
 
 .. toctree:: 
     :maxdepth: 2
