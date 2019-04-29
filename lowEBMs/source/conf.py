@@ -45,6 +45,12 @@ extensions = [
 ]
 autosectionlabel_prefix_document = True
 
+autodoc_mock_imports = ['matplotlib',
+          'numpy',
+          'netCDF4',
+          'climlab',
+          'xarray',
+          'attrdict',]
 
 language = 'en'
 templates_path = ['_templates']
