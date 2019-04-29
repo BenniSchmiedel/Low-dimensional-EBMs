@@ -21,8 +21,8 @@ Now the scheme continues the following procedure:
 
 .. math::
 
-    k_2 &= f(t_0+\\frac{h}{2},y_0+ \\frac{h}{2}\cdot k1) \\\
-    k_3 &= f(t_0+\\frac{h}{2},y_0+ \\frac{h}{2}\cdot k2) \\\
+    k_2 &= f(t_0+\\frac{h}{2},y_0+ \\frac{h}{2}\cdot k1) \\
+    k_3 &= f(t_0+\\frac{h}{2},y_0+ \\frac{h}{2}\cdot k2) \\
     k_4 &= f(t_0+h,y_0+ h\cdot k3).
 
 As final step of one iterative step the weighted increment :math:`\phi` is calculated by through:
@@ -49,13 +49,13 @@ import builtins
 import time
 
 def rk4alg(func,eqparam,rk4input,funccomp):
-    """This functions main task is performing the numerical integration explained above through solving the model equation from the ``modelequation`` package. 
+    """This functions main task is performing the numerical integration explained above through solving the model equation from the ``ModelEquation.py`` package. 
 
     In some cases the scheme only needs to run until an equilibrium state (a sufficient amount of data points without any change) is reached.
     Therefore a stop criterion is formulated within this function which prevents unnecessary long tasks (if the value of the equilibrium state is required only). 
     The stop criterion sets in if the standard deviation of a set of consecutive last data points is lower than a predefined limit.
 
-    Input has to be given as `Dictionaries` supplied by the ``configuration`` from a specific **configuration.ini**.
+    Input has to be given as `Dictionaries` supplied by the ``Configuration.py`` from a specific **configuration.ini**.
 
 
     **Function-call arguments** \n
