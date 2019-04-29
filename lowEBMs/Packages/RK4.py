@@ -21,8 +21,8 @@ Now the scheme continues the following procedure:
 
 .. math::
 
-    k_2 &= f(t_0+\\frac{h}{2},y_0+ \\frac{h}{2}\cdot k1) \\
-    k_3 &= f(t_0+\\frac{h}{2},y_0+ \\frac{h}{2}\cdot k2) \\
+    k_2 &= f(t_0+\\frac{h}{2},y_0+ \\frac{h}{2}\cdot k1) \\\\
+    k_3 &= f(t_0+\\frac{h}{2},y_0+ \\frac{h}{2}\cdot k2) \\\\
     k_4 &= f(t_0+h,y_0+ h\cdot k3).
 
 As final step of one iterative step the weighted increment :math:`\phi` is calculated by through:
