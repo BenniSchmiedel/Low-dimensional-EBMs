@@ -28,7 +28,7 @@ The physical basis of EBMs can be expressed in a model equation which commonly h
 
 .. math::
 
-    C \cdot \frac{dT}{dt} = R_{in}(t) + R_{out}(t) + F (t)
+    C \cdot \frac{dT}{dt} = R_{in} + R_{out} + F 
 
 where C is the heatcapacity, :math:`\frac{dT}{dt}` the term to consider that the system is dynamical and :math:`R_{in}`, :math:`R_{out}`, :math:`F` the energy fluxes which are commonly included.
 
@@ -56,7 +56,7 @@ With the chapter :doc:`How to use <howtouse>` it will be investigated in detail 
 
 .. Note::
 
-    The dependencies of parameters like :math:`\alpha` on variables like the temperature :math:`T` is strongly related to the inbound type of :doc:`Functions <code/functions>` and is therefore not specified while formulating this model equations.
+    The dependencies of parameters like :math:`\alpha` on variables like the temperature :math:`T` are strongly related to the inbound type of :doc:`Functions <code/functions>` and is therefore not specified while formulating this model equations.
 
 1D-EBM
 ------
