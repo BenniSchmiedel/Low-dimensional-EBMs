@@ -5,5 +5,5 @@ The numerical integrator
 Runge-Kutta 4th order scheme
 ============================
 
-.. literalinclude:: ../../Packages/rk4.py
+.. literalinclude:: ../../Packages/RK4.py
     
