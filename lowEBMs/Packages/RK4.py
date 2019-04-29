@@ -1,3 +1,11 @@
+"""
+The `RK4.py` packages provides the numerical scheme to iterative solve ordinary differential equations (ODE), hence the :doc:`model equation <modelequation>` which is parsed by the `ModelEquation.py` package initialized with the :doc:`configuration <configuration>` provided by the `Configuration.py` package 
+
+
+
+
+"""
+
 from lowEBMs.Packages.ModelEquation import model_equation
 from lowEBMs.Packages.Functions import *
 from lowEBMs.Packages.Variables import Vars
