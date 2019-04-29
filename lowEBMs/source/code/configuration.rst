@@ -1,9 +1,8 @@
-
-.. _configuration:
-
 *************
 Configuration
 *************
 
-.. literalinclude:: ../Packages/Configuration.py
-    :pyobject: importer
+.. automodule:: lowEBMs.Packages.Configuration
+    :members:
+    :undoc-members:
+    :show-inheritance:
