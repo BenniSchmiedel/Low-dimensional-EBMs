@@ -21,9 +21,9 @@ Now the scheme continues the following procedure:
 
 .. math::
 
-    k_2&= f(t_0+\\frac{h}{2},y_0+ \\frac{h}{2}\cdot k1) \\
-    k_3&= f(t_0+\\frac{h}{2},y_0+ \\frac{h}{2}\cdot k2) \\
-    k_4&= f(t_0+h,y_0+ h\cdot k3).
+    k_2 &= f(t_0+\\frac{h}{2},y_0+ \\frac{h}{2}\cdot k1) \\\
+    k_3 &= f(t_0+\\frac{h}{2},y_0+ \\frac{h}{2}\cdot k2) \\\
+    k_4 &= f(t_0+h,y_0+ h\cdot k3).
 
 As final step of one iterative step the weighted increment :math:`\phi` is calculated by through:
 
@@ -173,7 +173,7 @@ def rk4alg(func,eqparam,rk4input,funccomp):
     ###Running runge Kutta 4th order n times###
     j=0
     for i in range(1, n + 1):  
-        #Calculating increments at 4 positions from the energy balance equation (func)
+        #Calculating increments at 4 positions from the model equation (func)
         T0=Vars.T
         k1 = h * func(eqparam,funccomp)
         builtins.Runtime_Tracker += 1

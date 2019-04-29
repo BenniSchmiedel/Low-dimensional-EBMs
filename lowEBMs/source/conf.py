@@ -41,7 +41,10 @@ release = ''
 # ones.
 extensions = [
     'sphinx.ext.autodoc',
-    'sphinx.ext.autosectionlabel'
+    'sphinx.ext.autosectionlabel',
+    'sphinx.ext.viewcode',
+    'sphinx.ext.mathjax',
+    'numpydoc'
 ]
 autosectionlabel_prefix_document = True
 
