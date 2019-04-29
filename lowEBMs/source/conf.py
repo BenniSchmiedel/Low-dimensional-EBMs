@@ -43,8 +43,7 @@ extensions = [
     'sphinx.ext.autodoc',
     'sphinx.ext.autosectionlabel',
     'sphinx.ext.viewcode',
-    'sphinx.ext.mathjax',
-    'numpydoc'
+    'sphinx.ext.mathjax'
 ]
 autosectionlabel_prefix_document = True
 
