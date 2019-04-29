@@ -5,7 +5,7 @@ For an example see :doc:`How to use <../howtouse>`.
 
 .. sidebar:: Operating principle RK4
 
-    .. image:: _static/RK4.png
+    .. image:: ../_static/RK4.png
 
     The scheme operates from the initial step :math:`y_0(t_0)` to the subsequent step :math:`y_1(t_1)` with :math:`t_1=t_0+h` and :math:`y_1=y_0+\phi(t_0,y_0) \cdot h` by using a weighted increment :math:`\phi` calculated from increments :math:`k_1,..,k_4`. This operation is continued with :math:`y_1(t_1)` to estimate :math:`y_2(t_2)` an so on.
 
@@ -49,6 +49,102 @@ import builtins
 import time
 
 def rk4alg(func,eqparam,rk4input,funccomp):
+    """This functions main task is performing the numerical integration explained above through solving the model equation from the ``modelequation`` package. 
+
+    In some cases the scheme only needs to run until an equilibrium state is reached, hence a sufficient of data points without any change.
+    Therefore a stop criterion is formulated within this function which prevents unnecessary long tasks (only if the value of the equilibrium state is required). 
+    The stop criterion sets in if the standard deviation of a set of consecutive last datapoints is lower than a predefined limit.
+
+    Inputparameters have to be given as `Dictionaries` supplied by the ``configuration`` from a specific **configuration.ini**.
+
+    The return will be a 3-dimensional array.
+
+    **Function-call arguments** \n
+    
+    :param function func:       The name of the model equation which will be solved (for now **always** model_equation)
+
+    :param dict eqparam:        Configuration dictionary containing information needed for ``func``
+                                
+                                    * C_ao: The systems heat capacity 
+
+    :param dict rk4input:       Configuration dictionary containing the parameters to run
+
+                                    * number_of_integration: Number of iterations to perfom
+                                        
+                                        * type: integer
+                                        * unit: dimensionless
+                                        * value: minimum 1
+
+                                    * stepsize_of_integration: Time steps between iteration steps
+
+                                        * type: float
+                                        * unit: seconds
+                                        * value: positive float (for hours 3600, days 86400,..)
+
+                                    * spatial_resolution: Grid resolution (width of one latitudinal band)
+
+                                        * type: float
+                                        * unit: dimensionless
+                                        * value: 0 to <90, (0 to indicate 0D EBM, >0 to indicate 1D EBM)
+
+                                    * both_hemispheres: Indicates if both hemispheres are modeled or exclusively the northern hemisphere 
+
+                                        * type: boolean
+                                        * unit:  -
+                                        * value: True for both, False for northern
+
+                                    * latitudinal_circle: Indicates that data is evaluated on latitudinal circles
+
+                                        * type: boolean
+                                        * unit:  -
+                                        * value: True/False
+
+                                    * latitudinal_circle: Indicates that data is evaluated on latitudinal belts (the centre between two latitudinal circles)
+
+                                        * type: boolean
+                                        * unit:  -
+                                        * value: True/False
+
+                                    * eq_condition: Activation/Deactivation of stop criterion (equilibrium condition)
+
+                                        * type: boolean
+                                        * unit:  -
+                                        * value: True/False
+
+                                    * eq_condition_length: Indicates the number of last datapoints which are used calculate the standard deviation which is compared with the predefined limit (eq_condition_value)
+
+                                        * type: integer
+                                        * unit: dimensionless
+                                        * value: minimum 2 but for physical sense much higher (probably higher than 100)
+
+                                    * eq_condition_amplitude: The limiting value which defines the stop criterion
+
+                                        * type: float
+                                        * unit: Kelvin
+                                        * value: any, for physical sense use low values (lower than 1e-3)
+
+                                    * data_readout: Indicates the number of iteration steps are performed until data in written into the output (to decrease computational cost)
+
+                                        * type: integer
+                                        * unit: dimensionless
+                                        * value: minimum 1 (1 for every step, 2 for every second...)
+
+                                    * number_of_externals: Indicates the number of external forcings are used (to create lists where the data is stored)
+
+                                        * type: integer
+                                        * unit: dimensionless
+                                        * value: minimum 0
+
+
+    :param dict funccomp:       Configuration 2D dictionary containing function names and function parameters which is parsed to the ``func``
+
+                                    * funcnames: a dictionary of names 
+                                        
+
+
+    
+    """
+    
     #Start the runtime tracker
     Vars.start_time = time.time()
     #locally defining rk4input parameters
@@ -100,6 +196,7 @@ def rk4alg(func,eqparam,rk4input,funccomp):
                     for m in range(len(Vars.Read)):
                         Vars.Read[m]=Vars.Read[m][:(j)]
                     break
+    #Return the written data (Cut excessive 0s)
     dataout=[data[0][:(j+1)],data[1][:(j+1)],data[2][:(j+1)]]
 
     print('Finished!')
