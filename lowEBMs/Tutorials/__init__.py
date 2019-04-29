@@ -12,7 +12,7 @@ def plot_time_temp(outputdata):
 def plot_lat_temp(outputdata):
     T=plotmeanstd(outputdata[1])
     plt.plot(Vars.Lat,T[0])
-    plt.xlabel('Latitude [°]')
+    plt.xlabel('Latitude [°]'); plt.ylabel('ZMT [K]')
     plt.xticks(np.linspace(-90,90,7))
-    plt.ylabel('ZMT [K]')
+
     plt.show()

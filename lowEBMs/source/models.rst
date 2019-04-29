@@ -79,7 +79,7 @@ Budyko-type model
 
 This EBM constructed by :doc:`Michail Budyko  <references>` uses various assumptions, supported by global earth observation data. The key features of this model are:
 
-- An empirically determined outgoing radiation flux with linear dependence on temperature, in its simplest form described by *:math:`R_{out}=A+B\cdot T`*.
+- An empirically determined outgoing radiation flux with linear dependence on temperature, in its simplest form described by :math:`R_{out}=A+B\cdot T`.
 
 - An albedo seperated into three different regions with dependence on latitude (or by customization on temperature), with high albedo values towards the polar regions and low albedo values in the equatorial regions.
 

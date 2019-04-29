@@ -33,11 +33,11 @@ The input will be created manually and is stored in a **configuration.ini** file
 For now you can simply use the **0DEBM_simple_config.ini** file which imports a 0D EBM with a model run over 10 year and a stepsize of integration of 1 day.
 To import this file use the ``importer``-function::
 
-    configuration=importer('filename')
+    configuration=importer('filename',path='path/to/your/configuration.ini')
 
 .. Note::
-    Since you very likely work in another directory than the project directory you will have to add the path where your **configuration.ini** is located and add in the form of **importer('filename',path='path/to/your/configuration.ini')
-    Depending on the interface you use there are different way to find it. If you work with Linux/Debian, you can go to the terminal, locate your project with **cd** and type **pwd**. This will print the current path which you can copy.    
+    It is not mandatory to add the argument ``path=``, but since you very likely work in another directory than the installation directory of the project you will have to add the path where your **configuration.ini** is located.
+ 
 
 ``configuration`` is an dictionary which contains all required input parameters. To seperate them for a clearer structure you can use::
 
@@ -100,27 +100,25 @@ you get something like this:
 Putting it together
 ===================
 
-The summary of what you need to get the model running. Import package::
+The summary of what you need to get the model running. Import packages::
 
     import matplotlib as plt
     import numpy as np
-    import os
-    os.chdir('/insert/your/path/to/the/project/here'+'/Packages')
-    from Configuration import importer
-    from Variables import variable_importer
-    from ModelEquation import model_equation
-    from RK4 import rk4alg
+    from lowEBMs.Packages.Configuration import importer 
+    from lowEBMs.Packages.Variables import variable_importer
+    from lowEBMs.Packages.RK4 import rk4alg
+    from lowEBMs.Packages.ModelEquation import model_equation
 
 and run the specific functions::
 
-    configuration=importer('/insert/path/where/your/configurationfiles/are/stored/','filename')
+    configuration=importer('filename',path='path/to/your/configuration.ini')
     eq=configuration['eqparam']
     rk4=configuration['rk4input']
     fun=configuration['funccomb']
     variable_importer(configuration)
     outputdata=rk4alg(model_equation,eq,rk4,fun)
 
-This demonstration also exists as a jupyter notebook in the *Tutorials/* directive of the project.
+This demonstration also exists as a jupyter notebook in the *'Tutorials/'* directive of this project (*EMB0D_simple.ipynb*).
 
 
 
