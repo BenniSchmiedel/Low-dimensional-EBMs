@@ -1,31 +1,39 @@
 """
 The ``RK4.py`` packages provides the numerical scheme to iteratively solve ordinary differential equations (ODE), hence the :doc:`model equation <modelequation>` which is parsed by the ``ModelEquation.py`` package initialized with the :doc:`configuration <configuration>` provided by the ``Configuration.py`` package. 
 
-For an example see :doc:`How to use <howtouse>`.
+For an example see :doc:`How to use <../howtouse>`.
 
 .. sidebar:: Operating principle RK4
 
     .. image:: _static/RK4.png
 
-    The scheme operates from the initial step :math:`y_0(t_0)` to the subsequent step :math:`y_1(t_1)` with :math:`t_1=t_0+h` and :math`y_1=y_0+\phi(t_0,y_0) \cdot h` by using a weighted increment :math:`\phi` calculated from increments :math:`k_1,..,k_4`. This operation is continued with :math:`y_1(t_1)` to estimate :math:`y_2(t_2)`.
+    The scheme operates from the initial step :math:`y_0(t_0)` to the subsequent step :math:`y_1(t_1)` with :math:`t_1=t_0+h` and :math:`y_1=y_0+\phi(t_0,y_0) \cdot h` by using a weighted increment :math:`\phi` calculated from increments :math:`k_1,..,k_4`. This operation is continued with :math:`y_1(t_1)` to estimate :math:`y_2(t_2)` an so on.
 
-An illustration of the scheme's operating principle is shown beneath. The increments :math:`k_1,..,k_4` are obtained by solving the model equation, as defined in the :doc:`physical background <models>` for the dynamical term :math:`\frac{dT}{dt}`. The increments differ in their choice of inital conditions (point of evaluation of the model equation). One iterative step always goes through a cycle of evaluating the model equation four times. It starts with the calculation of :math:`k_1` at point :math:`y_0(t_0)` with::
+The increments :math:`k_1,..,k_4` are obtained by solving the model equation, as defined in the :doc:`physical background <models>` for the dynamical term :math:`dT/dt`. The increments differ in their choice of inital conditions (point of evaluation of the model equation). One iterative step always goes through a cycle of evaluating the model equation four times. It starts with the calculation of :math:`k_1` at point :math:`y_0(t_0)` with:
+
+.. math::
 
     k_1= f(t_0,y_0),
 
-where :math:`f(t,y(t))` is given by the deviation of :math:`y(t)`, hence :math:`\frac{dT}{dt} = \frac{1}{C}\cdot(R_{in}+R_{out}+...)` at :math:`T_0 (t_0)`.
+where :math:`f(t,y(t))` is given by the deviation of :math:`y(t)`, hence :math:`dT/dt = 1/C\cdot(R_{in}+R_{out}+...)` at :math:`T_0 (t_0)`.
 
-Now the scheme continues the following procedure::
+Now the scheme continues the following procedure:
+
+.. math::
 
     k_2&= f(t_0+\frac{h}{2},y_0+ \frac{h}{2}\cdot k1) \\
     k_3&= f(t_0+\frac{h}{2},y_0+ \frac{h}{2}\cdot k2) \\
     k_4&= f(t_0+h,y_0+ h\cdot k3).
 
-As final step of one iterative step the weighted increment :math:`\phi` is calculated by through::
+As final step of one iterative step the weighted increment :math:`\phi` is calculated by through:
+
+.. math::
 
     \phi = \frac{1}{6}\cdot k_1+\frac{1}{3}\cdot k_2+\frac{1}{3}\cdot k_3+\frac{1}{6}\cdot k_4
 
-to estimate :math:`y_1` as final step of one iteration cycle::
+to estimate :math:`y_1` as final step of one iteration cycle:
+
+.. math::
     
     y_1=y_0+\phi(t_0,y_0)\cdot h . 
 
