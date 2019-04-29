@@ -50,7 +50,9 @@ autodoc_mock_imports = ['matplotlib',
           'netCDF4',
           'climlab',
           'xarray',
-          'attrdict',]
+          'attrdict',
+          'scipy'
+]
 
 language = 'en'
 templates_path = ['_templates']
