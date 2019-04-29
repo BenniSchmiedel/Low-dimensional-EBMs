@@ -51,23 +51,26 @@ import time
 def rk4alg(func,eqparam,rk4input,funccomp):
     """This functions main task is performing the numerical integration explained above through solving the model equation from the ``modelequation`` package. 
 
-    In some cases the scheme only needs to run until an equilibrium state is reached, hence a sufficient of data points without any change.
-    Therefore a stop criterion is formulated within this function which prevents unnecessary long tasks (only if the value of the equilibrium state is required). 
-    The stop criterion sets in if the standard deviation of a set of consecutive last datapoints is lower than a predefined limit.
+    In some cases the scheme only needs to run until an equilibrium state (a sufficient amount of data points without any change) is reached.
+    Therefore a stop criterion is formulated within this function which prevents unnecessary long tasks (if the value of the equilibrium state is required only). 
+    The stop criterion sets in if the standard deviation of a set of consecutive last data points is lower than a predefined limit.
 
-    Inputparameters have to be given as `Dictionaries` supplied by the ``configuration`` from a specific **configuration.ini**.
+    Input has to be given as `Dictionaries` supplied by the ``configuration`` from a specific **configuration.ini**.
 
-    The return will be a 3-dimensional array.
 
     **Function-call arguments** \n
     
-    :param function func:       The name of the model equation which will be solved (for now **always** model_equation)
+    :param function func:       The name of the model equation which will be solved (for now always model_equation)
 
-    :param dict eqparam:        Configuration dictionary containing information needed for ``func``
+    :param dict eqparam:        Configuration dictionary containing information needed for ``func``:
                                 
-                                    * C_ao: The systems heat capacity 
+                                    * C_ao: The systems heat capacity (time the height of the system)
 
-    :param dict rk4input:       Configuration dictionary containing the parameters to run
+                                        * type: float
+                                        * unit: Joule*Meter/Kelvin
+                                        * value: > 0
+
+    :param dict rk4input:       Configuration dictionary containing the parameters to run:
 
                                     * number_of_integration: Number of iterations to perfom
                                         
@@ -85,7 +88,7 @@ def rk4alg(func,eqparam,rk4input,funccomp):
 
                                         * type: float
                                         * unit: dimensionless
-                                        * value: 0 to <90, (0 to indicate 0D EBM, >0 to indicate 1D EBM)
+                                        * value: 0 to <90, (0 to run a 0D EBM, >0 to run a 1D EBM)
 
                                     * both_hemispheres: Indicates if both hemispheres are modeled or exclusively the northern hemisphere 
 
@@ -121,7 +124,7 @@ def rk4alg(func,eqparam,rk4input,funccomp):
 
                                         * type: float
                                         * unit: Kelvin
-                                        * value: any, for physical sense use low values (lower than 1e-3)
+                                        * value: > 0, but for physical sense use low values (lower than 1e-3)
 
                                     * data_readout: Indicates the number of iteration steps are performed until data in written into the output (to decrease computational cost)
 
@@ -138,7 +141,18 @@ def rk4alg(func,eqparam,rk4input,funccomp):
 
     :param dict funccomp:       Configuration 2D dictionary containing function names and function parameters which is parsed to the ``func``
 
-                                    * funcnames: a dictionary of names 
+                                    * funcnames: a dictionary of function names which will build up the model equation. See :doc:`here <functions>` for a list of functions
+
+                                    * funcparams: a dictionary of functions parameters corresponding to the functions chosen within ``funcnames``. For details on the parameters see the specific function :doc:`here <functions>`
+
+    :returns:                   An array of the outputdata of the numercial integrator, containing: 
+                                    
+                                    * time (seconds)
+                                    * zonal mean temperature (ZMT, Kelvin)
+                                    * global mean temperature (GMT, Kelvin)
+
+    :rtype:                     array( array(time) , array(ZMT) , array(GMT) )
+
                                         
 
 
