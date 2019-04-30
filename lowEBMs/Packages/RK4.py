@@ -1,5 +1,5 @@
 """
-The ``RK4.py`` packages provides the numerical scheme to iteratively solve ordinary differential equations (ODE), hence the :doc:`model equation <modelequation>` which is parsed by the ``ModelEquation.py`` package initialized with the :doc:`configuration <configuration>` provided by the ``Configuration.py`` package. 
+The ``lowEBMs.Packages.RK4`` package provides the numerical scheme to iteratively solve ordinary differential equations (ODE), hence the :doc:`model equation <modelequation>` which is parsed by the ``lowEBMs.Packages.ModelEquation`` package initialized with the :doc:`configuration <configuration>` provided by the ``lowEBMs.Packages.Configuration`` package. 
 
 For an example see :doc:`How to use <../howtouse>`.
 
@@ -49,20 +49,20 @@ import builtins
 import time
 
 def rk4alg(func,eqparam,rk4input,funccomp):
-    """This functions main task is performing the numerical integration explained above through solving the model equation from the ``ModelEquation.py`` package. 
+    """This functions main task is performing the numerical integration explained above through solving the model equation from ``lowEBMs.Packages.ModelEquatio``. 
 
     In some cases the scheme only needs to run until an equilibrium state (a sufficient amount of data points without any change) is reached.
     Therefore a stop criterion is formulated within this function which prevents unnecessary long tasks (if the value of the equilibrium state is required only). 
     The stop criterion sets in if the standard deviation of a set of consecutive last data points is lower than a predefined limit.
 
-    Input has to be given as `Dictionaries` supplied by the ``Configuration.py`` from a specific **configuration.ini**.
+    Input has to be given as `Dictionaries` supplied by ``lowEBMs.Packages.Configuration`` from a specific **configuration.ini**.
 
 
     **Function-call arguments** \n
     
     :param function func:       The name of the model equation which will be solved (for now always model_equation)
 
-    :param dict eqparam:        Configuration dictionary containing information needed for ``func``:
+    :param dict eqparam:        Configuration dictionary containing information needed for **func**:
                                 
                                     * C_ao: The systems heat capacity (time the height of the system)
 
@@ -139,11 +139,11 @@ def rk4alg(func,eqparam,rk4input,funccomp):
                                         * value: minimum 0
 
 
-    :param dict funccomp:       Configuration 2D dictionary containing function names and function parameters which is parsed to the ``func``
+    :param dict funccomp:       Configuration 2D dictionary containing function names and function parameters which is parsed to the **func**
 
                                     * funcnames: a dictionary of function names which will build up the model equation. See :doc:`here <functions>` for a list of functions
 
-                                    * funcparams: a dictionary of functions parameters corresponding to the functions chosen within ``funcnames``. For details on the parameters see the specific function :doc:`here <functions>`
+                                    * funcparams: a dictionary of functions parameters corresponding to the functions chosen within **funcnames**. For details on the parameters see the specific function :doc:`here <functions>`
 
     :returns:                   An array of the outputdata of the numercial integrator, containing: 
                                     
