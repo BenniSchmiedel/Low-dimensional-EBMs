@@ -1,5 +1,5 @@
 *************
-Configuration
+lowEBMs.Packages.Configuration
 *************
 
 .. automodule:: lowEBMs.Packages.Configuration

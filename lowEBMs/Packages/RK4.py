@@ -1,5 +1,5 @@
 """
-The ``lowEBMs.Packages.RK4`` package provides the numerical scheme to iteratively solve ordinary differential equations (ODE), hence the :doc:`model equation <modelequation>` which is parsed by the ``lowEBMs.Packages.ModelEquation`` package initialized with the :doc:`configuration <configuration>` provided by the ``lowEBMs.Packages.Configuration`` package. 
+The ``lowEBMs.Packages.RK4`` provides the numerical scheme to iteratively solve differential equations, hence the :doc:`model equation <modelequation>` which is parsed by ``lowEBMs.Packages.ModelEquation``, initialized with the :doc:`configuration <configuration>` provided by ``lowEBMs.Packages.Configuration``. 
 
 For an example see :doc:`How to use <../howtouse>`.
 
@@ -49,13 +49,13 @@ import builtins
 import time
 
 def rk4alg(func,eqparam,rk4input,funccomp):
-    """This functions main task is performing the numerical integration explained above through solving the model equation from ``lowEBMs.Packages.ModelEquatio``. 
+    """This functions main task is performing the numerical integration explained above by using the solution of the model equation from ``lowEBMs.Packages.ModelEquations``. 
 
     In some cases the scheme only needs to run until an equilibrium state (a sufficient amount of data points without any change) is reached.
     Therefore a stop criterion is formulated within this function which prevents unnecessary long tasks (if the value of the equilibrium state is required only). 
     The stop criterion sets in if the standard deviation of a set of consecutive last data points is lower than a predefined limit.
 
-    Input has to be given as `Dictionaries` supplied by ``lowEBMs.Packages.Configuration`` from a specific **configuration.ini**.
+    Input has to be given as `Dictionaries` supplied by ``lowEBMs.Packages.Configuration.importer`` from a specific **configuration.ini**.
 
 
     **Function-call arguments** \n
@@ -139,7 +139,7 @@ def rk4alg(func,eqparam,rk4input,funccomp):
                                         * value: minimum 0
 
 
-    :param dict funccomp:       Configuration 2D dictionary containing function names and function parameters which is parsed to the **func**
+    :param dict funccomp:       Configuration 2D dictionary containing function names and function parameters parsed to the **func**
 
                                     * funcnames: a dictionary of function names which will build up the model equation. See :doc:`here <functions>` for a list of functions
 
