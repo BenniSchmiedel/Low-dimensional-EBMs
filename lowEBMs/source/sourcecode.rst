@@ -5,7 +5,7 @@ Source Code
 
 The project is seperated onto 5 python-packages with several submodules. 
 
-The coremodule is the numerical integrator, the Runge-Kutta 4th order scheme defined in :doc:` ``lowEBMs.Packages.RK4`` <code/rk4>`.
+The coremodule is the numerical integrator, the Runge-Kutta 4th order scheme defined in :doc:```lowEBMs.Packages.RK4`` <code/rk4>`.
 
 The structure of the model is provided by the :doc:`modelequation <code/modelequation>` package. It builds up the physical model from a set of physical :doc:`functions <code/functions>` which are specified in the functions package. 
 
