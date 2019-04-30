@@ -1,9 +1,10 @@
 """
-In ``lowEBMs.Packages.ModelEquation`` the module ``lowEBMs.Packages.ModelEquation.model_equation`` is defined which builds the EBM from functions given to it. The operation of this module is adding the given functions :math:`F_1,F_2,...F_i` according to the following scheme (compare :doc:`physical background <../models>`:
+In ``lowEBMs.Packages.ModelEquation`` the module ``lowEBMs.Packages.ModelEquation.model_equation`` is defined which builds the EBM from functions given to it. The operation of this module is adding the given functions :math:`F_1,F_2,...F_i` according to the following scheme (compare :doc:`physical background <../models>`):
 
 .. math::
 
-    y = \\frac{1}{C_{ao}\cdot (F_1 + F_2 + ... + F_i),
+    y= \\frac{1}{C_{ao}} \cdot (F_1 + F_2 + ... + F_i),
+
 
 with the deviation function :math:`y=\\frac{dT}{dt}` required by the ``lowEBMs.Packages.RK4.rk4alg`` and :math:`C_{ao}` the heat capacity which is passed to the right side of the model equation.
 
@@ -32,7 +33,7 @@ def model_equation(eqparam,funccomp):
 
                                     * funcparams: a dictionary of functions parameters corresponding to the functions chosen within **funcnames**. For details on the parameters see the specific function :doc:`here <functions>`
 
-    :returns:                   The temperature gradient (Kelvin/seconds) calculated from the model equation: 
+    :returns:                   The temperature gradient :math:`\\frac{dT}{dt}` (Kelvin/seconds) 
                                    
 
     :rtype:                     float or array(float), depending on 0D EBM or 1D EBM. In 1D, output is an array containing the temperature gradient for each latitudinal belt.
