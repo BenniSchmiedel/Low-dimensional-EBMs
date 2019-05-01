@@ -26,10 +26,16 @@ from lowEBMs.Packages.Variables import Vars
 
 class flux_down:
     """
-    Class defining downward radiative fluxes
+    Class defining radiative fluxes directed downwards (towards the surface). 
+    
+    Because the models in this project don't include atmospheric layers (for now), the only radiative flux directed downwards is the radiative energy coming from the sun. This function is the same for all implemented models and is described in ``flux_down.insolation`` which allows several adjustments.
+
+    
     """
     def insolation(funcparam):
-        """Hello"""
+        """
+        Function defining the solar insolation. Physically this 
+        """
         #Incoming radiation with latitudal dependence, albedo transition for T<T_ice, without noise
         #R_ininsolalbedo=[Conversion,alpha_p,T_ice,m]
         key=list(funcparam.keys())

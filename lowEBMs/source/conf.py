@@ -48,7 +48,7 @@ extensions = [
 ]
 autosectionlabel_prefix_document = True
 
-autodoc_default_flags = ['members']
+#autodoc_default_flags = ['members']
 autosummary_generate = True
 
 autodoc_mock_imports = ['matplotlib',

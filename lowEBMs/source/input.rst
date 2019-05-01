@@ -71,12 +71,12 @@ If the meaning of parameters is unclear, there is a detailed definition of the p
 If you now want to add functions you can write them into the configfile with the scheme shown above. If we want to add two functions, one for incoming radiative energy flux and one for outgoing radiative energy flux, this might look like this::
 
     [func0]
-    func=R_ininsolalbedo
+    func=flux_down.insolation
     Q=342
     m=1
     dQ=0
 
-    albedo=Albedo0D 
+    albedo=albedo.static 
     albedoread=True           
     albedoparam=[0.3] 
 
@@ -93,7 +93,7 @@ If you now want to add functions you can write them into the configfile with the
     orbitalyear=0
 
     [func1]
-    func=R_outplanck
+    func=flux_up.planck
     grey=0.612
     sigma=const.sigma
 

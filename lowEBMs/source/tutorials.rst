@@ -16,9 +16,9 @@ For the physical background see :doc:`Model types <models>` and the explanation 
 
 A 0D EBM equipped with:
 
-- constant absorbed incoming solar radiation flux
+- constant absorbed downward solar radiation flux
 
-- outgoing radiation flux according to the Stefan-Boltzmann law
+- upward radiation flux according to the Stefan-Boltzmann law
 
 
 0D EBM (:math:`CO_2` forced)
@@ -26,9 +26,9 @@ A 0D EBM equipped with:
 
 A 0D EBM equipped with:
 
-- constant absorbed incoming solar radiation flux
+- constant absorbed downward solar radiation flux
 
-- outgoing radiation flux according to the Stefan-Boltzmann law
+- upward radiation flux according to the Stefan-Boltzmann law
 
 - :math:`CO_2` radiative forcing according to estimates by :doc:`Myhre <references>`
 
@@ -39,9 +39,9 @@ The tutorial-file of this EBM uses a :math:`CO_2`-forcing based on 1958 - presen
 
 A 0D EBM equipped with:
 
-- constant incoming solar radiation flux
+- constant absorbed downward solar radiation flux
 
-- outgoing radiation flux according to the Stefan-Boltzmann law
+- upward radiation flux according to the Stefan-Boltzmann law
 
 - volcanic radiative forcing given by the difference in :math:`Wm^{-2}`
 
@@ -52,9 +52,9 @@ The tutorial-file of this EBM uses a randomly generated radiative forcing as vol
 
 A 1D EBM equipped with:
 
-- static albedo distribution with three regions of albedo regions |rarr| constant absorbed incoming solar radiation flux  
+- static albedo distribution with three regions of albedo regions |rarr| constant absorbed downward solar radiation flux  
 
-- outgoing radiation flux according to Budyko's radiation law
+- upward radiation flux according to Budyko's radiation law
 
 - a symmetric diffusive transfer energy flux according to Budyko
 
@@ -67,9 +67,9 @@ The parameters of the tutorial-file are chosen to reproduce the EBM as it was in
 A 1D EBM equipped with:
 
 - temperature dependant albedo distribution with three regions of albedo regions 
-  |rarr| dynamic absorbed incoming solar radiation flux  
+  |rarr| dynamic absorbed downward solar radiation flux  
 
-- outgoing radiation flux given by the empirical law according to :ref:`Budyko <Budyko>`
+- upward radiation flux given by the empirical law according to :ref:`Budyko <Budyko>`
 
 - a symmetric diffusive transfer energy flux according to :ref:`Budyko <Budyko>`
 
@@ -82,9 +82,9 @@ The temperature dependence of the albedo is defined in :doc:`Functions <code/fun
 
 A 1D EBM equipped with:
 
-- dynamic albedo distribution with a continuous temperature dependant albedo function |rarr| dynamic absorbed incoming solar radiation flux  
+- dynamic albedo distribution with a continuous temperature dependant albedo function |rarr| dynamic absorbed downward solar radiation flux  
 
-- outgoing radiation flux given by an edited Stefan-Boltzmann radiation law according to :ref:`Sellers <Sellers>`
+- upward radiation flux given by an edited Stefan-Boltzmann radiation law according to :ref:`Sellers <Sellers>`
 
 - transfer energy flux according to :ref:`Sellers <Sellers>`
 
