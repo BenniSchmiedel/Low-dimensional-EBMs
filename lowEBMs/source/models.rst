@@ -20,7 +20,7 @@ In general, energy balance models describe the behaviour of a planet's energy ba
 
 Here shown is a 0D schematic of the earth's energy balance like it is often given in the standard literature. The radiative energy fluxes (in :math:`Wm^{-2}`) of the earth are indicated with their strength and direction. However, EBMs describe the energy balance mostly with the crucial parts only, which means that small or strongly regional energy fluxes are neglected.
 
-EBMs are commonly restricted to the **incoming radiative energy flux** (:math:`R_{in}`), the **outgoing radiative energy flux** (:math:`R_{out}`) and in some cases of 0D-EBMs an **external forcing energy flux** (:math:`F_{ext}`) (e.g. Carbon Dioxide forcing), or in cases of 1D-EBMs to **latitudinal transfer energy fluxes** (:math:`F_{transfer}`). This is of course no necessity rather than a general identification of EBMs since they are specifically characterized by their simplicity.
+EBMs are commonly restricted to the **downward radiative energy flux** (:math:`R_{down}`), the **upward radiative energy flux** (:math:`R_{up}`) and in some cases of 0D-EBMs to a **forcing energy flux** (:math:`F_{forced}`) (e.g. Carbon Dioxide forcing), or in cases of 1D-EBMs to **latitudinal transfer energy fluxes** (:math:`F_{transfer}`). This is of course no necessity rather than a general identification of EBMs since they are specifically characterized by their simplicity.
 
 The physical basis of EBMs can be expressed in a model equation which commonly has the following form:
 
@@ -28,9 +28,9 @@ The physical basis of EBMs can be expressed in a model equation which commonly h
 
 .. math::
 
-    C \cdot \frac{dT}{dt} = R_{in} + R_{out} + F 
+    C \cdot \frac{dT}{dt} = R_{down} + R_{up} + F 
 
-where C is the heatcapacity, :math:`\frac{dT}{dt}` the term to consider that the system is dynamical and :math:`R_{in}`, :math:`R_{out}`, :math:`F` the energy fluxes which are commonly included.
+where C is the heatcapacity, :math:`\frac{dT}{dt}` the term to consider that the system is dynamical and :math:`R_{down}`, :math:`R_{up}`, :math:`F` the energy fluxes which are included.
 
 Model Types
 ===========
@@ -42,14 +42,14 @@ If one is interested in the 0D case, the model equation above suffices to descri
 
 .. math::
 
-    R_{in} & = (1-\alpha)\cdot \\
-    R_{out} & = - \epsilon\sigma T^4
+    R_{down} & = (1-\alpha)\cdot Q \\
+    R_{up} & = - \epsilon\sigma T^4
 
 with the albedo :math:`\alpha`, the solar insolation :math:`Q`, the Stefan-Boltzmann constant :math:`\sigma`, and the emissivity :math`\espilon`, the simplest form of an EBM is described by:
 
 .. math::
 
-    C \cdot \frac{dT}{dt} = R_{in} + R_{out} = (1-\alpha) \cdot Q - \epsilon\sigma T^4
+    C \cdot \frac{dT}{dt} = R_{down} + R_{up} = (1-\alpha) \cdot Q - \epsilon\sigma T^4
 
 This equation can easily be solved analytically, but to observe the behaviour of the energy balance over time a numerical algorithm can be used to solve this equation.
 With the chapter :doc:`How to use <howtouse>` it will be investigated in detail how this project implements such an EBM. Additionally there is a tutorial given once you have :doc:`installed <installation>` this project.
@@ -70,7 +70,7 @@ By indentifying each latitudinal band and all its parameters with an index i, th
 
 .. math::
 
-    C \cdot \frac{dT_i}{dt} = R_{in,i} + R_{out,i} + F_{transfer,i}
+    C \cdot \frac{dT_i}{dt} = R_{down,i} + R_{up,i} + F_{transfer,i}
 
 There are many different approaches to discretize these terms in 1D. Because this project was started to implement two specific EBMs, one created by :doc:`Michail Budyko <references>` and one by :doc:`William Seller  <references>`, both published in the late 1960s, these two discretizations will be shown. 
 
@@ -79,7 +79,7 @@ Budyko-type model
 
 This EBM constructed by :doc:`Michail Budyko  <references>` uses various assumptions, supported by global earth observation data. The key features of this model are:
 
-- An empirically determined outgoing radiation flux with linear dependence on temperature, in its simplest form described by :math:`R_{out}=A+B\cdot T`.
+- An empirically determined upward radiation flux with linear dependence on temperature, in its simplest form described by :math:`R_{up}=A+B\cdot T`.
 
 - An albedo seperated into three different regions with dependence on latitude (or by customization on temperature), with high albedo values towards the polar regions and low albedo values in the equatorial regions.
 
@@ -99,7 +99,7 @@ Sellers-type model
 
 The EBM constructed :doc:`William Seller  <references>` is adapted even more to global earth observation data and thereby is constructed with more complex terms than the EBM from Budyko. The key features of this model are:
 
-- The Stefan-Boltzmann radiation law as outgoing radiation flux extended with a term considering atmospheric attenuation.
+- The Stefan-Boltzmann radiation law as upward radiation flux extended with a term considering atmospheric attenuation.
 
 - An albedo described by an empircal law with linear dependence on temperature and surface elevation.
 
