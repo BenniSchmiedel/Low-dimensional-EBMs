@@ -28,14 +28,6 @@ Additionally defined are tools for evaluation or simplification in the class:
 
     tools
 
-Here the full list of modules defined in ``lowEBMs.Packages.Functions``:
-
-.. autosummary::
-    :members:
-    :toctree: stubs
-    :nosignatures:
-
-    flux_down
 
 """
 
@@ -122,6 +114,21 @@ class albedo:
     def static(alpha):
         return alpha
 
+    def static_bud(alpha_p,border_1,border_2):
+        #Albedo function as used in budyko (1969), with  2albedo transitions fixed to latitudes (border_1, border_2)
+        #and fixed albedos, with intermediate case +0.18 and arctic case +0.3
+        
+        #creating and filling array, depending on the current latitudinal temperature
+        albedo=[0]*len(Vars.Lat)
+        for i in range(len(Vars.Lat)):
+            if np.abs(Vars.Lat[i]) <= border_1:
+                albedo[i]=alpha_p
+            if np.abs(Vars.Lat[i]) <= border_2 and np.abs(Vars.Lat[i]) > border_1:
+                albedo[i]=alpha_p+0.18
+            if np.abs(Vars.Lat[i]) <= 90 and np.abs(Vars.Lat[i]) > border_2:
+                albedo[i]=alpha_p+0.3
+        return albedo
+
     def dynamic_bud(T_1,T_2,alpha_0,alpha_1,alpha_2):
         #Defining a 3State albedo function, with temperature dependant albedo transitions at T_1 (alpha_0 to 
         #alpha_1) and T_2 (alpha_1 to alpha_2), with alpha_0 ice free, alpha_1 intermediate and alpha_2 ice
@@ -160,29 +167,13 @@ class albedo:
                 albedo[i]=0.85
         return albedo
 
-    def static_bud(alpha_p,border_1,border_2):
-        #Albedo function as used in budyko (1969), with  2albedo transitions fixed to latitudes (border_1, border_2)
-        #and fixed albedos, with intermediate case +0.18 and arctic case +0.3
-        
-        #creating and filling array, depending on the current latitudinal temperature
-        albedo=[0]*len(Vars.Lat)
-        for i in range(len(Vars.Lat)):
-            if np.abs(Vars.Lat[i]) <= border_1:
-                albedo[i]=alpha_p
-            if np.abs(Vars.Lat[i]) <= border_2 and np.abs(Vars.Lat[i]) > border_1:
-                albedo[i]=alpha_p+0.18
-            if np.abs(Vars.Lat[i]) <= 90 and np.abs(Vars.Lat[i]) > border_2:
-                albedo[i]=alpha_p+0.3
-        return albedo
-
-
 class flux_up:
     """ 
     Class defining upward radiative fluxes
 
     """
 
-    def budnc(funcparam):     
+    def budyko_noclouds(funcparam):     
         #Outgoing radiation, from empirical approximation formula by Budyko (no clouds)
         #R_outbudncparam=[A,B]
         list_parameters=list(funcparam.values())
@@ -192,7 +183,7 @@ class flux_up:
             Vars.Read[11][int(Runtime_Tracker/(4*data_readout))]=R_out
         return R_out
 
-    def budc(funcparam):
+    def budyko_clouds(funcparam):
         #Outgoing radiation, from empirical approximation formula by Budyko (clouds)
         #R_outbudcparam=[A,B,A1,B1,f_c]
         list_parameters=list(funcparam.values())
@@ -212,7 +203,7 @@ class flux_up:
             Vars.Read[11][int(Runtime_Tracker/(4*data_readout))]=R_out
         return R_out
 
-    def sel(funcparam):
+    def sellers(funcparam):
         #Outgoing radiation, from Sellers earth-atmosphere model
         #R_outselparam=[sig,grey,gamma,m]"""
         list_parameters=list(funcparam.values())
@@ -231,7 +222,7 @@ class transfer:
     Class defining latitudinal transfer fluxes
 
     """
-    def bud(funcparam):
+    def budyko(funcparam):
         #Diffusive transfer flow by Budyko
         #A_budpama=[beta]
         list_parameters=list(funcparam.values())
@@ -246,41 +237,7 @@ class transfer:
                 Vars.Read[7][int(Runtime_Tracker/(4*data_readout))]=F
         return F
 
-    def watervapour_sel(funcparam):
-        #Transfer flow of water vapour across latitudinal bands
-        #WV_Selparam=[K_wv,g,a,eps,p,e0,L,Rd,dy,dp]
-        #list_parameters=list(funcparam.values())
-        K_wv,g,a,eps,p,e0,L,Rd,dy,dp,factor_wv,factor_kwv=funcparam
-        
-        #calculating the specific humidity q and its latitudinal difference dq
-        q=earthsystem.specific_saturation_humidity_sel(e0,eps,L,Rd,p)
-        dq=earthsystem.humidity_difference(e0,eps,L,Rd,p)
-        
-        #equation of the water vapour energy transfer
-        c=L*(Vars.meridional*q-K_wv*factor_kwv*(dq/(dy)))*((dp*const.mb_to_Pa)/g)*factor_wv
-        return c
-
-    def sensibleheat_air_sel(funcparam):
-        #Transfer flux due to atmosphere sensible heat transfer across latitudinal bands
-        #SH_airSelparam=[K_h,g,a,dy,cp,dp]
-        #list_parameters=list(funcparam.values())
-        K_h,g,a,dy,cp,dp,factor_air,factor_kair=funcparam
-        
-        #equation of the atmosphere sensible heat transfer, with dependence on Temperature and Temperature difference
-        C=(Vars.meridional*Vars.T[:-1]-K_h**factor_kair*(Vars.tempdif/(dy)))*(cp*dp*const.mb_to_Pa/g)*factor_air
-        return C
-        
-    def sensibleheat_ocean_sel(funcparam):
-        #Transer flux due to sensible heat transfer from ocean currents
-        #SH_oceanSelparam=[K_o,dz,l_cover,dy,re]
-        #list_parameters=list(funcparam.values())
-        K_o,dz,l_cover,dy,cp_w,dens_w,factor_oc=funcparam
-        
-        #equation of ocean sensible heat transfer
-        F=-K_o*dz*l_cover*Vars.tempdif/(dy)*cp_w*dens_w*factor_oc
-        return F
-
-    def sel(funcparam):
+    def sellers(funcparam):
         #Combined transfer fluxes, Sellers
         #Transfer_Sel=WV_Sel+SH_airSel+SH_oceanSel
         #Transfer_Selparam=[K_wv,g,a,eps,p,e0,L,Rd,dy,dp,K_h,cp,K_o,dz,l_cover,re]
@@ -327,6 +284,40 @@ class transfer:
         else:
             Transfer=0
         return Transfer
+
+    def watervapour_sel(funcparam):
+        #Transfer flow of water vapour across latitudinal bands
+        #WV_Selparam=[K_wv,g,a,eps,p,e0,L,Rd,dy,dp]
+        #list_parameters=list(funcparam.values())
+        K_wv,g,a,eps,p,e0,L,Rd,dy,dp,factor_wv,factor_kwv=funcparam
+        
+        #calculating the specific humidity q and its latitudinal difference dq
+        q=earthsystem.specific_saturation_humidity_sel(e0,eps,L,Rd,p)
+        dq=earthsystem.humidity_difference(e0,eps,L,Rd,p)
+        
+        #equation of the water vapour energy transfer
+        c=L*(Vars.meridional*q-K_wv*factor_kwv*(dq/(dy)))*((dp*const.mb_to_Pa)/g)*factor_wv
+        return c
+
+    def sensibleheat_air_sel(funcparam):
+        #Transfer flux due to atmosphere sensible heat transfer across latitudinal bands
+        #SH_airSelparam=[K_h,g,a,dy,cp,dp]
+        #list_parameters=list(funcparam.values())
+        K_h,g,a,dy,cp,dp,factor_air,factor_kair=funcparam
+        
+        #equation of the atmosphere sensible heat transfer, with dependence on Temperature and Temperature difference
+        C=(Vars.meridional*Vars.T[:-1]-K_h**factor_kair*(Vars.tempdif/(dy)))*(cp*dp*const.mb_to_Pa/g)*factor_air
+        return C
+        
+    def sensibleheat_ocean_sel(funcparam):
+        #Transer flux due to sensible heat transfer from ocean currents
+        #SH_oceanSelparam=[K_o,dz,l_cover,dy,re]
+        #list_parameters=list(funcparam.values())
+        K_o,dz,l_cover,dy,cp_w,dens_w,factor_oc=funcparam
+        
+        #equation of ocean sensible heat transfer
+        F=-K_o*dz*l_cover*Vars.tempdif/(dy)*cp_w*dens_w*factor_oc
+        return F
 
 
 class forcing:
@@ -432,7 +423,7 @@ class forcing:
         return F
 
 
-    def co2(funcparam):
+    def co2_myhre(funcparam):
         list_parameters=list(funcparam.values())
         A,C_0,CO2_base,datapath,name,delimiter,header,footer,col_time,col_conc,timeunit,BP,time_start=list_parameters
         if Runtime_Tracker==0:
@@ -482,7 +473,7 @@ class earthsystem:
         #as global mean annual temperature 
         return np.average(Vars.T, weights=cosd(Vars.Lat))
 
-    def zonalmeaninsolation():
+    def zonalmean_insolation():
         #Calculation of the annual mean solar radiation over latitudes from
         #the climlab package 
         days=np.linspace(0,365,365)
