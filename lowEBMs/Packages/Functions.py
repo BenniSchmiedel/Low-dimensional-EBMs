@@ -32,8 +32,10 @@ Here the full list of modules defined in ``lowEBMs.Packages.Functions``:
 
 .. autosummary::
     :members:
-    :toctree: 
+    :toctree: stubs
     :nosignatures:
+
+    flux_down
 
 """
 
