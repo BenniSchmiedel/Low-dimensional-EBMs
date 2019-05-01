@@ -197,7 +197,7 @@ def rk4alg(func,eqparam,rk4input,funccomp):
             data[1][j] = Vars.T = T0 + (k1 + k2 + k2 + k3 + k3 + k4) / 6  
             #The globalmeantemp calculated from the new generated temperature distribution
             if spatial_resolution>0:
-                data[2][j] = Vars.T_global = globalmeantemp()
+                data[2][j] = Vars.T_global = earthsystem.globalmean_temperature()
             else: #if 0 dimensional
                 data[2][j] = Vars.T_global = Vars.T
         #Check if the equilibrium condition is fulfilled. If true, break the loop, cut the output array to
