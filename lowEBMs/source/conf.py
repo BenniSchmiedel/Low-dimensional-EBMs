@@ -41,11 +41,15 @@ release = ''
 # ones.
 extensions = [
     'sphinx.ext.autodoc',
+    'sphinx.ext.autosummary',
     'sphinx.ext.autosectionlabel',
     'sphinx.ext.viewcode',
     'sphinx.ext.mathjax'
 ]
 autosectionlabel_prefix_document = True
+
+autodoc_default_flags = ['members']
+autosummary_generate = True
 
 autodoc_mock_imports = ['matplotlib',
           'numpy',

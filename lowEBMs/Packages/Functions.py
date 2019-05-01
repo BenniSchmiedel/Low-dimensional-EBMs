@@ -5,9 +5,10 @@ This module is structured through classes which distinguish the type of energy f
 
 The classes which define energy fluxes are:
 
-.. toctree::
-    
-    functions.flux_down
+.. autosummary::
+    :toctree: stubs
+
+    flux_down
 
 """
 
