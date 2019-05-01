@@ -1,3 +1,16 @@
+"""
+In ``lowEBMs.Package.Functions`` all physical equations are defined which describe the energy balance of the earth system.
+
+This module is structured through classes which distinguish the type of energy flux or property definition. The classes contain several functions which follow a different approach of parameterizing the respective type of energy flux/ property.
+
+The classes which define energy fluxes are:
+
+.. toctree::
+    
+    functions.flux_down
+
+"""
+
 import numpy as np
 from climlab import constants as const
 from climlab.solar.insolation import daily_insolation
