@@ -1,12 +1,12 @@
 """
-In ``lowEBMs.Packages.ModelEquation`` the module ``lowEBMs.Packages.ModelEquation.model_equation`` is defined which builds the EBM from functions given to it. The operation of this module is adding the given functions :math:`F_1,F_2,...F_i` according to the following scheme (compare :doc:`physical background <../models>`):
+In ``lowEBMs.Packages.ModelEquation`` modules are defined which build the EBM from functions given to it. The operation of this modules is adding the given functions :math:`F_1,F_2,...F_i` according to the following scheme (compare :doc:`physical background <../models>`):
 
 .. math::
 
     y= \\frac{1}{C_{ao}} \cdot (F_1 + F_2 + ... + F_i),
 
 
-with the deviation function :math:`y=\\frac{dT}{dt}` required by the ``lowEBMs.Packages.RK4.rk4alg`` and :math:`C_{ao}` the heat capacity which is passed to the right side of the model equation.
+with the deviation function :math:`y=\\frac{dT}{dt}` required by the ``lowEBMs.Packages.RK4.rk4alg`` and :math:`C_{ao}` the heat capacity of the system which is passed to the right side of the model equation.
 
 
 """
@@ -21,7 +21,7 @@ def model_equation(eqparam,funccomp):
 
     :param dict eqparam:        Configuration dictionary containing additional information for the model equation:
                                 
-                                    * C_ao: The systems heat capacity (time the height of the system)
+                                    * C_ao: The systems heat capacity (times the height of the system)
 
                                         * type: float
                                         * unit: Joule*Meter/Kelvin
