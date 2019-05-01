@@ -9,6 +9,31 @@ The classes which define energy fluxes are:
     :toctree: stubs
 
     flux_down
+    flux_up
+    transfer
+    forcing
+
+The classes which contain definitions of earth system properties are:
+
+.. autosummary::
+    :toctree: stubs
+
+    albedo
+    earthsystem
+
+Additionally defined are tools for evaluation or simplification in the class:
+
+.. autosummary::
+    :toctree: stubs
+
+    tools
+
+Here the full list of modules defined in ``lowEBMs.Packages.Functions``:
+
+.. autosummary::
+    :members:
+    :toctree: 
+    :nosignatures:
 
 """
 
