@@ -1,6 +1,6 @@
-*************
+******************************
 lowEBMs.Packages.Configuration
-*************
+******************************
 
 .. automodule:: lowEBMs.Packages.Configuration
     :members:
