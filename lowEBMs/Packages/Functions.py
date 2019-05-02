@@ -50,7 +50,13 @@ class flux_down:
     Because the models in this project don't include atmospheric layers (for now), the only radiative flux directed downwards is the radiative energy coming from the sun. This function is the same for all implemented models and is described in ``flux_down.insolation`` which allows several adjustments.
 
     
+    insolation
+    ^^^^^^^^^^
+
+    .. autofunction:: insolation
+
     """
+
     def insolation(funcparam):
         """
         Function defining the absorbed solar insolation. Physically there is an important difference between the insolation, which is denoted as :math:`Q` and the absorbed insolation, which is the output of this function denoted as :math:`R_{down}`. The absorbed insolation in it's simplest form is written (as introduced in the :doc:`physical background <../models>`): 
