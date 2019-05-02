@@ -7,7 +7,7 @@ lowEBMs.Packages.Functions
 Here the full list of modules defined in ``lowEBMs.Packages.Functions``:
 
 .. toctree::
-    :maxdepth: 2
+    :maxdepth: 4
 
     functions_code/flux_down
     functions_code/flux_up
