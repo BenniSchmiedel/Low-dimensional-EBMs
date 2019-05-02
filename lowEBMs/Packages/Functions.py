@@ -598,67 +598,64 @@ class tools:
     """
     Class with useful functions and evaluation tools 
     """
-    def bla():
-        return
+    def lna(a):
+        return np.array(a)      #conversion of list to numpy array
 
-def lna(a):
-    return np.array(a)      #conversion of list to numpy array
+    def nal(a):
+        return np.ndarray.tolist(a)   #conversion of numpy array to list
 
-def nal(a):
-    return np.ndarray.tolist(a)   #conversion of numpy array to list
+    def cosd(Lat):
+        #Returning the value of cosine with input in degree    
+        return np.cos(Lat*np.pi/180)
 
-def cosd(Lat):
-    #Returning the value of cosine with input in degree    
-    return np.cos(Lat*np.pi/180)
+    def sind(Lat):
+        #Returning the value of sine with input in degree
+        return np.sin(Lat*np.pi/180)
 
-def sind(Lat):
-    #Returning the value of sine with input in degree
-    return np.sin(Lat*np.pi/180)
+    def plotmeanstd(array):
+        #calculation of an arrays mean value and standard deviation, with regard to the equilibrium condition chosen
+        #Used to process the final output data
+        arraymean=np.mean(array[:][-int(eq_condition_length):],axis=0)
+        arraystd=np.std(array[:][-int(eq_condition_length):],axis=0)
+        
+        #for l in range(len(arraynew)):
+        #    arraymean.append(np.mean(arraynew[l][-eq_condition_length:]))
+        #    arraystd.append(np.std(arraynew[l][-eq_condition_length:]))
+        return arraymean, arraystd
 
-def plotmeanstd(array):
-    #calculation of an arrays mean value and standard deviation, with regard to the equilibrium condition chosen
-    #Used to process the final output data
-    arraymean=np.mean(array[:][-int(eq_condition_length):],axis=0)
-    arraystd=np.std(array[:][-int(eq_condition_length):],axis=0)
-    
-    #for l in range(len(arraynew)):
-    #    arraymean.append(np.mean(arraynew[l][-eq_condition_length:]))
-    #    arraystd.append(np.std(arraynew[l][-eq_condition_length:]))
-    return arraymean, arraystd
+    def datasetaverage(dataset):
+        #error estimation of the final output data, for now limited to calculate mean values and standard deviations
+        #of temperature, but with the possibility to do it for all of the readout data
+        Readoutlen=len(dataset[2])
+        Readzipk=[]
+        Readdataaverage=[]
+        for k in range(Readoutlen): 
+            Mean_mean=np.mean(dataset[2][k],axis=0)
+            Mean_std=np.std(dataset[2][k],axis=0)
+            Readdataaverage.append([Mean_mean,Mean_std])
+        
+        return Readdataaverage
 
-def datasetaverage(dataset):
-    #error estimation of the final output data, for now limited to calculate mean values and standard deviations
-    #of temperature, but with the possibility to do it for all of the readout data
-    Readoutlen=len(dataset[2])
-    Readzipk=[]
-    Readdataaverage=[]
-    for k in range(Readoutlen): 
-        Mean_mean=np.mean(dataset[2][k],axis=0)
-        Mean_std=np.std(dataset[2][k],axis=0)
-        Readdataaverage.append([Mean_mean,Mean_std])
-    
-    return Readdataaverage
+    def interpolator(arrayx,arrayy):
+        #Returning the interpolation function (with a polyfit) of a parameter or variable
+        z=np.polyfit(arrayx,arrayy,4)
+        f=np.poly1d(z)
+        return f
 
-def interpolator(arrayx,arrayy):
-    #Returning the interpolation function (with a polyfit) of a parameter or variable
-    z=np.polyfit(arrayx,arrayy,4)
-    f=np.poly1d(z)
-    return f
+    def SteadyStateConditionGlobal(Global):
+        #equilibrium condition of the RK4-algorithm, checking if the condition is fulfilled or not
+        dT=np.std(Global)
+        #if fulfilled, return True to interupt the algorithm and stop with output message
+        if dT <= eq_condition_amplitude:
+            print('Steady State reached after %s steps, within %s seconds'               %(int(Runtime_Tracker/(4*data_readout)),(time.time() - Vars.start_time)))
+            return True
+        #if not fulfilled return False, until the integrationnumber is exceeded
+        if Runtime_Tracker==(number_of_integration-1)*4:
+            print('Transit State within %s seconds' %(time.time() - Vars.start_time))
+            return True
+        else:
+            return False
 
-def SteadyStateConditionGlobal(Global):
-    #equilibrium condition of the RK4-algorithm, checking if the condition is fulfilled or not
-    dT=np.std(Global)
-    #if fulfilled, return True to interupt the algorithm and stop with output message
-    if dT <= eq_condition_amplitude:
-        print('Steady State reached after %s steps, within %s seconds'               %(int(Runtime_Tracker/(4*data_readout)),(time.time() - Vars.start_time)))
-        return True
-    #if not fulfilled return False, until the integrationnumber is exceeded
-    if Runtime_Tracker==(number_of_integration-1)*4:
-        print('Transit State within %s seconds' %(time.time() - Vars.start_time))
-        return True
-    else:
-        return False
-
-def BPtimeplot(time,number):
-    time_new = (lna(time)/stepsize_of_integration-Vars.External_time_start[number])
-    return time_new
+    def BPtimeplot(time,number):
+        time_new = (lna(time)/stepsize_of_integration-Vars.External_time_start[number])
+        return time_new
