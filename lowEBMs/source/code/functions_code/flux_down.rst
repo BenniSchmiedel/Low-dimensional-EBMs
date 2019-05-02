@@ -5,7 +5,7 @@ flux_down
 insolation
 ==========
 
-.. autofunction:: insolation
+.. autofunction:: lowEBMs.Packages.Functions.flux_down.insolation
 
 .. autoclass:: lowEBMs.Packages.Functions.flux_down
 
