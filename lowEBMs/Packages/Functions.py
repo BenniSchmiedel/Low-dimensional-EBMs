@@ -53,7 +53,7 @@ class flux_down:
     """
     def insolation(funcparam):
         """
-        Function defining the absorbed solar insolation. Physically there is an important difference between the insolation, which is denoted as :math:`Q` and the absorbed insolation, which is the output of this function denoted as :math:`R_{down}`. The absorbed insolation in it's simplest form is written (as introduced in the :doc:`physical background <models>`: 
+        Function defining the absorbed solar insolation. Physically there is an important difference between the insolation, which is denoted as :math:`Q` and the absorbed insolation, which is the output of this function denoted as :math:`R_{down}`. The absorbed insolation in it's simplest form is written (as introduced in the :doc:`physical background <../../models>`): 
 
         .. math::
 
@@ -77,97 +77,97 @@ class flux_down:
     
         :param dict funcparams:     a dictionary of the functions parameters directly parsed from ``lowEBMs.Packages.ModelEquation.model_equation``
                                     
-                                        * Q: The value of solar insolation (only useful for 0D EBMs) 
+                                        * *Q*: The value of solar insolation (only useful for 0D EBMs) 
 
                                             * type: float
                                             * unit: Watt/m^2
                                             * value: > 0 (standard 342)
 
-                                        * m: Factorial change of absorbed insolation
+                                        * *m*: Factorial change of absorbed insolation
 
                                             * type: float
                                             * unit: dimensionless
                                             * value: > 0
                                         
-                                        * dQ: Additive energy offset on :math:`Q`
+                                        * *dQ*: Additive energy offset on :math:`Q`
 
                                             * type: float
                                             * unit: Watt/m^2
                                             * value: any
 
-                                        * albedo: The name of albedo function which is called from ``lowEBMs.Packages.Functions.albedo`` to return the albedo value/distribution. See :doc:`class albedo <../source/code/functions_code/albedo>`.
+                                        * *albedo*: The name of albedo function which is called from ``lowEBMs.Packages.Functions.albedo`` to return the albedo value/distribution. See :doc:`class albedo <albedo>`.
 
-                                            * type: string (the classname has to be added, hence *albedo.func*)
+                                            * type: string
                                             * unit: -
                                             * value: albedo.static, albedo.static_bud, albedo.dynamic_bud, albedo.smooth, albedo.dynamical_sel
 
-                                        * albedoread: Indicates if the albedo is provided as specific output
+                                        * *albedoread*: Indicates if the albedo is provided as specific output
 
                                             * type: boolean 
                                             * unit: -
                                             * value: True/Flase
 
-                                        * albedoparam: Provides an array of parameters the albedo function (see :doc:`class albedo <../source/code/functions_code/albedo>`)
+                                        * *albedoparam*: Provides an array of parameters the albedo function (see :doc:`class albedo <../source/code/functions_code/albedo>`)
 
                                             * type: array 
                                             * unit: -
                                             * value: depending on function chosen
 
-                                        * noise: Indicates if solar noise is activated
+                                        * *noise*: Indicates if solar noise is activated
 
                                             * type: boolean 
                                             * unit: -
                                             * value: True/False
 
-                                        * noiseamp: Determines the strength of the random solar noise as one standard deviation of a normal distribution (for further information see ``numpy.random.normal``)
+                                        * *noiseamp*: Determines the strength of the random solar noise as one standard deviation of a normal distribution (for further information see ``numpy.random.normal``)
 
                                             * type: float 
                                             * unit: Watt/m^2
                                             * value: >0 (e.g. noise with 1 percent of 342 is the value: 0.01*342)
 
-                                        * noisedelay: Determines how often this random factor is updated to a new random factor (one factor persists until it is replaced)
+                                        * *noisedelay*: Determines how often this random factor is updated to a new random factor (one factor persists until it is replaced)
 
                                             * type: int eger
                                             * unit: number of iteration steps
                                             * value: minimum 1 (every iteration cycle)
 
-                                        * seed: Indicates if a specific seed is used to ensure that the random numbers are the one created by this specific seed (useful for comparisons to other simulation with the same solar noise)
+                                        * *seed*: Indicates if a specific seed is used to ensure that the random numbers are the one created by this specific seed (useful for comparisons to other simulation with the same solar noise)
 
                                             * type: boolean
                                             * unit: -
                                             * value: True/False
 
-                                        * seedmanipulation: Defines the value for the seed
+                                        * *seedmanipulation*: Defines the value for the seed
 
                                             * type: integer
                                             * unit: dimensionless
                                             * value: any (if 0 it is everytime another seed)
 
-                                        * solarinput: Indicates if solar insolation distribution from ``climlab.solar.insolation`` are used (recommended for 1D EBMs), which are called from ``lowEBMs.Packages.Functions.earthsystem.solarradiation``
+                                        * *solarinput*: Indicates if solar insolation distribution from ``climlab.solar.insolation`` are used (recommended for 1D EBMs), which are called from ``lowEBMs.Packages.Functions.earthsystem.solarradiation``
 
                                             * type: boolean
                                             * unit: -
                                             * value: True/False
 
-                                        * convfactor: Determines if a conversation factor is used to change the solar insolation to another unit than Watt/m^2
+                                        * *convfactor*: Determines if a conversation factor is used to change the solar insolation to another unit than Watt/m^2
 
                                             * type: float
                                             * unit: depending on the conversion applied
                                             * value: > 0
 
-                                        * timeunit: Determines which timeunit of the solarradiation shall be used for averaging (depending on how the *stepsize_of_integration* is chosen*)
+                                        * *timeunit*: Determines which timeunit of the solarradiation shall be used for averaging (depending on how the *stepsize_of_integration* is chosen*)
 
                                             * type:  string
                                             * unit: -
                                             * value: 'annualmean' (average annualy and give :math:`Q` as Watt/m^2), 'year', 'month', 'day', 'second' 
 
-                                        * orbital: Indicates if the solar insolation considers manipulation through orbital parameters over time (this will replace ``lowEBMs.Packages.Functions.earthsystem.solarradiation`` by ``lowEBMs.Packages.Functions.earthsystem.solarradiation_orbital``
+                                        * *orbital*: Indicates if the solar insolation considers manipulation through orbital parameters over time (this will replace ``lowEBMs.Packages.Functions.earthsystem.solarradiation`` by ``lowEBMs.Packages.Functions.earthsystem.solarradiation_orbital``
 
                                             * type: boolean
                                             * unit: -
                                             * value: True/False (if False, the year given in *orbitalyear* still matters) 
 
-                                        * orbitalyear: Determines for which year (in ky) the orbitalparameters are taken (orbital parameters are provided by ``climlab.solar.orbital`` which is based on Berger (1991) and Laskar (2004)
+                                        * *orbitalyear*: Determines for which year (in ky) the orbitalparameters are taken (orbital parameters are provided by ``climlab.solar.orbital`` which is based on Berger (1991) and Laskar (2004)
 
                                             * type: integer 
                                             * unit: kiloyear
