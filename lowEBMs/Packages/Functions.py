@@ -50,12 +50,16 @@ class flux_down:
     Because the models in this project don't include atmospheric layers (for now), the only radiative flux directed downwards is the radiative energy coming from the sun. This function is the same for all implemented models and is described in ``flux_down.insolation`` which allows several adjustments.
 
     .. autosummary::
-    :toctree:
+        :toctree:
+
+        insolation
+
+    **********
+    insolation
+    **********
 
     insolation
-
-    insolation
-    ^^^^^^^^^^
+    ==========
 
     .. autofunction:: lowEBMs.Packages.Functions.flux_down.insolation
 
