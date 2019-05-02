@@ -6,7 +6,7 @@ This module is structured through classes which distinguish the type of energy f
 The classes which define energy fluxes are:
 
 .. autosummary::
-    :toctree: stubs
+    :toctree:
 
     flux_down
     flux_up

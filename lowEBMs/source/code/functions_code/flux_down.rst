@@ -6,6 +6,5 @@ insolation
 ^^^^^^^^^^
 
 .. autofunction:: lowEBMs.Packages.Functions.flux_down.insolation
-    :show-inheritance:
     
 
