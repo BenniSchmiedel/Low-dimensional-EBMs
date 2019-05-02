@@ -53,7 +53,7 @@ class flux_down:
     """
     def insolation(funcparam):
         """
-        Function defining the absorbed solar insolation. Physically there is an important difference between the insolation, which is denoted as :math:`Q` and the absorbed insolation, which is the output of this function denoted as :math:`R_{down}`. The absorbed insolation in it's simplest form is written (as introduced in the :doc:`physical background <../../models>`): 
+        Function defining the absorbed solar insolation. Physically there is an important difference between the insolation, which is denoted as :math:`Q` and the absorbed insolation, which is the output of this function denoted as :math:`R_{down}`. The absorbed insolation in it's simplest form is written (as introduced in the :doc:`physical background <../models>`): 
 
         .. math::
 
@@ -95,7 +95,7 @@ class flux_down:
                                             * unit: Watt/m^2
                                             * value: any
 
-                                        * *albedo*: The name of albedo function which is called from ``lowEBMs.Packages.Functions.albedo`` to return the albedo value/distribution. See :doc:`class albedo <albedo>`.
+                                        * *albedo*: The name of albedo function which is called from ``lowEBMs.Packages.Functions.albedo`` to return the albedo value/distribution. See :doc:`class albedo <functions_code/albedo>`.
 
                                             * type: string
                                             * unit: -
