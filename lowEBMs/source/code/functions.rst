@@ -10,7 +10,7 @@ Here the full list of modules defined in ``lowEBMs.Packages.Functions``:
     :maxdepth: 2
 
     functions_code/flux_down
-    functions_code/flux_down
+    functions_code/flux_up
     functions_code/transfer
     functions_code/forcing
     functions_code/albedo
