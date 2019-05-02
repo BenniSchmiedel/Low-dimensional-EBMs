@@ -2,5 +2,5 @@
 albedo
 ******
 
-.. autoclass:: lowEBMs.Packages.Functions.flux_down
+.. autoclass:: lowEBMs.Packages.Functions.albedo
     :show-inheritance:
