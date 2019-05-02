@@ -45,7 +45,7 @@ from lowEBMs.Packages.Variables import Vars
 
 class flux_down:
     """
-    Class defining radiative fluxes directed downwards (towards the surface). 
+    Class defining radiative fluxes directed downwards. 
     
     Because the models in this project don't include atmospheric layers (for now), the only radiative flux directed downwards is the radiative energy coming from the sun. This function is the same for all implemented models and is described in ``flux_down.insolation`` which allows several adjustments.
 
@@ -53,13 +53,6 @@ class flux_down:
         :toctree:
 
         insolation
-
-    **********
-    insolation
-    **********
-
-    insolation
-    ==========
 
     .. autofunction:: lowEBMs.Packages.Functions.flux_down.insolation
 
@@ -246,10 +239,39 @@ class flux_down:
 
 class albedo:
     """
-    Class defining the albedo distribution 
+    Class defining the albedo distributions 
+
+    .. autosummary::
+        :toctree:
+
+        static
+        static_bud
+        dynamic_bud
+        smooth
+        dynamic_sel
+
+    .. autofunction:: lowEBMs.Packages.Functions.albedo.static
+
+    .. autofunction:: lowEBMs.Packages.Functions.albedo.static_bud
+
+    .. autofunction:: lowEBMs.Packages.Functions.albedo.dynamic_bud
+
+    .. autofunction:: lowEBMs.Packages.Functions.albedo.smooth
+
+    .. autofunction:: lowEBMs.Packages.Functions.albedo.dynamic_sel
 
     """
     def static(alpha):
+        """
+        Function defining a static albedo value
+
+        **Function-call arguments** \n
+    
+        :param float albedo:     the global albedo value
+
+                                * type: float
+                                * type: float
+        """
         return alpha
 
     def static_bud(alpha_p,border_1,border_2):
