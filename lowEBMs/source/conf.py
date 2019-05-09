@@ -51,7 +51,7 @@ autosectionlabel_prefix_document = True
 #autodoc_default_flags = ['members']
 autosummary_generate = True
 
-autodoc_docstring_signature = True
+autodoc_docstring_signature = False
 
 autodoc_mock_imports = ['matplotlib',
           'numpy',
