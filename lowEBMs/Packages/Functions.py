@@ -286,7 +286,7 @@ class albedo:
 
                                     * type: float
                                     * unit: dimensionless
-                                    * value: 0 :math:`\leq alpha :math:`\leq ` 1
+                                    * value: 0 :math:`\leq` alpha :math:`\leq ` 1
 
         :returns:                   The globally averaged albedo value
 
@@ -503,13 +503,10 @@ class albedo:
         .. math::
 
             T_g(\phi)=T(\phi)-0.0065\cdot Z (\phi) \\
-            alpha(\phi)= \left\{\\begin{array}{cc}
-            b(\phi)-0.009\cdot T_g(\phi) &  T_g(\phi)<283.15 \\
-            b(\phi)-2.548 & T_g(\phi)> 283.15
-            \end{array} \\right
-            
+            If\;T_g(\phi)<283.15:\quad \\alpha(\phi)=b(\phi)-0.009\cdot T_g(\phi)   \\
+            If\;T_g(\phi)> 283.15:\quad \\alpha(\phi)= b(\phi)-2.548 \\            
 
-        with the albedo value :math:`\\alpha(\phi)` and temperature :math:`T(\phi)` of latitude :math:`\phi`, the altitude weighted temperature :math:`T_g` with the zonal mean altitude :math:`Z(\phi)` and empirical constants :math:`b(\phi)`.
+        with the albedo value :math:`\\alpha(\phi)` (maximum of 0.85) and temperature :math:`T(\phi)` of latitude :math:`\phi`, the altitude weighted temperature :math:`T_g` with the zonal mean altitude :math:`Z(\phi)` and empirical constants :math:`b(\phi)`.
         
         **Function-call arguments** \n
     
@@ -519,9 +516,9 @@ class albedo:
 
                                                 * type: array(float)
                                                 * unit: Kelvin/m
-                                                * value: > 0 in Kelvin (standard 273.15)
+                                                * value: > 0 in Kelvin
     
-                                            * *b*: The ice-covered albedo value
+                                            * *b*: Empirical constant to estimate the albedo (provided by ``Configuration.add_sellersparameters``)
 
                                                 * type: float
                                                 * unit: dimensionless
@@ -530,7 +527,7 @@ class albedo:
 
         :returns:                   The latitudinal albedo distribution
 
-        :rtype:                     array(floats) (also possible in 0D)
+        :rtype:                     array(floats)
   
         """
         #Defining the albedo function defined by sellers (1969), with a linear dependency 
