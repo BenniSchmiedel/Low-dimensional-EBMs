@@ -7,7 +7,7 @@ The classes which define energy fluxes are:
 
 .. Important::
 
-    These contain the physical functions available for the EBM. To correctly run them they need parameters as input which are parsed by ``Configuration.importer()` but **have to be given manually into the configuration.ini**. To add a function, extend your *configuration.ini* with a [func] section and insert all parameters below which are given in documentation here of the specific function. As example see :doc:`Input <../input>`, where ``flux_down.insolation`` is added.
+    These contain the physical functions available for the EBM. To correctly run them they need parameters as input which are parsed by ``Configuration.importer()`` but **have to be given manually into the configuration.ini**. To add a function, extend your *configuration.ini* with a [func] section and insert all parameters below which are given in documentation here of the specific function. As example see :doc:`Input <../input>`, where ``flux_down.insolation`` is added.
 
 .. autosummary::
     :toctree:
@@ -58,6 +58,7 @@ class flux_down:
 
     .. autosummary::
         :toctree:
+        :nosignatures:
 
         insolation
 
@@ -267,7 +268,7 @@ class albedo:
 
     .. Note::
 
-        These are special functions which are used by ``flux_down.insolation``. In the *configuration.ini* they have to be inserted in its [func]-section with the parameters used (see :ref:`albedo <flux_down>`). 
+        These are special functions which are used by ``flux_down.insolation``. In the *configuration.ini* they have to be inserted in its [func]-section with the parameters used (see :ref:`albedo <albedo>`). 
 
     .. autofunction:: lowEBMs.Packages.Functions.albedo.static
 
@@ -299,7 +300,7 @@ class albedo:
 
     def static_bud(alpha_p,border_1,border_2):
         """
-        A static albedo distribution as used in :ref:`Budyko`. 
+        A static albedo distribution as used in :ref:`Budyko <Budyko>`. 
         
         The albedo distribution is described through three zones of albedo values.
 
@@ -356,7 +357,7 @@ class albedo:
     def dynamic_bud(T_1,T_2,alpha_0,alpha_1,alpha_2):
 
         """
-        A temperature dependant albedo distribution with three albedo regions. Approach as used in :ref:`Budyko` but complemented with albedo transition depending on temperature. 
+        A temperature dependant albedo distribution with three albedo regions. Approach as used in :ref:`Budyko <Budyko>` but complemented with albedo transition depending on temperature. 
         
         The albedo distribution is described through three zones of albedo values.
 
@@ -448,7 +449,7 @@ class albedo:
 
     def smooth(T_ref,alpha_f,alpha_i,steepness):
         """
-        A temperature dependant albedo distribution with tangens hyperbolicus transition. A common approach in climate modelling (for example see :ref:`North`)
+        A temperature dependant albedo distribution with tangens hyperbolicus transition. A common approach in climate modelling (for example see :ref:`North <North>`)
         
         The albedo of one latitude is defined by:
 
@@ -499,7 +500,7 @@ class albedo:
 
     def dynamic_sel(Z,b):
         """
-        A albedo distribution with linear temperature dependence. Approach as used by :ref:`Sellers`.
+        A albedo distribution with linear temperature dependence. Approach as used by :ref:`Sellers <Sellers>`.
         
         The albedo of one latitude is defined by:
 

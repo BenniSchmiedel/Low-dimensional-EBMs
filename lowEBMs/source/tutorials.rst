@@ -58,7 +58,7 @@ A 1D EBM equipped with:
 
 - a symmetric diffusive transfer energy flux according to Budyko
 
-The parameters of the tutorial-file are chosen to reproduce the EBM as it was introduced by :ref:`Budyko 1968 <Budyko>`.
+The parameters of the tutorial-file are chosen to reproduce the EBM as it was introduced by :ref:`Budyko (1968) <Budyko>`.
 
 
 1D EBM Budyko-type (temperature-dependant albedo)
@@ -73,7 +73,7 @@ A 1D EBM equipped with:
 
 - a symmetric diffusive transfer energy flux according to :ref:`Budyko <Budyko>`
 
-The parameters of the tutorial-file are chosen to reproduce the EBM as it was introduced by :ref:`Budyko 1968 <Budyko>`.
+The parameters of the tutorial-file are chosen to reproduce the EBM as it was introduced by :ref:`Budyko (1968) <Budyko>`.
 The temperature dependence of the albedo is defined in :doc:`Functions <code/functions>`.
 
 
@@ -84,12 +84,12 @@ A 1D EBM equipped with:
 
 - dynamic albedo distribution with a continuous temperature dependant albedo function |rarr| dynamic absorbed downward solar radiation flux  
 
-- upward radiation flux given by an edited Stefan-Boltzmann radiation law according to :ref:`Sellers <Sellers>`
+- upward radiation flux given by an edited Stefan-Boltzmann radiation law according to :ref:`Sellers (1969) <Sellers>`
 
 - transfer energy flux according to :ref:`Sellers <Sellers>`
 
 - temperature distributions corrected by the average latitudinal band elevation
 
-The parameters of the tutorial-file are chosen to reproduce the EBM as it was introduced by :ref:`Sellers 1969 <Sellers>`.
+The parameters of the tutorial-file are chosen to reproduce the EBM as it was introduced by :ref:`Sellers (1969) <Sellers>`.
 
 
