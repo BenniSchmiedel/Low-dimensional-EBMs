@@ -256,6 +256,7 @@ class albedo:
     Class defining the albedo distributions 
 
     .. autosummary::
+        :nosignatures:
         :toctree:
 
         static
@@ -264,7 +265,9 @@ class albedo:
         smooth
         dynamic_sel
 
-    These are special functions which are used by ``flux_down.insolation`` and in the *configuration.ini* they have to be inserted in its [func]-section with the parameters used (see :ref:`albedo`). 
+    .. Note::
+
+        These are special functions which are used by ``flux_down.insolation``. In the *configuration.ini* they have to be inserted in its [func]-section with the parameters used (see :ref:`albedo`). 
 
     .. autofunction:: lowEBMs.Packages.Functions.albedo.static
 
@@ -502,9 +505,9 @@ class albedo:
 
         .. math::
 
-            T_g(\phi)=T(\phi)-0.0065\cdot Z (\phi) \\
-            If\;T_g(\phi)<283.15:\quad \\alpha(\phi)=b(\phi)-0.009\cdot T_g(\phi)   \\
-            If\;T_g(\phi)> 283.15:\quad \\alpha(\phi)= b(\phi)-2.548 \\            
+            T_g(\phi)=T(\phi)-0.0065\cdot Z (\phi) \\\\
+            If\;T_g(\phi)<283.15:\quad \\alpha(\phi)=b(\phi)-0.009\cdot T_g(\phi)   \\\\
+            If\;T_g(\phi)> 283.15:\quad \\alpha(\phi)= b(\phi)-2.548
 
         with the albedo value :math:`\\alpha(\phi)` (maximum of 0.85) and temperature :math:`T(\phi)` of latitude :math:`\phi`, the altitude weighted temperature :math:`T_g` with the zonal mean altitude :math:`Z(\phi)` and empirical constants :math:`b(\phi)`.
         
