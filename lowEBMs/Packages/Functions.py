@@ -264,6 +264,8 @@ class albedo:
         smooth
         dynamic_sel
 
+    These are special functions which are used by ``flux_down.insolation`` and in the *configuration.ini* they have to be inserted in its [func]-section with the parameters used (see :ref:`albedo`). 
+
     .. autofunction:: lowEBMs.Packages.Functions.albedo.static
 
     .. autofunction:: lowEBMs.Packages.Functions.albedo.static_bud
@@ -273,9 +275,6 @@ class albedo:
     .. autofunction:: lowEBMs.Packages.Functions.albedo.smooth
 
     .. autofunction:: lowEBMs.Packages.Functions.albedo.dynamic_sel
-
-    These are special functions which are used by ``flux_down.insolation`` and in the *configuration.ini* they have to be inserted in its [func]-section with the parameters used (see :ref:`albedo`). 
-
     """
     def static(alpha):
         """
@@ -504,12 +503,13 @@ class albedo:
         .. math::
 
             T_g(\phi)=T(\phi)-0.0065\cdot Z (\phi) \\
-            
-            \alpha(\phi)= \left\{ b(\phi)-0.009\cdot T_g(\phi)\qquad & T_g(\phi)<283.15 \\
-            & b(\phi)-2.548 & T_g(\phi)> 283.15 \right 
+            alpha(\phi)= \left\{\begin{array}{cc}
+            b(\phi)-0.009\cdot T_g(\phi) &  T_g(\phi)<283.15 \\\\
+            b(\phi)-2.548 & T_g(\phi)> 283.15
+            \end{array} \right
             
 
-        with the albedo value :math:`\\alpha(\phi)` and temperature :math:`T(\phi)` of latitude :math:`\phi`, the temperature :math:`T_g` weighted with the latitudinal averaged altitude :math:`Z(\hpi)`
+        with the albedo value :math:`\\alpha(\phi)` and temperature :math:`T(\phi)` of latitude :math:`\phi`, the altitude weighted temperature :math:`T_g` with the latitudinal averaged altitude :math:`Z(\phi)` and empirical constants :math:`b(\phi)`.
 
             
 
