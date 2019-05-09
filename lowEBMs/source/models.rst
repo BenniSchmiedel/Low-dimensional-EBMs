@@ -45,14 +45,14 @@ If one is interested in the 0D case, the model equation above suffices to descri
     R_{down} & = (1-\alpha)\cdot Q \\
     R_{up} & = - \epsilon\sigma T^4
 
-with the albedo :math:`\alpha`, the solar insolation :math:`Q`, the Stefan-Boltzmann constant :math:`\sigma`, and the emissivity :math`\espilon`, the simplest form of an EBM is described by:
+with the albedo :math:`\alpha`, the solar insolation :math:`Q`, the Stefan-Boltzmann constant :math:`\sigma`, and the emissivity :math:`\espilon`, the simplest form of an EBM is described by:
 
 .. math::
 
     C \cdot \frac{dT}{dt} = R_{down} + R_{up} = (1-\alpha) \cdot Q - \epsilon\sigma T^4
 
 This equation can easily be solved analytically, but to observe the behaviour of the energy balance over time a numerical algorithm can be used to solve this equation.
-With the chapter :doc:`How to use <howtouse>` it will be investigated in detail how this project implements such an EBM. Additionally there is a tutorial given once you have :doc:`installed <installation>` this project.
+With the chapter :doc:`How to use <howtouse>` it will be investigated in detail how this project implements such an EBM. Additionally there is a demonstration file given once you have :doc:`installed <installation>` this project.
 
 .. Note::
 
@@ -79,7 +79,7 @@ Budyko-type model
 
 This EBM constructed by :doc:`Michail Budyko  <references>` uses various assumptions, supported by global earth observation data. The key features of this model are:
 
-- An empirically determined upward radiation flux with linear dependence on temperature, in its simplest form described by :math:`R_{up}=A+B\cdot T`.
+- An empirically determined upward radiation flux with linear dependence on temperature, in its simplest form described by :math:`R_{up}=- (A+B\cdot T)`.
 
 - An albedo seperated into three different regions with dependence on latitude (or by customization on temperature), with high albedo values towards the polar regions and low albedo values in the equatorial regions.
 

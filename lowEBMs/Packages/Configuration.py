@@ -340,4 +340,106 @@ def add_sellersparameters(config,importer,file,transfernumber,incomingnumber,sol
     configout['funccomp']['funcparam']['func'+str(incomingnumber)]=funcin
     return configout, paras
     
+def import_fitparameter(fitconfig_filename,*args,**kwargs):
+    
+    path=kwargs.get('path',None)
+    
+    #Importing the configfile.ini from path
+    if path == None:
+        possible_paths=['','Config/Parameterfit/','../Config/Parameterfit/']
+        for i in sys.path:
+            possible_paths.append(i+'/lowEBMs/Tutorials/Config/Parameterfit/')
+        for trypath in possible_paths:
+            exists = os.path.isfile(trypath+fitconfig_filename)
+            if exists:
+                path=trypath
+                print('Loading fit-configuration from: '+path)
+                fitconfigini=configparser.ConfigParser()  
+                fitconfigini.read(path+fitconfig_filename)    
+                break 
+            if trypath==possible_paths[-1]:
+                sys.exit('Error: File not found, please specify the path of the fitconfiguration.ini.  importer(filename,path= " ... ")')
+    else:
+    #Importing the configfile.ini
+        exists = os.path.isfile(path+fitconfig_filename)
+        if exists:
+            print('Loading fit-configuration from: '+path)
+            fitconfigini=configparser.ConfigParser()  
+            fitconfigini.read(path+fitconfig_filename) 
+        else:         
+            sys.exit('Error: File not found, please specify the path of the configuration.ini.  importer(filename,path= " ... ")')                  
+       
+    fitparams={}
+    for i in fitconfigini.sections():     
+        fitparams.update({str(i):dict()})
+        for j in fitconfigini.options(i):
+            fitparams[i].update({str(j):eval(fitconfigini[i][j])})
+    return fitparams
+
+def allocate_fitparameter(fitparameter_raw):
+    num_params=fitparameter_raw['parametersetup']['number_of_parameters']
+    num_cycles=fitparameter_raw['parametersetup']['number_of_cycles']
+    parametersetup=fitparameter_raw.pop('parametersetup')
+    parametersetup = dict((k,int(v)) for k,v in parametersetup.items())
+
+    fitparameter_raw_minus=fitparameter_raw
+    fitparameter_allocated=dict()
+    for i in list(fitparameter_raw_minus.keys()):
+        fitparameter_allocated.update({i:dict()})
+        for j in list(fitparameter_raw_minus[i].keys()):
+            paramrange=np.linspace(fitparameter_raw_minus[i][j][0],
+                                   fitparameter_raw_minus[i][j][1],num_cycles)
+            fitparameter_allocated[i].update({j:paramrange})
+    return fitparameter_allocated, parametersetup
+
+def write_fitparameter(config,fitparameter,parametersetup):
+    num_params=parametersetup['number_of_parameters']
+    num_cycles=parametersetup['number_of_cycles']
+
+    #for s in range(num_cycles):
+    paralleldict=dict()
+    for key in list(fitparameter.keys()):
+        paralleldict.update({key:dict()})
+        for paramkey in list(fitparameter[key].keys()):
+            paralleldict[key].update({paramkey:dict()})
+    key=list(fitparameter.keys())  
+    paramkey=[]
+    for l in key:
+        paramkey.append(list(fitparameter[l].keys()))
+    for n in range(num_cycles):
+        for m in range(num_cycles):
+            #for o in range(num_cycles):
+            x=paralleldict[key[1]]
+            if n==0 and m==0:
+                x.update({paramkey[1][0]:[]})
+            x.update({paramkey[1][0]:np.append(x.get(paramkey[1][0]),
+                                                 fitparameter[key[1]][paramkey[1][0]][m])})
+            y=paralleldict[key[2]]
+            if n==0 and m==0:
+                y.update({paramkey[2][0]:[]})
+            y.update({paramkey[2][0]:np.append(y.get(paramkey[2][0]),
+                                                 fitparameter[key[2]][paramkey[2][0]][n])})
+            paralleldict.update({key[2]:y})
+
+            """z=paralleldict[key[0]]
+            if n==0 and m==0:
+                z.update({paramkey[0][0]:[]})
+            z.update({paramkey[0][0]:np.append(z.get(paramkey[0][0]),
+                                                 fitparameter[key[0]][paramkey[0][0]][n])})
+            paralleldict.update({key[0]:z})"""
+
+    eq=paralleldict.pop('eqparam')
+    func=paralleldict
+    for eqkey in list(eq.keys()):
+        if bool(eq)==False:
+            break
+        config['eqparam'][eqkey]=eq[eqkey]
+        print('hi')
+    for key in list(func.keys()):
+        for paramkey in list(func[key].keys()):
+            config['funccomp']['funcparam'][key][paramkey]=func[key][paramkey]
+    #for key in parallel
+    #    config['funccomp']['funcparam'][funcnumber][parametername]=parameter
+    
+    return config
 
