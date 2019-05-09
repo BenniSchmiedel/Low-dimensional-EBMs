@@ -503,46 +503,30 @@ class albedo:
         .. math::
 
             T_g(\phi)=T(\phi)-0.0065\cdot Z (\phi) \\
-            alpha(\phi)= \left\{\begin{array}{cc}
-            b(\phi)-0.009\cdot T_g(\phi) &  T_g(\phi)<283.15 \\\\
+            alpha(\phi)= \left\{\\begin{array}{cc}
+            b(\phi)-0.009\cdot T_g(\phi) &  T_g(\phi)<283.15 \\
             b(\phi)-2.548 & T_g(\phi)> 283.15
-            \end{array} \right
+            \end{array} \\right
             
 
-        with the albedo value :math:`\\alpha(\phi)` and temperature :math:`T(\phi)` of latitude :math:`\phi`, the altitude weighted temperature :math:`T_g` with the latitudinal averaged altitude :math:`Z(\phi)` and empirical constants :math:`b(\phi)`.
-
-            
-
-        with the albedo value :math:`$\\alpha(\phi)$` and temperature :math:`$T(\phi)$` of latitude :math:`$\phi$`, an ice-covered/ice-free albedo value :math:`$\\alpha_i / \\alpha_f$`, the reference temperature of transition :math:`$T_{ref}$` and the steepness of the transition :math:`$\gamma$`.
-
+        with the albedo value :math:`\\alpha(\phi)` and temperature :math:`T(\phi)` of latitude :math:`\phi`, the altitude weighted temperature :math:`T_g` with the zonal mean altitude :math:`Z(\phi)` and empirical constants :math:`b(\phi)`.
         
         **Function-call arguments** \n
     
-        :param array albedoparam:       albedo distribution parameters *[T_ref,alpha_f,alpha_i,steepness]*
+        :param array albedoparam:       albedo distribution parameters *[Z,b]*
                 
-                                            * *T_ref*: Reference transition temperature from ice-free to ice-covered albedo
+                                            * *Z*: Zonal mean altitude (provided by ``Configuration.add_sellersparameters``)
 
-                                                * type: float
-                                                * unit: Kelvin
+                                                * type: array(float)
+                                                * unit: Kelvin/m
                                                 * value: > 0 in Kelvin (standard 273.15)
     
-                                            * *alpha_i*: The ice-covered albedo value
+                                            * *b*: The ice-covered albedo value
 
                                                 * type: float
                                                 * unit: dimensionless
                                                 * value: 0 :math:`$\leq$` alpha_i :math:`$\leq$` 1 (standard 0.7)
     
-                                            * *alpha_f*: The ice-free albedo value
-
-                                                * type: float
-                                                * unit: dimensionless
-                                                * value: 0 :math:`$\leq$` alpha_f :math:`$\leq$` 1 (standard 0.3)
-
-                                            * *steepness*: The steepness of albedo transition (:math:`$\gamma$`)
-
-                                                * type: float
-                                                * unit: 1/Kelvin
-                                                * value: 0 :math:`$\leq$` steepness :math:`$\leq$` 1 (standard 0.3)
 
         :returns:                   The latitudinal albedo distribution
 
