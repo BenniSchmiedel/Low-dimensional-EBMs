@@ -103,5 +103,5 @@ If you now want to add functions you can write them into the configfile with the
 
 A detailed description of the function parameters is given along with the implementation of the :doc:`Functions <code/functions>`.
 
-With this content the **0DEBM_Config.ini** is complete and the OD-EBM can be run the way it is described in :doc:`How to use <howtouse>`.
+With this content the **EBM0D_simple_config.ini** is complete and the OD-EBM can be run the way it is described in :doc:`How to use <howtouse>`.
 
