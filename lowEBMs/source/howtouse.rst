@@ -30,7 +30,7 @@ The input will be created manually and is stored in a **configuration.ini** file
 .. Important::
     The configuration.ini file will provide the physical sense of the EBM!
 
-For now you can simply use the **0DEBM_simple_config.ini** file which imports a 0D EBM with a model run over 10 year and a stepsize of integration of 1 day.
+For now you can simply use the **EBM0D_simple_config.ini** file which imports a 0D EBM with a model run over 10 year and a stepsize of integration of 1 day.
 To import this file use the ``importer``-function::
 
     configuration=importer('filename',path='path/to/your/configuration.ini')
@@ -43,7 +43,7 @@ To import this file use the ``importer``-function::
 
     eq=configuration['eqparam']
     rk4=configuration['rk4input']
-    fun=configuration['funccomb']
+    fun=configuration['funccomp']
     ini=configuration['initials']
 
 These are four dictionaries which contain the information needed for the base equation, the runge-kutta algorithm, the functions used and the initial conditions.
@@ -77,7 +77,7 @@ and then call the desired variables by their name, for example::
 
 For detailed information about output variables see section :doc:`output <output>`. 
 
-If you look at the output of the algorithm (initialized with the **0DEBM_Config.ini** file) and plot the global temperature over time with::
+If you look at the output of the algorithm (initialized with the **EBM0D_simple_config.ini** file) and plot the global temperature over time with::
 
     plt.plot(np.array(outputdata[0])/stepsize_of_integration/365,outputdata[2])
     plt.xlabel('time [years]')
@@ -111,14 +111,14 @@ The summary of what you need to get the model running. Import packages::
 
 and run the specific functions::
 
-    configuration=importer('filename',path='path/to/your/configuration.ini')
+    configuration=importer('EBM0D_simple_config.ini')
     eq=configuration['eqparam']
     rk4=configuration['rk4input']
-    fun=configuration['funccomb']
+    fun=configuration['funccomp']
     variable_importer(configuration)
     outputdata=rk4alg(model_equation,eq,rk4,fun)
 
-This demonstration also exists as a jupyter notebook in the *'Tutorials/'* directive of this project (*EMB0D_simple.ipynb*).
+This demonstration also exists as a jupyter notebook in the *'Tutorials/'* directive of this project (*EBM0D_simple.ipynb*).
 
 
 

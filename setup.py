@@ -21,5 +21,7 @@ setuptools.setup(name='lowEBMs',
           'xarray',
           'attrdict',
       ],
+      classifiers=[
+    'Development Status :: 3 - Alpha'],
       include_package_data=True,
       zip_safe=False)
