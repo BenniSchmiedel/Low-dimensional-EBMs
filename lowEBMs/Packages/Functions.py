@@ -5,6 +5,10 @@ This module is structured through classes which distinguish the type of energy f
 
 The classes which define energy fluxes are:
 
+.. Important::
+
+These contain the physical functions available for the EBM. To correctly run them they need parameters as input which are parsed by ``Configuration.importer()` but **have to be given manually into the configuration.ini**. To add a function, extend your *configuration.ini* with a [func] section and insert all parameters below which are given in documentation here of the specific function. As example see :doc:`Input <../input>`, where ``flux_down.insolation`` is added.
+
 .. autosummary::
     :toctree:
 
@@ -28,6 +32,9 @@ Additionally defined are tools for evaluation or simplification in the class:
 
     tools
 
+
+
+     
 
 """
 
@@ -101,6 +108,8 @@ class flux_down:
                                             * type: float
                                             * unit: Watt/m^2
                                             * value: any
+
+                                       ..  _albedo:
 
                                         * *albedo*: The name of albedo function which is called from ``lowEBMs.Packages.Functions.albedo`` to return the albedo value/distribution. See :doc:`class albedo <functions_code/albedo>`.
 
@@ -265,6 +274,8 @@ class albedo:
 
     .. autofunction:: lowEBMs.Packages.Functions.albedo.dynamic_sel
 
+    These are special functions which are used by ``flux_down.insolation`` and in the *configuration.ini* they have to be inserted in its [func]-section with the parameters used (see :ref:`albedo`). 
+
     """
     def static(alpha):
         """
@@ -272,14 +283,60 @@ class albedo:
 
         **Function-call arguments** \n
     
-        :param float albedo:     the global albedo value
+        :param float alpha:     the globally averaged albedo value
 
-                                * type: float
-                                * type: float
+                                    * type: float
+                                    * unit: dimensionless
+                                    * value: 0 :math:`$\leq$ alpha :math:`$\leq$` 1
+
+        :returns:                   The globally averaged albedo value
+
+        :rtype:                     float       
         """
         return alpha
 
     def static_bud(alpha_p,border_1,border_2):
+        """
+        A static albedo distribution as used in :ref:`Budyko`. 
+        
+        The albedo distribution is described through three zones of albedo values.
+
+        +------------------------+-----------------------------------------------+
+        | Latitude of transition | Albedo value alhpa                            | 
+        +------------------------+-----------------------------------------------+
+        | < *border_1*           | low albedo zone: alpha=*alpha_p*              |
+        +------------------------+-----------------------------------------------+
+        | > *border_1*           | intermediate zone: alpha=*alpha_p*+0.18       |
+        +------------------------+-----------------------------------------------+
+        | > *border_1*           | high albedo zone: alpha=*alpha_p*+0.3         |
+        +------------------------+-----------------------------------------------+
+
+        **Function-call arguments** \n
+    
+        :param array albedoparam:         albedo distribution parameters *[alpha_p,border_1,border_2]*
+                
+                                                * *alpha_p*: The low albedo zone value
+
+                                                    * type: float
+                                                    * unit: dimensionless
+                                                    * value: 0 :math:`$\leq$` albedo :math:`$\leq$` 1 (standard 0.3)
+        
+                                                * *border_1*: Latitude of low to intermediate albedo zone transition
+
+                                                    * type: float
+                                                    * unit: Unit of latitude (degree)
+                                                    * value: 0 :math:`$\leq$` border_1 :math:`$\leq$` 90 (standard 60)
+        
+                                                * *border_2*: Latitude of intermediate to high albedo zone transition
+
+                                                    * type: float
+                                                    * unit: Unit of latitude (degree)
+                                                    * value: 0 :math:`$\leq$` border_2 :math:`$\leq$` 1 (standard 70)
+
+        :returns:                   The latitudinal albedo distribution
+
+        :rtype:                     array(floats)  
+        """
         #Albedo function as used in budyko (1969), with  2albedo transitions fixed to latitudes (border_1, border_2)
         #and fixed albedos, with intermediate case +0.18 and arctic case +0.3
         
@@ -295,6 +352,62 @@ class albedo:
         return albedo
 
     def dynamic_bud(T_1,T_2,alpha_0,alpha_1,alpha_2):
+
+        """
+        A temperature dependant albedo distribution with three albedo regions. Approach as used in :ref:`Budyko` but complemented with albedo transition depending on temperature. 
+        
+        The albedo distribution is described through three zones of albedo values.
+
+        +---------------------------+-----------------------------------------------+
+        | Temperature of transition | Albedo value alhpa                            | 
+        +---------------------------+-----------------------------------------------+
+        | > *T_1*                   | low albedo zone: alpha=*alpha_0*              |
+        +---------------------------+-----------------------------------------------+
+        | < *T_1* & > *T_2*         | intermediate zone: alpha=*alpha_1*            |
+        +---------------------------+-----------------------------------------------+
+        | < *T_2*                   | high albedo zone: alpha=*alpha_2*             |
+        +---------------------------+-----------------------------------------------+
+
+        **Function-call arguments** \n
+    
+        :param array albedoparam:       albedo distribution parameters *[T_1,T_2,alpha_0,alpha_1,alpha_2]*
+                
+                                            * *T_1*: Temperature of low to intermediate albedo zone transition
+
+                                                * type: float
+                                                * unit: Kelvin
+                                                * value: > 0 in Kelvin (standard 273.15)
+    
+                                            * *T_2*: Temperature of intermediate to high albedo zone transition
+
+                                                * type: float
+                                                * unit: Kelvin
+                                                * value: > 0 in kelvin (standard 263.15)
+    
+                                            * *alpha_0*: The low albedo zone value
+
+                                                * type: float
+                                                * unit: dimensionless
+                                                * value: 0 :math:`$\leq$` alpha_0 :math:`$\leq$` 1 (standard 0.32)
+
+                                            * *alpha_1*: The intermediate albedo zone value
+
+                                                * type: float
+                                                * unit: dimensionless
+                                                * value: 0 :math:`$\leq$` alpha_1 :math:`$\leq$` 1 (standard 0.5)
+
+                                            * *alpha_2*: The high albedo zone value
+
+                                                * type: float
+                                                * unit: dimensionless
+                                                * value: 0 :math:`$\leq$` alpha_2 :math:`$\leq$` 1 (standard 0.62)
+
+        :returns:                   The latitudinal albedo distribution
+
+        :rtype:                     array(floats)
+  
+        """        
+
         #Defining a 3State albedo function, with temperature dependant albedo transitions at T_1 (alpha_0 to 
         #alpha_1) and T_2 (alpha_1 to alpha_2), with alpha_0 ice free, alpha_1 intermediate and alpha_2 ice
         
@@ -332,12 +445,109 @@ class albedo:
         return np.array(albedo)
 
     def smooth(T_ref,alpha_f,alpha_i,steepness):
+        """
+        A temperature dependant albedo distribution with tangens hyperbolicus transition. A common approach in climate modelling (for example see :ref:`North`)
+        
+        The albedo of one latitude is defined by:
+
+        .. math::
+
+            \\alpha(\phi)=\\alpha_i-\\frac{1}{2}(\\aplha_i-\\alpha_f)\cdot (1+tanh(\\gamma*(T(\phi)-T_{ref})))
+
+        with the albedo value :math:`$\\alpha(\phi)$` and temperature :math:`$T(\phi)$` of latitude :math:`$\phi$`, an ice-covered/ice-free albedo value :math:`$\\alpha_i / \\alpha_f$`, the reference temperature of transition :math:`$T_{ref}$` and the steepness of the transition :math:`$\gamma$`.
+
+        
+        **Function-call arguments** \n
+    
+        :param array albedoparam:       albedo distribution parameters *[T_ref,alpha_f,alpha_i,steepness]*
+                
+                                            * *T_ref*: Reference transition temperature from ice-free to ice-covered albedo
+
+                                                * type: float
+                                                * unit: Kelvin
+                                                * value: > 0 in Kelvin (standard 273.15)
+    
+                                            * *alpha_i*: The ice-covered albedo value
+
+                                                * type: float
+                                                * unit: dimensionless
+                                                * value: 0 :math:`$\leq$` alpha_i :math:`$\leq$` 1 (standard 0.7)
+    
+                                            * *alpha_f*: The ice-free albedo value
+
+                                                * type: float
+                                                * unit: dimensionless
+                                                * value: 0 :math:`$\leq$` alpha_f :math:`$\leq$` 1 (standard 0.3)
+
+                                            * *steepness*: The steepness of albedo transition (:math:`$\gamma$`)
+
+                                                * type: float
+                                                * unit: 1/Kelvin
+                                                * value: 0 :math:`$\leq$` steepness :math:`$\leq$` 1 (standard 0.3)
+
+        :returns:                   The latitudinal albedo distribution
+
+        :rtype:                     array(floats) (also possible in 0D)
+  
+        """
         #Defining a smooth abledotransition from an icefree albedo alpha_f to an icecovered albedo alpha_i
         #with the steepness gamma and the reference temperature for the transition T_ref, refering to north
         albedo=alpha_i-1/2*(alpha_i-alpha_f)*(1+np.tanh(steepness*(Vars.T-T_ref)))
         return albedo
 
     def dynamic_sel(Z,b):
+        """
+        A albedo distribution with linear temperature dependence. Approach as used by :ref:`Sellers`.
+        
+        The albedo of one latitude is defined by:
+
+        .. math::
+            T_g(\phi)=T(\phi)-0.0065\cdot Z \\
+            
+            \alpha(\phi)= \left\{ b(\phi)-0.009\cdot T_g(\phi)\qquad & T_g(\phi)<283.15 \\
+            & b(\phi)-2.548 & T_g(\phi)> 283.15 \right 
+            
+
+        where the albedo value :math:`$\\alpha(\phi)$` and temperature :math:`$T(\phi)$` of latitude :math:`$\phi$`
+
+            
+
+        with the albedo value :math:`$\\alpha(\phi)$` and temperature :math:`$T(\phi)$` of latitude :math:`$\phi$`, an ice-covered/ice-free albedo value :math:`$\\alpha_i / \\alpha_f$`, the reference temperature of transition :math:`$T_{ref}$` and the steepness of the transition :math:`$\gamma$`.
+
+        
+        **Function-call arguments** \n
+    
+        :param array albedoparam:       albedo distribution parameters *[T_ref,alpha_f,alpha_i,steepness]*
+                
+                                            * *T_ref*: Reference transition temperature from ice-free to ice-covered albedo
+
+                                                * type: float
+                                                * unit: Kelvin
+                                                * value: > 0 in Kelvin (standard 273.15)
+    
+                                            * *alpha_i*: The ice-covered albedo value
+
+                                                * type: float
+                                                * unit: dimensionless
+                                                * value: 0 :math:`$\leq$` alpha_i :math:`$\leq$` 1 (standard 0.7)
+    
+                                            * *alpha_f*: The ice-free albedo value
+
+                                                * type: float
+                                                * unit: dimensionless
+                                                * value: 0 :math:`$\leq$` alpha_f :math:`$\leq$` 1 (standard 0.3)
+
+                                            * *steepness*: The steepness of albedo transition (:math:`$\gamma$`)
+
+                                                * type: float
+                                                * unit: 1/Kelvin
+                                                * value: 0 :math:`$\leq$` steepness :math:`$\leq$` 1 (standard 0.3)
+
+        :returns:                   The latitudinal albedo distribution
+
+        :rtype:                     array(floats) (also possible in 0D)
+  
+        """
         #Defining the albedo function defined by sellers (1969), with a linear dependency 
         
         #Shift of the temperature with the elevation to gain surface temperatures
@@ -779,11 +989,11 @@ class earthsystem:
         #Meriwind_Selparam=[a]"""
         
         if parallelization==True:
-            v=np.array([[0]*len(Vars.Lat2)]*number_of_parallels)
+            v=np.array([[0]*len(Vars.Lat2)]*number_of_parallels,dtype=float)
             T_av=np.average(np.abs(Vars.tempdif),weights=(2*np.pi*re*cosd(Vars.Lat2)),axis=1)
 
         else: 
-            v=np.array([0]*len(Vars.Lat2))
+            v=np.array([0]*len(Vars.Lat2),dtype=float)
 
             T_av=np.average(np.abs(Vars.tempdif),weights=(2*np.pi*re*cosd(Vars.Lat2)))
         #Globaly averaged temperature difference
@@ -808,7 +1018,9 @@ class earthsystem:
                         v[l,j]=-a[j]*(Vars.tempdif[l,j]+T_av[l])
         else:
             for j in range(k):
+                
                 v[j]=-a[j]*(Vars.tempdif[j]-T_av)
+                    
             for j in range(k,len(v)):
                 v[j]=-a[j]*(Vars.tempdif[j]+T_av)
         return v
