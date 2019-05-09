@@ -35,7 +35,7 @@ import numpy as np
 from climlab import constants as const
 from climlab.solar.insolation import daily_insolation
 from climlab.solar.orbital import OrbitalTable
-#from climlab.solar.orbital import LongOrbitalTable
+from climlab.solar.orbital import LongOrbitalTable
 import scipy
 import builtins
 import time
@@ -223,16 +223,21 @@ class flux_down:
             #with orbital variations (if False by default present day)
             if orbital==True:
                 if Runtime_Tracker % 4*data_readout == 0:
-                    Vars.Solar=earthsystem.solarradiation_orbital(convfactor,orbitalyear)
+                    Vars.Solar=earthsystem.solarradiation_orbital(convfactor,orbitalyear,timeunit)
                     Vars.Read[8][int(Runtime_Tracker/(4*data_readout))]=Vars.Solar
             else:
                 if Runtime_Tracker==0:
                     Vars.Solar=earthsystem.solarradiation(convfactor,timeunit,orbitalyear)
+                    if parallelization==True:
+                        Vars.Solar=np.array([Vars.Solar]*(number_of_parallels))
         #total solar insolation with possible offset
         Q_total=Vars.Solar+dQ
+            
         
         #Equation of incoming radiation
-        R_in=(Q_total+z)*factor_solar*(1-lna(alpha))
+        #print(Q_total.shape,alpha.shape,type(Q_total),type(alpha),factor_solar.shape)
+        
+        R_in=np.transpose((np.transpose(Q_total)+z)*factor_solar*(1-np.transpose(alpha)))
         if Runtime_Tracker % 4*data_readout == 0:    #Only on 4th step (due to rk4)
             Vars.Read[10][int(Runtime_Tracker/(4*data_readout))]=R_in
         return R_in
@@ -294,15 +299,37 @@ class albedo:
         #alpha_1) and T_2 (alpha_1 to alpha_2), with alpha_0 ice free, alpha_1 intermediate and alpha_2 ice
         
         #Creating array and filling with values, depending on the current latitudinal temperature
-        albedo=[0]*len(Vars.T)
-        for j in range(len(Vars.T)):
-            if Vars.T[j]>T_1:
-                albedo[j]=alpha_0
-            if Vars.T[j]<=T_1:
-                albedo[j]=alpha_1
-            if Vars.T[j]<=T_2:
-                albedo[j]=alpha_2
-        return albedo
+        if parallelization==True:
+            
+            albedo=np.array([[0]*len(Vars.Lat)]*number_of_parallels)
+            if len(T_1)==number_of_parallels:  
+                for i in range(number_of_parallels):          
+                    for j in range(len(Vars.Lat)):
+                        if Vars.T[i,j]>T_1[i]:
+                            albedo[i,j]=alpha_0[i]
+                        if Vars.T[i,j]<=T_1[i]:
+                            albedo[i,j]=alpha_1[i]
+                        if Vars.T[j]<=T_2[i]:
+                            albedo[i,j]=alpha_2[i]
+            else:
+                for i in range(number_of_parallels):          
+                    for j in range(len(Vars.Lat)):
+                        if Vars.T[i,j]>T_1:
+                            albedo[i,j]=alpha_0
+                        if Vars.T[i,j]<=T_1:
+                            albedo[i,j]=alpha_1
+                        if Vars.T[j]<=T_2:
+                            albedo[i,j]=alpha_2
+        else:
+            albedo=[0]*len(Vars.Lat)
+            for j in range(len(Vars.Lat)):
+                if Vars.T[j]>T_1:
+                    albedo[j]=alpha_0
+                if Vars.T[j]<=T_1:
+                    albedo[j]=alpha_1
+                if Vars.T[j]<=T_2:
+                    albedo[j]=alpha_2
+        return np.array(albedo)
 
     def smooth(T_ref,alpha_f,alpha_i,steepness):
         #Defining a smooth abledotransition from an icefree albedo alpha_f to an icecovered albedo alpha_i
@@ -315,17 +342,38 @@ class albedo:
         
         #Shift of the temperature with the elevation to gain surface temperatures
         Tg=Vars.T-0.0065*Z
-        
+
         #creating and filling array, depending on the current latitudinal temperature
-        albedo=[0]*len(Tg)
-        for i in range(len(Tg)):
-            if Tg[i]<283.16:
-                albedo[i]=b[i]-0.009*Tg[i]
+        if parallelization==True:
+            albedo=np.array([[0]*len(Vars.Lat)]*number_of_parallels)
+            if len(Z)==number_of_parallels:  
+                for i in range(number_of_parallels):                
+                    for j in range(len(Vars.Lat)):
+                        if Tg[i,j]<283.16:
+                            albedo[i,j]=b[i,j]-0.009*Tg[i,j]
+                        else:
+                            albedo[i,j]=b[i,j]-2.548
+                        if albedo[i,j]>0.85:
+                            albedo[i,j]=0.85
             else:
-                albedo[i]=b[i]-2.548
-            if albedo[i]>0.85:
-                albedo[i]=0.85
-        return albedo
+                for i in range(number_of_parallels):                
+                    for j in range(len(Vars.Lat)):
+                        if Tg[i,j]<283.16:
+                            albedo[i,j]=b[j]-0.009*Tg[i,j]
+                        else:
+                            albedo[i,j]=b[j]-2.548
+                        if albedo[i,j]>0.85:
+                            albedo[i,j]=0.85
+        else:
+            albedo=[0]*len(Tg)
+            for j in range(len(Tg)):
+                if Tg[j]<283.16:
+                    albedo[j]=b[j]-0.009*Tg[j]
+                else:
+                    albedo[j]=b[j]-2.548
+                if albedo[j]>0.85:
+                    albedo[j]=0.85
+        return np.array(albedo)
 
 class flux_up:
     """ 
@@ -338,7 +386,7 @@ class flux_up:
         #R_outbudncparam=[A,B]
         list_parameters=list(funcparam.values())
         A,B=list_parameters
-        R_out=-(A+B*(Vars.T-273.15))
+        R_out=np.transpose(-(A+B*(np.transpose(Vars.T)-273.15)))
         if Runtime_Tracker % 4*data_readout == 0:    #Only on 4th step (due to rk4)
             Vars.Read[11][int(Runtime_Tracker/(4*data_readout))]=R_out
         return R_out
@@ -348,7 +396,7 @@ class flux_up:
         #R_outbudcparam=[A,B,A1,B1,f_c]
         list_parameters=list(funcparam.values())
         A,B,A1,B1,f_c=list_parameters
-        R_out=-(A+B*(np.array(Vars.T)-273.15)-(A1+B1*(np.array(Vars.T)-273.15))*f_c)
+        R_out=np.transpose(-(A+B*(np.transpose(Vars.T)-273.15)-(A1+B1*(np.transpose(Vars.T)-273.15))*f_c))
         if Runtime_Tracker % 4*data_readout == 0:    #Only on 4th step (due to rk4)
             Vars.Read[11][int(Runtime_Tracker/(4*data_readout))]=R_out
         return R_out
@@ -358,7 +406,7 @@ class flux_up:
         #R_outplanckparam=[grey,sig]
         list_parameters=list(funcparam.values())
         grey,sig=list_parameters
-        R_out=-(grey*sig*Vars.T**4)
+        R_out=np.transpose(-(grey*sig*np.transpose(Vars.T**4)))
         if Runtime_Tracker % 4*data_readout == 0:    #Only on 4th step (due to rk4)
             Vars.Read[11][int(Runtime_Tracker/(4*data_readout))]=R_out
         return R_out
@@ -368,7 +416,7 @@ class flux_up:
         #R_outselparam=[sig,grey,gamma,m]"""
         list_parameters=list(funcparam.values())
         m,sig,gamma,grey=list_parameters
-        R_out=-grey*sig*Vars.T**4*(1-m*np.tanh(gamma*Vars.T**6))
+        R_out=np.transpose(-grey*sig*np.transpose(Vars.T)**4*(1-m*np.tanh(gamma*np.transpose(Vars.T)**6)))
         if Runtime_Tracker % 4*data_readout == 0:    #Only on 4th step (due to rk4)
             Vars.Read[11][int(Runtime_Tracker/(4*data_readout))]=R_out
         return R_out
@@ -407,8 +455,8 @@ class transfer:
             #Parameters for different transfer Fluxes+their calculation 
 
             #WV_Selparam_keys=['K_wv','g','a','eps','p','e0','L','Rd','dy','dp','factor_wv','factor_kwv']
-            WV_Selparam=[K_wv,g,a,eps,p,e0,L,Rd,dy,dp,factor_wv,factor_kwv]   
-            SH_airSelparam=[K_h,g,a,dy,cp,dp,factor_air,factor_kair]
+            WV_Selparam=[K_wv,g,eps,p,e0,L,Rd,dy,dp,factor_wv,factor_kwv]   
+            SH_airSelparam=[K_h,g,dy,cp,dp,factor_air,factor_kair]
             SH_oceanSelparam=[K_o,dz,l_cover,dy,cp_w,dens_w,factor_oc]
             
             #calculating the current temperature differences and wind patterns
@@ -419,7 +467,7 @@ class transfer:
             Lc=transfer.watervapour_sel(WV_Selparam)
             C=transfer.sensibleheat_air_sel(SH_airSelparam)
             F=transfer.sensibleheat_ocean_sel(SH_oceanSelparam)
-            P=Lc+C+F                  
+            P=Lc+C+F              
             
             #calculation of gridparameters (for 1st step only)
             if Runtime_Tracker==0:
@@ -427,8 +475,17 @@ class transfer:
                 Vars.Area=earthsystem.area_latitudes(re)
                 
             #Converting Arrays to two arrays with an one element shift
-            P1=np.insert(P,0,0)                       
-            P0=np.append(P,0)
+            if parallelization==True: 
+                P1=[0]*number_of_parallels
+                P0=[0]*number_of_parallels
+                for i in range(number_of_parallels):
+                    P_1=np.insert(P[i],0,0)                     
+                    P_0=np.append(P[i],0)
+                    P1[i]=P_1
+                    P0[i]=P_0            
+            else:
+                P1=np.insert(P,0,0)                       
+                P0=np.append(P,0)
             l1=np.insert(Vars.latlength,0,0)
             l0=np.append(Vars.latlength,0)
             
@@ -449,24 +506,35 @@ class transfer:
         #Transfer flow of water vapour across latitudinal bands
         #WV_Selparam=[K_wv,g,a,eps,p,e0,L,Rd,dy,dp]
         #list_parameters=list(funcparam.values())
-        K_wv,g,a,eps,p,e0,L,Rd,dy,dp,factor_wv,factor_kwv=funcparam
+        K_wv,g,eps,p,e0,L,Rd,dy,dp,factor_wv,factor_kwv=funcparam
         
         #calculating the specific humidity q and its latitudinal difference dq
         q=earthsystem.specific_saturation_humidity_sel(e0,eps,L,Rd,p)
         dq=earthsystem.humidity_difference(e0,eps,L,Rd,p)
-        
+        if parallelization==True:
         #equation of the water vapour energy transfer
-        c=L*(Vars.meridional*q-K_wv*factor_kwv*(dq/(dy)))*((dp*const.mb_to_Pa)/g)*factor_wv
-        return c
+            a1=Vars.meridional*q
+            a2=K_wv*factor_kwv*dq/dy
+            a3=dp*const.mb_to_Pa/g
+            cL=L*(a1-a2)*a3*factor_wv
+        else:
+            cL=L*(Vars.meridional*q-K_wv*factor_kwv*dq/dy)*(dp*const.mb_to_Pa/g)*factor_wv
+        return cL
 
     def sensibleheat_air_sel(funcparam):
         #Transfer flux due to atmosphere sensible heat transfer across latitudinal bands
         #SH_airSelparam=[K_h,g,a,dy,cp,dp]
         #list_parameters=list(funcparam.values())
-        K_h,g,a,dy,cp,dp,factor_air,factor_kair=funcparam
+        K_h,g,dy,cp,dp,factor_air,factor_kair=funcparam
         
         #equation of the atmosphere sensible heat transfer, with dependence on Temperature and Temperature difference
-        C=(Vars.meridional*Vars.T[:-1]-K_h**factor_kair*(Vars.tempdif/(dy)))*(cp*dp*const.mb_to_Pa/g)*factor_air
+        if parallelization==True:
+            a1=Vars.meridional*Vars.T[:,:-1]
+            a2=K_h**factor_kair*Vars.tempdif/dy
+            a3=cp*dp*const.mb_to_Pa/g
+            C=(a1-a2)*a3*factor_air
+        else:
+            C=(Vars.meridional*Vars.T[:-1]-K_h**factor_kair*(Vars.tempdif/(dy)))*(cp*dp*const.mb_to_Pa/g)*factor_air
         return C
         
     def sensibleheat_ocean_sel(funcparam):
@@ -476,7 +544,10 @@ class transfer:
         K_o,dz,l_cover,dy,cp_w,dens_w,factor_oc=funcparam
         
         #equation of ocean sensible heat transfer
-        F=-K_o*dz*l_cover*Vars.tempdif/(dy)*cp_w*dens_w*factor_oc
+        if parallelization==True:
+            F=-K_o*dz*l_cover*Vars.tempdif/dy*cp_w*dens_w*factor_oc
+        else:
+            F=-K_o*dz*l_cover*Vars.tempdif/(dy)*cp_w*dens_w*factor_oc
         return F
 
 
@@ -507,15 +578,22 @@ class forcing:
             i=0
             np.random.seed(seed)
             if frequency=='common':
-                freq=np.abs(start-stop)/steps*4/100
+                freqmin=0
+                freqmax=np.abs(start-stop)/steps*4/100
             if frequency=='intermediate':
-                freq=np.abs(start-stop)/steps*12/100
+                freqmin=np.abs(start-stop)/steps*4/100
+                freqmax=np.abs(start-stop)/steps*12/100
             if frequency=='rare':
-                freq=np.abs(start-stop)/steps*30/100
+                freqmin=np.abs(start-stop)/steps*12/100
+                freqmax=np.abs(start-stop)/steps*30/100
+            if frequency=='superrare':
+                freqmin=np.abs(start-stop)/steps*30/100
+                freqmax=np.abs(start-stop)/steps*60/100
             
             while i<len(random_events):
                 current_event=np.random.uniform(0,strength)
                 #random_events[i]=current_event
+                
                 if behaviour=='step':
                     for k in range(int(lifetime)):
                         if i+k==len(random_events):
@@ -527,7 +605,7 @@ class forcing:
                             break
                         random_events[i+k]=current_event*np.exp(-k/lifetime)
                         
-                next_event=np.random.randint(0,freq)
+                next_event=np.random.randint(freqmin,freqmax)
                 i=i+next_event
             if sign=='negative':
                 Vars.ExternalInput[forcingnumber]=[random_events_time,-lna(random_events)]
@@ -631,7 +709,11 @@ class earthsystem:
     def globalmean_temperature():
         #Returning the cosine weighted sum of the mean annual latitudal temperature 
         #as global mean annual temperature 
-        return np.average(Vars.T, weights=cosd(Vars.Lat))
+        if parallelization==True:
+            GMT=np.average(Vars.T, weights=cosd(Vars.Lat),axis=1)
+        else:
+            GMT=np.average(Vars.T, weights=cosd(Vars.Lat))
+        return GMT
 
     def zonalmean_insolation():
         #Calculation of the annual mean solar radiation over latitudes from
@@ -666,10 +748,11 @@ class earthsystem:
             Q=lna(daily_insolation(Vars.Lat,int(Vars.t/tconv)%365,Vars.orbitals))*convfactor
         return Q
 
-    def solarradiation_orbital(convfactor,orbitalyear):
+    def solarradiation_orbital(convfactor,orbitalyear,unit):
         #Calculation of solar insolations running with variable orbital parameters (for longterm runs)
         #
-        year=orbitalyear*1000+Vars.t/365
+        
+        year=orbitalyear*1000+Vars.t
         days=np.linspace(0,365,365)
         #calculation for first step
         if Runtime_Tracker == 0:
@@ -677,29 +760,57 @@ class earthsystem:
             Vars.orbitals=Vars.orbtable.lookup_parameters(year/1000)
             Q=lna(np.mean(daily_insolation(Vars.Lat,days,Vars.orbitals),axis=1))
         #updating for each kiloyear
-        if year % 1000==0:
-            print('timeprogress: '+str(year/1000)+'ka')
-            Vars.orbitals=Vars.orbtable.lookup_parameters(year/1000)
-            Q=lna(np.mean(daily_insolation(Vars.Lat,days,Vars.orbitals),axis=1))
+        if unit=='year':            
+            if year % 1000==0:
+                print('timeprogress: '+str(year/1000)+'ka')
+                Vars.orbitals=Vars.orbtable.lookup_parameters(year/1000)
+                Q=lna(np.mean(daily_insolation(Vars.Lat,days,Vars.orbitals),axis=1))
+            else:
+                Q=Vars.Solar
         else:
-            Q=Vars.Solar
+            if year % 100==0:
+                print('timeprogress: '+str(year/1000)+'ka')
+            else:
+                Q=Vars.Solar
         return Q
 
     def meridionalwind_sel(a,re):
         #Calculating the global wind patterns, with the function from sellers (1969)
         #Meriwind_Selparam=[a]"""
-        v=[0]*len(Vars.tempdif)
-        i=0
+        
+        if parallelization==True:
+            v=np.array([[0]*len(Vars.Lat2)]*number_of_parallels)
+            T_av=np.average(np.abs(Vars.tempdif),weights=(2*np.pi*re*cosd(Vars.Lat2)),axis=1)
+
+        else: 
+            v=np.array([0]*len(Vars.Lat2))
+
+            T_av=np.average(np.abs(Vars.tempdif),weights=(2*np.pi*re*cosd(Vars.Lat2)))
         #Globaly averaged temperature difference
-        Lat=np.insert(Vars.Lat2[:-1],0,-90)
-        T_av=np.average(np.abs(Vars.tempdif),weights=(2*np.pi*re*cosd(Vars.Lat2)))
+        
         #filling the array with values depending on the current latitude
+        i=0        
         while Vars.Lat[i]<5:
             i+=1
-        for k in range(i):
-            v[k]=-a[k]*(Vars.tempdif[k]-T_av)
-        for l in range(i,len(Vars.tempdif)):
-            v[l]=-a[l]*(Vars.tempdif[l]+T_av)
+        k=i
+
+        if parallelization==True:
+            for l in range(number_of_parallels):
+                if len(a)==number_of_parallels:
+                    for j in range(k):
+                        v[l,j]=-a[l,j]*(Vars.tempdif[l,j]-T_av[l])
+                    for j in range(k,len(v[l])):
+                        v[l,j]=-a[l,j]*(Vars.tempdif[l,j]+T_av[l])
+                else:
+                    for j in range(k):
+                        v[l,j]=-a[j]*(Vars.tempdif[l,j]-T_av[l])
+                    for j in range(k,len(v[l])):
+                        v[l,j]=-a[j]*(Vars.tempdif[l,j]+T_av[l])
+        else:
+            for j in range(k):
+                v[j]=-a[j]*(Vars.tempdif[j]-T_av)
+            for j in range(k,len(v)):
+                v[j]=-a[j]*(Vars.tempdif[j]+T_av)
         return v
 
     def specific_saturation_humidity_sel(e0,eps,L,Rd,p):
@@ -709,19 +820,29 @@ class earthsystem:
         
     def saturation_pressure(e0,eps,L,Rd):
         #temperature dependant equation of saturation pressure
-        e=e0*(1-0.5*eps*L*Vars.tempdif/(Rd*Vars.T[1:]**2))
+        if parallelization==True:
+            e=e0*(1-0.5*eps*L*Vars.tempdif/(Rd*Vars.T[:,1:]**2))
+        else:
+            e=e0*(1-0.5*eps*L*Vars.tempdif/(Rd*Vars.T[1:]**2))
         return e
 
     def humidity_difference(e0,eps,L,Rd,p):
         #equation of difference in humidity
+        
         e=earthsystem.saturation_pressure(e0,eps,L,Rd)
-        dq=eps**2*L*e*Vars.tempdif/(p*Rd*Vars.T[1:]**2)
+        if parallelization==True:
+            dq=eps**2*L*e*Vars.tempdif/(p*Rd*Vars.T[:,1:]**2)
+        else:
+            dq=eps**2*L*e*Vars.tempdif/(p*Rd*Vars.T[1:]**2)
         return dq
         
     def temperature_difference_latitudes():
         #Returning the temperature difference between the northern and southern latitudinal boundary
         if latitudinal_belt==True:
-            dT=Vars.T[1:]-Vars.T[:-1]  
+            if parallelization==True:
+                dT=Vars.T[:,1:]-Vars.T[:,:-1]  
+            else:
+                dT=Vars.T[1:]-Vars.T[:-1]  
         #Calculation if for sellers it is desired to be defined on the latitudinal circles, 
         #with interpolation towards the poles
         if latitudinal_circle==True:
@@ -754,68 +875,68 @@ class earthsystem:
         Vars.bounds=[lat_southbound,lat_northbound]
         return S_p 
         
-class tools:
+#class tools:
     """
     Class with useful functions and evaluation tools 
     """
-    def lna(a):
-        return np.array(a)      #conversion of list to numpy array
+def lna(a):
+    return np.array(a)      #conversion of list to numpy array
 
-    def nal(a):
-        return np.ndarray.tolist(a)   #conversion of numpy array to list
+def nal(a):
+    return np.ndarray.tolist(a)   #conversion of numpy array to list
 
-    def cosd(Lat):
-        #Returning the value of cosine with input in degree    
-        return np.cos(Lat*np.pi/180)
+def cosd(Lat):
+    #Returning the value of cosine with input in degree    
+    return np.cos(Lat*np.pi/180)
 
-    def sind(Lat):
-        #Returning the value of sine with input in degree
-        return np.sin(Lat*np.pi/180)
+def sind(Lat):
+    #Returning the value of sine with input in degree
+    return np.sin(Lat*np.pi/180)
 
-    def plotmeanstd(array):
-        #calculation of an arrays mean value and standard deviation, with regard to the equilibrium condition chosen
-        #Used to process the final output data
-        arraymean=np.mean(array[:][-int(eq_condition_length):],axis=0)
-        arraystd=np.std(array[:][-int(eq_condition_length):],axis=0)
-        
-        #for l in range(len(arraynew)):
-        #    arraymean.append(np.mean(arraynew[l][-eq_condition_length:]))
-        #    arraystd.append(np.std(arraynew[l][-eq_condition_length:]))
-        return arraymean, arraystd
+def plotmeanstd(array):
+    #calculation of an arrays mean value and standard deviation, with regard to the equilibrium condition chosen
+    #Used to process the final output data
+    arraymean=np.mean(array[:][-int(eq_condition_length):],axis=0)
+    arraystd=np.std(array[:][-int(eq_condition_length):],axis=0)
+    
+    #for l in range(len(arraynew)):
+    #    arraymean.append(np.mean(arraynew[l][-eq_condition_length:]))
+    #    arraystd.append(np.std(arraynew[l][-eq_condition_length:]))
+    return arraymean, arraystd
 
-    def datasetaverage(dataset):
-        #error estimation of the final output data, for now limited to calculate mean values and standard deviations
-        #of temperature, but with the possibility to do it for all of the readout data
-        Readoutlen=len(dataset[2])
-        Readzipk=[]
-        Readdataaverage=[]
-        for k in range(Readoutlen): 
-            Mean_mean=np.mean(dataset[2][k],axis=0)
-            Mean_std=np.std(dataset[2][k],axis=0)
-            Readdataaverage.append([Mean_mean,Mean_std])
-        
-        return Readdataaverage
+def datasetaverage(dataset):
+    #error estimation of the final output data, for now limited to calculate mean values and standard deviations
+    #of temperature, but with the possibility to do it for all of the readout data
+    Readoutlen=len(dataset[2])
+    Readzipk=[]
+    Readdataaverage=[]
+    for k in range(Readoutlen): 
+        Mean_mean=np.mean(dataset[2][k],axis=0)
+        Mean_std=np.std(dataset[2][k],axis=0)
+        Readdataaverage.append([Mean_mean,Mean_std])
+    
+    return Readdataaverage
 
-    def interpolator(arrayx,arrayy):
-        #Returning the interpolation function (with a polyfit) of a parameter or variable
-        z=np.polyfit(arrayx,arrayy,4)
-        f=np.poly1d(z)
-        return f
+def interpolator(arrayx,arrayy):
+    #Returning the interpolation function (with a polyfit) of a parameter or variable
+    z=np.polyfit(arrayx,arrayy,4)
+    f=np.poly1d(z)
+    return f
 
-    def SteadyStateConditionGlobal(Global):
-        #equilibrium condition of the RK4-algorithm, checking if the condition is fulfilled or not
-        dT=np.std(Global)
-        #if fulfilled, return True to interupt the algorithm and stop with output message
-        if dT <= eq_condition_amplitude:
-            print('Steady State reached after %s steps, within %s seconds'               %(int(Runtime_Tracker/(4*data_readout)),(time.time() - Vars.start_time)))
-            return True
-        #if not fulfilled return False, until the integrationnumber is exceeded
-        if Runtime_Tracker==(number_of_integration-1)*4:
-            print('Transit State within %s seconds' %(time.time() - Vars.start_time))
-            return True
-        else:
-            return False
+def SteadyStateConditionGlobal(Global):
+    #equilibrium condition of the RK4-algorithm, checking if the condition is fulfilled or not
+    dT=np.std(Global)
+    #if fulfilled, return True to interupt the algorithm and stop with output message
+    if dT <= eq_condition_amplitude:
+        print('Steady State reached after %s steps, within %s seconds'               %(int(Runtime_Tracker/(4*data_readout)),(time.time() - Vars.start_time)))
+        return True
+    #if not fulfilled return False, until the integrationnumber is exceeded
+    if Runtime_Tracker==(number_of_integration-1)*4:
+        print('Transit State within %s seconds' %(time.time() - Vars.start_time))
+        return True
+    else:
+        return False
 
-    def BPtimeplot(time,number):
-        time_new = (lna(time)/stepsize_of_integration-Vars.External_time_start[number])
-        return time_new
+def BPtimeplot(time,number):
+    time_new = (lna(time)/stepsize_of_integration-Vars.External_time_start[number])
+    return time_new
