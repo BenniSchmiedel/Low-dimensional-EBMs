@@ -256,7 +256,6 @@ class albedo:
     Class defining the albedo distributions 
 
     .. autosummary::
-        :nosignatures:
         :toctree:
 
         static
@@ -505,9 +504,9 @@ class albedo:
 
         .. math::
 
-            T_g(\phi)=T(\phi)-0.0065\cdot Z (\phi) \\\\
-            If\;T_g(\phi)<283.15:\quad \\alpha(\phi)=b(\phi)-0.009\cdot T_g(\phi)   \\\\
-            If\;T_g(\phi)> 283.15:\quad \\alpha(\phi)= b(\phi)-2.548
+            &T_g(\phi)=T(\phi)-0.0065\cdot Z (\phi) \\\\
+            If\;T_g(\phi)<283.15:&\quad \\alpha(\phi)=b(\phi)-0.009\cdot T_g(\phi)   \\\\
+            If\;T_g(\phi)> 283.15:&\quad \\alpha(\phi)= b(\phi)-2.548
 
         with the albedo value :math:`\\alpha(\phi)` (maximum of 0.85) and temperature :math:`T(\phi)` of latitude :math:`\phi`, the altitude weighted temperature :math:`T_g` with the zonal mean altitude :math:`Z(\phi)` and empirical constants :math:`b(\phi)`.
         
@@ -519,13 +518,13 @@ class albedo:
 
                                                 * type: array(float)
                                                 * unit: Kelvin/m
-                                                * value: > 0 in Kelvin
+                                                * value: > 0
     
                                             * *b*: Empirical constant to estimate the albedo (provided by ``Configuration.add_sellersparameters``)
 
                                                 * type: float
                                                 * unit: dimensionless
-                                                * value: 0 :math:`$\leq$` alpha_i :math:`$\leq$` 1 (standard 0.7)
+                                                * value: > 0 
     
 
         :returns:                   The latitudinal albedo distribution
