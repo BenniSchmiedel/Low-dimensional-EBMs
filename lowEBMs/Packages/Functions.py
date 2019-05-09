@@ -287,7 +287,7 @@ class albedo:
 
                                     * type: float
                                     * unit: dimensionless
-                                    * value: 0 :math:`$\leq$ alpha :math:`$\leq$` 1
+                                    * value: 0 :math:`\leq alpha :math:`\leq ` 1
 
         :returns:                   The globally averaged albedo value
 
@@ -304,11 +304,11 @@ class albedo:
         +------------------------+-----------------------------------------------+
         | Latitude of transition | Albedo value alhpa                            | 
         +------------------------+-----------------------------------------------+
-        | < *border_1*           | low albedo zone: alpha=*alpha_p*              |
+        | < *border_1*           | low albedo zone: alpha= *alpha_p*             |
         +------------------------+-----------------------------------------------+
-        | > *border_1*           | intermediate zone: alpha=*alpha_p*+0.18       |
+        | > *border_1*           | intermediate zone: alpha= *alpha_p* +0.18     |
         +------------------------+-----------------------------------------------+
-        | > *border_1*           | high albedo zone: alpha=*alpha_p*+0.3         |
+        | > *border_2*           | high albedo zone: alpha= *alpha_p* +0.3       |
         +------------------------+-----------------------------------------------+
 
         **Function-call arguments** \n
@@ -319,19 +319,19 @@ class albedo:
 
                                                     * type: float
                                                     * unit: dimensionless
-                                                    * value: 0 :math:`$\leq$` albedo :math:`$\leq$` 1 (standard 0.3)
+                                                    * value: 0 :math:`\leq` albedo :math:`\leq` 1 (standard 0.3)
         
                                                 * *border_1*: Latitude of low to intermediate albedo zone transition
 
                                                     * type: float
                                                     * unit: Unit of latitude (degree)
-                                                    * value: 0 :math:`$\leq$` border_1 :math:`$\leq$` 90 (standard 60)
+                                                    * value: 0 :math:`\leq` border_1 :math:`\leq` 90 (standard 60)
         
                                                 * *border_2*: Latitude of intermediate to high albedo zone transition
 
                                                     * type: float
                                                     * unit: Unit of latitude (degree)
-                                                    * value: 0 :math:`$\leq$` border_2 :math:`$\leq$` 1 (standard 70)
+                                                    * value: 0 :math:`\leq` border_2 :math:`\leq` 1 (standard 70)
 
         :returns:                   The latitudinal albedo distribution
 
@@ -359,13 +359,13 @@ class albedo:
         The albedo distribution is described through three zones of albedo values.
 
         +---------------------------+-----------------------------------------------+
-        | Temperature of transition | Albedo value alhpa                            | 
+        | Temperature of transition | Albedo value alpha                            | 
         +---------------------------+-----------------------------------------------+
-        | > *T_1*                   | low albedo zone: alpha=*alpha_0*              |
+        | > *T_1*                   | low albedo zone: alpha= *alpha_0*             |
+        +---------------------------+-----------------------------------------------+ 
+        | < *T_1* & > *T_2*         | intermediate zone: alpha= *alpha_1*           |
         +---------------------------+-----------------------------------------------+
-        | < *T_1* & > *T_2*         | intermediate zone: alpha=*alpha_1*            |
-        +---------------------------+-----------------------------------------------+
-        | < *T_2*                   | high albedo zone: alpha=*alpha_2*             |
+        | < *T_2*                   | high albedo zone: alpha= *alpha_2*            |
         +---------------------------+-----------------------------------------------+
 
         **Function-call arguments** \n
@@ -388,19 +388,19 @@ class albedo:
 
                                                 * type: float
                                                 * unit: dimensionless
-                                                * value: 0 :math:`$\leq$` alpha_0 :math:`$\leq$` 1 (standard 0.32)
+                                                * value: 0 :math:`\leq` alpha_0 :math:`\leq` 1 (standard 0.32)
 
                                             * *alpha_1*: The intermediate albedo zone value
 
                                                 * type: float
                                                 * unit: dimensionless
-                                                * value: 0 :math:`$\leq$` alpha_1 :math:`$\leq$` 1 (standard 0.5)
+                                                * value: 0 :math:`\leq` alpha_1 :math:`\leq` 1 (standard 0.5)
 
                                             * *alpha_2*: The high albedo zone value
 
                                                 * type: float
                                                 * unit: dimensionless
-                                                * value: 0 :math:`$\leq$` alpha_2 :math:`$\leq$` 1 (standard 0.62)
+                                                * value: 0 :math:`\leq` alpha_2 :math:`\leq` 1 (standard 0.62)
 
         :returns:                   The latitudinal albedo distribution
 
@@ -452,9 +452,9 @@ class albedo:
 
         .. math::
 
-            \\alpha(\phi)=\\alpha_i-\\frac{1}{2}(\\aplha_i-\\alpha_f)\cdot (1+tanh(\\gamma*(T(\phi)-T_{ref})))
+            \\alpha(\phi)=\\alpha_i-\\frac{1}{2}(\\alpha_i-\\alpha_f)\cdot (1+tanh(\\gamma \cdot (T(\phi)-T_{ref})))
 
-        with the albedo value :math:`$\\alpha(\phi)$` and temperature :math:`$T(\phi)$` of latitude :math:`$\phi$`, an ice-covered/ice-free albedo value :math:`$\\alpha_i / \\alpha_f$`, the reference temperature of transition :math:`$T_{ref}$` and the steepness of the transition :math:`$\gamma$`.
+        with the albedo value :math:`\\alpha(\phi)` and temperature :math:`T(\phi)` of latitude :math:`\phi`, an ice-covered/ice-free albedo value :math:`\\alpha_i / \\alpha_f`, the reference temperature of transition :math:`T_{ref}` and the steepness of the transition :math:`\gamma`.
 
         
         **Function-call arguments** \n
@@ -471,19 +471,19 @@ class albedo:
 
                                                 * type: float
                                                 * unit: dimensionless
-                                                * value: 0 :math:`$\leq$` alpha_i :math:`$\leq$` 1 (standard 0.7)
+                                                * value: 0 :math:`\leq` alpha_i :math:`\leq` 1 (standard 0.7)
     
                                             * *alpha_f*: The ice-free albedo value
 
                                                 * type: float
                                                 * unit: dimensionless
-                                                * value: 0 :math:`$\leq$` alpha_f :math:`$\leq$` 1 (standard 0.3)
+                                                * value: 0 :math:`\leq` alpha_f :math:`\leq` 1 (standard 0.3)
 
                                             * *steepness*: The steepness of albedo transition (:math:`$\gamma$`)
 
                                                 * type: float
                                                 * unit: 1/Kelvin
-                                                * value: 0 :math:`$\leq$` steepness :math:`$\leq$` 1 (standard 0.3)
+                                                * value: 0 :math:`\leq` steepness :math:`\leq` 1 (standard 0.3)
 
         :returns:                   The latitudinal albedo distribution
 
@@ -502,13 +502,14 @@ class albedo:
         The albedo of one latitude is defined by:
 
         .. math::
-            T_g(\phi)=T(\phi)-0.0065\cdot Z \\
+
+            T_g(\phi)=T(\phi)-0.0065\cdot Z (\phi) \\
             
             \alpha(\phi)= \left\{ b(\phi)-0.009\cdot T_g(\phi)\qquad & T_g(\phi)<283.15 \\
             & b(\phi)-2.548 & T_g(\phi)> 283.15 \right 
             
 
-        where the albedo value :math:`$\\alpha(\phi)$` and temperature :math:`$T(\phi)$` of latitude :math:`$\phi$`
+        with the albedo value :math:`\\alpha(\phi)` and temperature :math:`T(\phi)` of latitude :math:`\phi`, the temperature :math:`T_g` weighted with the latitudinal averaged altitude :math:`Z(\hpi)`
 
             
 
