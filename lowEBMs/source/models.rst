@@ -103,7 +103,7 @@ The EBM constructed by :doc:`William Seller  <references>` is adapted even more 
 
 - An albedo described by an empircal law with linear dependence on temperature and surface elevation.
 
-- A transfer energy flux *P* seperated into three different components, the atmospheric water vapour transfer, the atmospheric sensible heat transfer and the oceanic sensible heat transfer. The total transfer energy flux *F* of one gridbox is given by the difference of northward and southward transfer energy flux *P* (the sum of those three components from the northern/southern boundary).
+- A transfer energy flux *P* seperated into three different components, the atmospheric water vapour transfer, the atmospheric sensible heat transfer and the oceanic sensible heat transfer. The total transfer energy flux :math:`F` of one gridbox is given by the difference of northward and southward transfer energy flux :math:`P` (the sum of those three components from the northern/southern boundary).
 
 - A grid resolving the earth with latitudinal bands of 10° width. Hence, the earth is resolved by 18 latitudinal bands.
 
