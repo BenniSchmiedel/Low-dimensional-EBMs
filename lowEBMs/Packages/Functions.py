@@ -91,19 +91,19 @@ class flux_down:
                                         * *Q*: The value of solar insolation (only useful for 0D EBMs) 
 
                                             * type: float
-                                            * unit: Watt/m^2
+                                            * unit: :math:`Watt\cdot meter^{-2}`
                                             * value: > 0 (standard 342)
 
                                         * *m*: Factorial change of absorbed insolation
 
                                             * type: float
-                                            * unit: dimensionless
+                                            * unit: -
                                             * value: > 0
                                         
                                         * *dQ*: Additive energy offset on :math:`Q`
 
                                             * type: float
-                                            * unit: Watt/m^2
+                                            * unit: :math:`Watt\cdot meter^{-2}`
                                             * value: any
 
                                        ..  _albedo:
@@ -153,7 +153,7 @@ class flux_down:
                                         * *seedmanipulation*: Defines the value for the seed
 
                                             * type: integer
-                                            * unit: dimensionless
+                                            * unit: -
                                             * value: any (if 0 it is everytime another seed)
 
                                         * *solarinput*: Indicates whether the solar insolation distribution from ``climlab.solar.insolation`` are used (recommended for 1D EBMs), which are called from ``lowEBMs.Packages.Functions.earthsystem.solarradiation``
@@ -183,7 +183,7 @@ class flux_down:
                                         * *orbitalyear*: Determines for which year (in ky) the orbitalparameters are taken (orbital parameters are provided by ``climlab.solar.orbital`` which is based on Berger (1991) and Laskar (2004)
 
                                             * type: integer 
-                                            * unit: kiloyear
+                                            * unit: :math:`kyear`
                                             * value: -5000 to 0 (if 0, the year 1950 is used)
 
         :returns:                   The absorbed solar insolation :math:`R_{down}`
@@ -285,7 +285,7 @@ class albedo:
         :param float alpha:     the globally averaged albedo value
 
                                     * type: float
-                                    * unit: dimensionless
+                                    * unit: -
                                     * value: 0 :math:`\leq` alpha :math:`\leq ` 1
 
         :returns:                   The globally averaged albedo value
@@ -317,7 +317,7 @@ class albedo:
                                                 * *alpha_p*: The low albedo zone value
 
                                                     * type: float
-                                                    * unit: dimensionless
+                                                    * unit: -
                                                     * value: 0 :math:`\leq` albedo :math:`\leq` 1 (standard 0.3)
         
                                                 * *border_1*: Latitude of low to intermediate albedo zone transition
@@ -374,31 +374,31 @@ class albedo:
                                             * *T_1*: Temperature of low to intermediate albedo zone transition
 
                                                 * type: float
-                                                * unit: Kelvin
+                                                * unit: :math:`Kelvin`
                                                 * value: > 0 in Kelvin (standard 273.15)
     
                                             * *T_2*: Temperature of intermediate to high albedo zone transition
 
                                                 * type: float
-                                                * unit: Kelvin
+                                                * unit: :math:`Kelvin`
                                                 * value: > 0 in kelvin (standard 263.15)
     
                                             * *alpha_0*: The low albedo zone value
 
                                                 * type: float
-                                                * unit: dimensionless
+                                                * unit: -
                                                 * value: 0 :math:`\leq` alpha_0 :math:`\leq` 1 (standard 0.32)
 
                                             * *alpha_1*: The intermediate albedo zone value
 
                                                 * type: float
-                                                * unit: dimensionless
+                                                * unit: -
                                                 * value: 0 :math:`\leq` alpha_1 :math:`\leq` 1 (standard 0.5)
 
                                             * *alpha_2*: The high albedo zone value
 
                                                 * type: float
-                                                * unit: dimensionless
+                                                * unit: -
                                                 * value: 0 :math:`\leq` alpha_2 :math:`\leq` 1 (standard 0.62)
 
         :returns:                   The latitudinal albedo distribution
@@ -463,25 +463,25 @@ class albedo:
                                             * *T_ref*: Reference transition temperature from ice-free to ice-covered albedo
 
                                                 * type: float
-                                                * unit: Kelvin
+                                                * unit: :math:`Kelvin`
                                                 * value: > 0 in Kelvin (standard 273.15)
     
                                             * *alpha_i*: The ice-covered albedo value
 
                                                 * type: float
-                                                * unit: dimensionless
+                                                * unit: -
                                                 * value: 0 :math:`\leq` alpha_i :math:`\leq` 1 (standard 0.7)
     
                                             * *alpha_f*: The ice-free albedo value
 
                                                 * type: float
-                                                * unit: dimensionless
+                                                * unit: -
                                                 * value: 0 :math:`\leq` alpha_f :math:`\leq` 1 (standard 0.3)
 
                                             * *steepness*: The steepness of albedo transition (:math:`$\gamma$`)
 
                                                 * type: float
-                                                * unit: 1/Kelvin
+                                                * unit: :math:`Kelvin^{-1}`
                                                 * value: 0 :math:`\leq` steepness :math:`\leq` 1 (standard 0.3)
 
         :returns:                   The latitudinal albedo distribution
@@ -515,13 +515,13 @@ class albedo:
                                             * *Z*: Zonal mean altitude (provided by ``Configuration.add_sellersparameters``)
 
                                                 * type: array(float)
-                                                * unit: Kelvin/m
+                                                * unit: :math:`Kelvin \cdot meter^{-1}`
                                                 * value: > 0
     
                                             * *b*: Empirical constant to estimate the albedo (provided by ``Configuration.add_sellersparameters``)
 
                                                 * type: float
-                                                * unit: dimensionless
+                                                * unit: -
                                                 * value: > 0 
     
 
@@ -611,13 +611,13 @@ class flux_up:
                                         * *A*: Empirical offset parameter
 
                                             * type: float 
-                                            * unit: Watt/meter^2
+                                            * unit: :math:`Watt\cdot meter^{-2}`
                                             * value: any (standard 222.74)
                                     
                                         * *B*: Empirical gradient parameter
 
                                             * type: float 
-                                            * unit: Watt/meter^2/°Celcius
+                                            * unit: :math:`Watt\cdot meter^{-2}\cdot °Celcius^{-1}`
                                             * value: any (standard 2.23)
 
         :returns:                   The upward radiative energy flux :math:`R_{up}`
@@ -653,31 +653,31 @@ class flux_up:
                                         * *A*: Empirical offset parameter
 
                                             * type: float 
-                                            * unit: Watt/meter^2
+                                            * unit: :math:`Watt\cdot meter^{-2}`
                                             * value: any (standard 222.74)
                                     
                                         * *B*: Empirical gradient parameter
 
                                             * type: float 
-                                            * unit: Watt/meter^2/°Celcius
+                                            * unit: :math:`Watt\cdot meter^{-2}\cdot °Celcius^{-1}`
                                             * value: any (standard 2.23)
 
                                         * *A1*: Empirical offset parameter cloud term
 
                                             * type: float 
-                                            * unit: Watt/meter^2
+                                            * unit: :math:`Watt\cdot meter^{-2}`
                                             * value: any (standard 47.73)
 
                                         * *B1*: Empirical gradient parameter cloud term
 
                                             * type: float 
-                                            * unit: Watt/meter^2/°Celcius
+                                            * unit: :math:`Watt\cdot meter^{-2}\cdot °Celcius^{-1}`
                                             * value: any (standard 1.59)
 
                                         * *f_c*: Cloud fraction
 
                                             * type: float 
-                                            * unit: dimensionless
+                                            * unit: -
                                             * value: 0 :math:`\leq` f_c :math:`\leq` 1 (standard 0.5)
 
         :returns:                   The upward radiative energy flux :math:`R_{up}`
@@ -712,13 +712,13 @@ class flux_up:
                                         * *grey*: The emissivity (greyness)
 
                                             * type: float 
-                                            * unit: dimensionless
+                                            * unit: -
                                             * value: 0 :math:`\leq` grey :math:`\leq` 1 (standard 0.612)
                                     
                                         * *sigma*: Stefan-boltzmann constant
 
                                             * type: float 
-                                            * unit: Watt/meter^2/Kelvin^4
+                                            * unit: :math:`Watt\cdot meter^{-2}\cdot Kelvin^{-4}`
                                             * value: :math:`5,67\cdot 10^{-8}` (use const.sigma to load it from ``climlab.constants``)
 
         :returns:                   The upward radiative energy flux :math:`R_{up}`
@@ -756,25 +756,25 @@ class flux_up:
                                         * *m*: The atmospheric attenuation
 
                                             * type: float 
-                                            * unit: dimensionless
+                                            * unit: -
                                             * value: 0 :math:`\leq` m :math:`\leq` 1 (standard 0.5)
                                     
                                         * *sigma*: Stefan-boltzmann constant
 
                                             * type: float 
-                                            * unit: Watt/meter^2/Kelvin^4
+                                            * unit: :math:`Watt\cdot meter^{-2}\cdot Kelvin^{-4}`
                                             * value: :math:`5,67\cdot 10^{-8}` (use const.sigma to load it from ``climlab.constants``)
                                     
                                         * *gamma*: Empirical constant in the cloud term
 
                                             * type: float 
-                                            * unit: 1/Kelvin^6
+                                            * unit: :math:`Kelvin^{-6}`
                                             * value: :math:`1.9\cdot 10^{-15}`
                                     
                                         * *grey*: The emissivity (greyness)
 
                                             * type: float 
-                                            * unit: dimensionless
+                                            * unit: -
                                             * value: 0 :math:`\leq` grey :math:`\leq` 1 (standard 1)
 
         :returns:                   The upward radiative energy flux :math:`R_{up}`
@@ -834,9 +834,9 @@ class transfer:
     
         .. math::
 
-            F_{transfer}= \beta\cdot(T(\phi)-T_g)
+            F_{transfer}= \\beta\cdot(T(\phi)-T_g)
                 
-        with the temperature :math:`T(\phi)` of latitude :math:`\phi`, the global mean temperature :math:`T_g` and the transport parameter :math:`\beta`. 
+        with the temperature :math:`T(\phi)` of latitude :math:`\phi`, the global mean temperature :math:`T_g` and the transport parameter :math:`\\beta`. 
         
         **Function-call arguments** \n
 
@@ -845,7 +845,7 @@ class transfer:
                                         * *beta*: The transport parameter
 
                                             * type: float 
-                                            * unit: Watt/meter^2/Kelvin
+                                            * unit: :math:`Watt\cdot meter^{-2} \cdot Kelvin^{-1}`
                                             * value: any (standard 3.74)
                                   
                                         * *Read*: Indicates whether the transfer flux is specifically provided as output
@@ -922,139 +922,139 @@ class transfer:
                                         * *K_wv*: The thermal diffusivity of the watervapour term
 
                                             * type: float 
-                                            * unit: meter^2/second
+                                            * unit: :math:`meter^2\cdot second^{-1}`
                                             * value: :math:`10^5` (imported by ``Configuration.add_sellersparameters``)
                                   
                                         * *K_h*: The thermal diffusivity of the atmospheric sensible heat term
 
                                             * type: float 
-                                            * unit: meter^2/second
+                                            * unit: :math:`meter^2 \cdot second^{-1}`
                                             * value: :math:`10^6` (imported by ``Configuration.add_sellersparameters``)
                                   
                                         * *K_o*: The thermal diffusivity of the oceanic sensible heat term
 
                                             * type: float 
-                                            * unit: meter^2/second
+                                            * unit: :math:`meter^2\cdot second^{-1}`
                                             * value: :math:`10^2` (imported by ``Configuration.add_sellersparameters``)
                                   
                                         * *g*: The gravitational acceleration
 
                                             * type: float 
-                                            * unit: meter/second^2
+                                            * unit: :math:`meter\cdot second^{-2}`
                                             * value: :math:`9.81`
                                   
                                         * *a*: Empricial constant to calculate the meridional windspeed
 
                                             * type: float 
-                                            * unit: meter/second/°Celcius
+                                            * unit: :math:`meter\cdot second^{-1}\cdot °Celcius^{-1}`
                                             * value: :math:`10^-2` (imported by ``Configuration.add_sellersparameters``)
                                   
                                         * *eps*: Empirical constant of the saturation specific humidity
 
                                             * type: float 
-                                            * unit: dimensionless
+                                            * unit: -
                                             * value: 0.622
                                   
                                         * *p*: The average sea level pressure
 
                                             * type: float 
-                                            * unit: mbar
+                                            * unit: :math:`mbar`
                                             * value: 1000
                                   
                                         * *e0*: The mean sea level saturation vapour pressure
 
                                             * type: float 
-                                            * unit: mbar
+                                            * unit: :math:`mbar`
                                             * value: 17
                                   
                                         * *L*: The latent heat of condensation
 
                                             * type: float 
-                                            * unit: Joule/gramm
+                                            * unit: :math:`Joule\cdot gramm^{-1}`
                                             * value: :math:`2.5\cdot 10^3`
                                   
                                         * *Rd*: The gas constant
 
                                             * type: float 
-                                            * unit: Joule/gramm/Kelvin
+                                            * unit: :math:`Joule\cdot gramm^{-1}\cdot Kelvin^{-1}`
                                             * value: :math:`0.287`
                                   
                                         * *dy*: The width of an latitudinal belt
 
                                             * type: float 
-                                            * unit: meter
+                                            * unit: :math:`meter`
                                             * value: :math:`1.11\cdot 10^6`
                                   
                                         * *dp*: The tropospheric pressure depth
 
                                             * type: float 
-                                            * unit: mbar
+                                            * unit: :math:`mbar`
                                             * value: 700-900 (imported by ``Configuration.add_sellersparameters``)
                                   
                                         * *cp*: The specific heat capacity of air at constant pressure
 
                                             * type: float 
-                                            * unit: Joule/gramm/Kelvin
+                                            * unit: :math:`Joule\cdot gramm^{-1}\cdot Kelvin^{-1}`
                                             * value: :math:`1.004`
                                   
                                         * *dz*: The average zonal ocean depth
 
                                             * type: float 
-                                            * unit: meter
+                                            * unit: :math:`meter`
                                             * value: 1000-4000 (imported by ``Configuration.add_sellersparameters``)
                                   
                                         * *l_cover*: The proportion of ocean covered surface
 
                                             * type: float 
-                                            * unit: dimensionless
+                                            * unit: -
                                             * value: 0.5
                                   
                                         * *re*: The earth's radius
 
                                             * type: float 
-                                            * unit: meter
+                                            * unit: :math:`meter`
                                             * value: :math:`6.371\cdot 10^6`
                                   
                                         * *cp_w*: The specific heat capacity of sea water
 
                                             * type: float 
-                                            * unit: Joule/gramm/Kelvin
+                                            * unit: :math:`Joule\cdot gramm^{-1}\cdot Kelvin^{-1}`
                                             * value: :math:`4182`
                                   
                                         * *dens_w*: The density of water
 
                                             * type: float 
-                                            * unit: gramm/meter^3
+                                            * unit: :math:`gramm\cdot meter^{-3}`
                                             * value: :math:`0.997\cdot 10^6`
                                   
                                         * *factor_wv*: A tuning factor applied to the watervapour term
 
                                             * type: float 
-                                            * unit: dimensionless
+                                            * unit: -
                                             * value: any
                                   
                                         * *factor_air*: A tuning factor applied to the atmospheric sensible heat term
 
                                             * type: float 
-                                            * unit: dimensionless
+                                            * unit: -
                                             * value: any
                                   
                                         * *factor_oc*: A tuning factor applied to the oceanic sensible heat term (or it's diffusivity)
 
                                             * type: float 
-                                            * unit: dimensionless
+                                            * unit: -
                                             * value: any
                                   
                                         * *factor_kwv*: A tuning factor applied to the thermal diffusivity of the watervapour term
 
                                             * type: float 
-                                            * unit: dimensionless
+                                            * unit: -
                                             * value: any
                                   
                                         * *factor_kair*: A tuning factor applied to the thermal diffusivity of the atmospheric sensible heat term
 
                                             * type: float 
-                                            * unit: dimensionless
+                                            * unit: -
                                             * value: any
 
         :returns:                   The Sellers energy transfer flux :math:`F_{transfer}`
@@ -1131,77 +1131,75 @@ class transfer:
 
         with the meridional windspeed :math:`v` provided by ``earthsstem.meridionalwind_sel``, the specific saturation humidity :math:`q` provided by ``earthsystem.specific_saturation_humidity_sel`` and the humidity difference :math:`dq` provided by ``earthsystem.humidity_difference``. Additional parameters are the thermal diffusivity of watervapour :math:`K_{wv}`, the width of the latitudinal belts :math:`\Delta y`, the tropospheric pressure depth :math:`\Delta p` and the gravitational acceleration :math:`g`.
 
-        For purposes of tuning, :math:`c_{wv}` and :math:`K_{wv} are provided with the scaling factors *factor_wv* and *factor_kwv*.
+        For purposes of tuning, :math:`c_{wv}` and :math:`K_{wv}` are provided with the scaling factors *factor_wv* and *factor_kwv*.
 
         **Function-call arguments** \n
 
-        :param dict funcparams:     a dictionary of the function's parameters directly parsed from ``lowEBMs.Packages.ModelEquation.model_equation``
-                                  
-                                        * *K_wv*: The thermal diffusivity of the watervapour term
+        :param dict funcparams:     * *K_wv*: The thermal diffusivity of the watervapour term
 
-                                            * type: float 
-                                            * unit: meter^2/second
-                                            * value: :math:`10^5` (imported by ``Configuration.add_sellersparameters``)
-                                  
-                                        * *g*: The gravitational acceleration
+                                        * type: float 
+                                        * unit: :math:`meter^2\cdot second^{-1}`
+                                        * value: :math:`10^5` (imported by ``Configuration.add_sellersparameters``)
+                              
+                                    * *g*: The gravitational acceleration
 
-                                            * type: float 
-                                            * unit: meter/second^2
-                                            * value: :math:`9.81`
-                                  
-                                        * *eps*: Empirical constant of the saturation specific humidity
+                                        * type: float 
+                                        * unit: :math:`meter\cdot second^{-2}`
+                                        * value: :math:`9.81`
+                              
+                                    * *eps*: Empirical constant of the saturation specific humidity
 
-                                            * type: float 
-                                            * unit: dimensionless
-                                            * value: 0.622
-                                  
-                                        * *p*: The average sea level pressure
+                                        * type: float 
+                                        * unit: -
+                                        * value: 0.622
+                              
+                                    * *p*: The average sea level pressure
 
-                                            * type: float 
-                                            * unit: mbar
-                                            * value: 1000
-                                  
-                                        * *e0*: The mean sea level saturation vapour pressure
+                                        * type: float 
+                                        * unit: :math:`mbar`
+                                        * value: 1000
+                              
+                                    * *e0*: The mean sea level saturation vapour pressure
 
-                                            * type: float 
-                                            * unit: mbar
-                                            * value: 17
-                                  
-                                        * *L*: The latent heat of condensation
+                                        * type: float 
+                                        * unit: :math:`mbar`
+                                        * value: 17
+                              
+                                    * *L*: The latent heat of condensation
 
-                                            * type: float 
-                                            * unit: Joule/gramm
-                                            * value: :math:`2.5\cdot 10^3`
-                                  
-                                        * *Rd*: The gas constant
+                                        * type: float 
+                                        * unit: :math:`Joule\cdot gramm^{-1}`
+                                        * value: :math:`2.5\cdot 10^3`
+                              
+                                    * *Rd*: The gas constant
 
-                                            * type: float 
-                                            * unit: Joule/gramm/Kelvin
-                                            * value: :math:`0.287`
-                                  
-                                        * *dy*: The width of an latitudinal belt
+                                        * type: float 
+                                        * unit: :math:`Joule\cdot gramm^{-1}\cdot Kelvin^{-1}`
+                                        * value: :math:`0.287`
+                              
+                                    * *dy*: The width of an latitudinal belt
 
-                                            * type: float 
-                                            * unit: meter
-                                            * value: :math:`1.11\cdot 10^6`
-                                  
-                                        * *dp*: The tropospheric pressure depth
+                                        * type: float 
+                                        * unit: :math:`meter`
+                                        * value: :math:`1.11\cdot 10^6`
+                              
+                                    * *dp*: The tropospheric pressure depth
 
-                                            * type: float 
-                                            * unit: mbar
-                                            * value: 700-900 (imported by ``Configuration.add_sellersparameters``)
-                                  
-                                        * *factor_wv*: A tuning factor applied to the watervapour term
+                                        * type: float 
+                                        * unit: :math:`mbar`
+                                        * value: 700-900 (imported by ``Configuration.add_sellersparameters``)
+                              
+                                    * *factor_wv*: A tuning factor applied to the watervapour term
 
-                                            * type: float 
-                                            * unit: dimensionless
-                                            * value: any
-                                  
-                                        * *factor_kwv*: A tuning factor applied to the thermal diffusivity of the watervapour term
+                                        * type: float 
+                                        * unit: -
+                                        * value: any
+                              
+                                    * *factor_kwv*: A tuning factor applied to the thermal diffusivity of the watervapour term
 
-                                            * type: float 
-                                            * unit: dimensionless
-                                            * value: any
+                                        * type: float 
+                                        * unit: -
+                                        * value: any
                                   
 
         :returns:                   The watervapour energy transfer flux :math:`c_{wv}`
@@ -1239,53 +1237,51 @@ class transfer:
 
         with the meridional windspeed :math:`v` provided by ``earthsstem.meridionalwind_sel``, and the temperature difference :math:`\Delta T` provided by ``earthsystem.tempdif``. Additional parameters are the temperature :math:`T`, the thermal diffusivity of air :math:`K_{h}`, the width of the latitudinal belts :math:`\Delta y`, the tropospheric pressure depth :math:`\Delta p`, the specific heat capacity of air :math:`c_p` and the gravitational acceleration :math:`g`.
 
-        For purposes of tuning, :math:`C_{air}` and :math:`K_{h} are provided with the scaling factors *factor_air* and *factor_kair*.
+        For purposes of tuning, :math:`C_{air}` and :math:`K_{h}` are provided with the scaling factors *factor_air* and *factor_kair*.
 
         **Function-call arguments** \n
 
-        :param dict funcparams:     a dictionary of the function's parameters directly parsed from ``lowEBMs.Packages.ModelEquation.model_equation``
-                                  
-                                        * *K_h*: The thermal diffusivity of the atmospheric sensible heat term
+        :param dict funcparams:     * *K_h*: The thermal diffusivity of the atmospheric sensible heat term
 
-                                            * type: float 
-                                            * unit: meter^2/second
-                                            * value: :math:`10^6` (imported by ``Configuration.add_sellersparameters``)
-                                                                    
-                                        * *g*: The gravitational acceleration
+                                        * type: float 
+                                        * unit: :math:`meter^2\cdot second^{-1}`
+                                        * value: :math:`10^6` (imported by ``Configuration.add_sellersparameters``)
+                                                                
+                                    * *g*: The gravitational acceleration
 
-                                            * type: float 
-                                            * unit: meter/second^2
-                                            * value: :math:`9.81`
+                                        * type: float 
+                                        * unit: :math:`meter\cdot second^{-2}`
+                                        * value: :math:`9.81`
 
-                                        * *dy*: The width of an latitudinal belt
+                                    * *dy*: The width of an latitudinal belt
 
-                                            * type: float 
-                                            * unit: meter
-                                            * value: :math:`1.11\cdot 10^6`
-                                  
-                                        * *dp*: The tropospheric pressure depth
+                                        * type: float 
+                                        * unit: :math:`meter`
+                                        * value: :math:`1.11\cdot 10^6`
+                              
+                                    * *dp*: The tropospheric pressure depth
 
-                                            * type: float 
-                                            * unit: mbar
-                                            * value: 700-900 (imported by ``Configuration.add_sellersparameters``)
-                                  
-                                        * *cp*: The specific heat capacity of air at constant pressure
+                                        * type: float 
+                                        * unit: :math:`mbar`
+                                        * value: 700-900 (imported by ``Configuration.add_sellersparameters``)
+                              
+                                    * *cp*: The specific heat capacity of air at constant pressure
 
-                                            * type: float 
-                                            * unit: Joule/gramm/Kelvin
-                                            * value: :math:`1.004`
-                                  
-                                        * *factor_air*: A tuning factor applied to the atmospheric sensible heat term
+                                        * type: float 
+                                        * unit: :math:`Joule\cdot gramm^{-1}\cdot Kelvin^{-1}`
+                                        * value: :math:`1.004`
+                              
+                                    * *factor_air*: A tuning factor applied to the atmospheric sensible heat term
 
-                                            * type: float 
-                                            * unit: dimensionless
-                                            * value: any
-                                  
-                                        * *factor_kair*: A tuning factor applied to the thermal diffusivity of the atmospheric sensible heat term
+                                        * type: float 
+                                        * unit: -
+                                        * value: any
+                              
+                                    * *factor_kair*: A tuning factor applied to the thermal diffusivity of the atmospheric sensible heat term
 
-                                            * type: float 
-                                            * unit: dimensionless
-                                            * value: any
+                                        * type: float 
+                                        * unit: -
+                                        * value: any
 
         :returns:                   The atmospheric sensible heat energy transfer flux :math:`C_{air}`
 
@@ -1317,49 +1313,47 @@ class transfer:
 
             F_{oc}= - K_o\Delta z l_{cover}\\frac{\Delta T}{\Delta y}\cdot C_{p,w}\rho_{w}
 
-        with the temperature difference :math:`\Delta T` provided by ``earthsystem.tempdif``. Additional parameters are the thermal diffusivity of the ocean :math:`K_{o}`, the width of the latitudinal belts :math:`\Delta y`, the average ocean depth :math:`\Delta z`, the proportion of ocean cover :math:`l_{cover}`, the specific heat capacity of water :math:`c_{p,w}` and the densitiy of water :math:`\rho_w`.
+        with the temperature difference :math:`\Delta T` provided by ``earthsystem.tempdif``. Additional parameters are the thermal diffusivity of the ocean :math:`K_{o}`, the width of the latitudinal belts :math:`\Delta y`, the average ocean depth :math:`\Delta z`, the proportion of ocean cover :math:`l_{cover}`, the specific heat capacity of water :math:`c_{p,w}` and the densitiy of water :math:`\\rho_w`.
 
         For purposes of tuning, a scaling factors *factor_oc* is provided.
 
         **Function-call arguments** \n
 
-        :param dict funcparams:     a dictionary of the function's parameters directly parsed from ``lowEBMs.Packages.ModelEquation.model_equation``
-                                       
-                                        * *K_o*: The thermal diffusivity of the oceanic sensible heat term
+        :param dict funcparams:     * *K_o*: The thermal diffusivity of the oceanic sensible heat term
 
-                                            * type: float 
-                                            * unit: meter^2/second
-                                            * value: :math:`10^2` (imported by ``Configuration.add_sellersparameters``)
-                                  
-                                        * *dz*: The average zonal ocean depth
+                                        * type: float 
+                                        * unit: :math:`meter^2\cdot second^{-1}`
+                                        * value: :math:`10^2` (imported by ``Configuration.add_sellersparameters``)
+                              
+                                    * *dz*: The average zonal ocean depth
 
-                                            * type: float 
-                                            * unit: meter
-                                            * value: 1000-4000 (imported by ``Configuration.add_sellersparameters``)
-                                  
-                                        * *l_cover*: The proportion of ocean covered surface
+                                        * type: float 
+                                        * unit: :math:`meter`
+                                        * value: 1000-4000 (imported by ``Configuration.add_sellersparameters``)
+                              
+                                    * *l_cover*: The proportion of ocean covered surface
 
-                                            * type: float 
-                                            * unit: dimensionless
-                                            * value: 0.5
-                                  
-                                        * *cp_w*: The specific heat capacity of sea water
+                                        * type: float 
+                                        * unit: -
+                                        * value: 0.5
+                              
+                                    * *cp_w*: The specific heat capacity of sea water
 
-                                            * type: float 
-                                            * unit: Joule/gramm/Kelvin
-                                            * value: :math:`4182`
-                                  
-                                        * *dens_w*: The density of water
+                                        * type: float 
+                                        * unit: :math:`Joule\cdot gramm^{-1}\cdot Kelvin^{-1}`
+                                        * value: :math:`4182`
+                              
+                                    * *dens_w*: The density of water
 
-                                            * type: float 
-                                            * unit: gramm/meter^3
-                                            * value: :math:`0.997\cdot 10^6`
-                                  
-                                        * *factor_oc*: A tuning factor applied to the oceanic sensible heat term (or it's diffusivity)
+                                        * type: float 
+                                        * unit: :math:`gramm\cdot meter^{-3}`
+                                        * value: :math:`0.997\cdot 10^6`
+                              
+                                    * *factor_oc*: A tuning factor applied to the oceanic sensible heat term (or it's diffusivity)
 
-                                            * type: float 
-                                            * unit: dimensionless
-                                            * value: any
+                                        * type: float 
+                                        * unit: -
+                                        * value: any
 
         :returns:                   The oceanic sensible heat energy transfer flux :math:`F_{oc}`
 
