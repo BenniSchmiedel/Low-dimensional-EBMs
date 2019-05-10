@@ -135,7 +135,7 @@ class flux_down:
                                         * *noiseamp*: Determines the strength of the random solar noise as one standard deviation of a normal distribution (for further information see ``numpy.random.normal``)
 
                                             * type: float 
-                                            * unit: Watt/m^2
+                                            * unit: :math:`Watt\cdot meter^{-2}`
                                             * value: >0 (e.g. noise with 1 percent of 342 is the value: 0.01*342)
 
                                         * *noisedelay*: Determines how often this random factor is updated to a new random factor (one factor persists until it is replaced)
@@ -172,7 +172,7 @@ class flux_down:
 
                                             * type:  string
                                             * unit: -
-                                            * value: 'annualmean' (average annualy and give :math:`Q` as Watt/m^2), 'year', 'month', 'day', 'second' 
+                                            * value: 'annualmean' (average annually and give :math:`Q` as Watt/m^2), 'year', 'month', 'day', 'second' 
 
                                         * *orbital*: Indicates whether the solar insolation considers manipulation through orbital parameters over time (this will replace ``lowEBMs.Packages.Functions.earthsystem.solarradiation`` by ``lowEBMs.Packages.Functions.earthsystem.solarradiation_orbital``
 
@@ -286,7 +286,7 @@ class albedo:
 
                                     * type: float
                                     * unit: -
-                                    * value: 0 :math:`\leq` alpha :math:`\leq ` 1
+                                    * value: 0 :math:`\leq alpha :math:`\leq` 1
 
         :returns:                   The globally averaged albedo value
 
@@ -1311,7 +1311,7 @@ class transfer:
 
         .. math::
 
-            F_{oc}= - K_o\Delta z l_{cover}\\frac{\Delta T}{\Delta y}\cdot C_{p,w}\rho_{w}
+            F_{oc}= - K_o l_{cover}\Delta z\\frac{\Delta T}{\Delta y}\cdot C_{p,w}\rho_{w}
 
         with the temperature difference :math:`\Delta T` provided by ``earthsystem.tempdif``. Additional parameters are the thermal diffusivity of the ocean :math:`K_{o}`, the width of the latitudinal belts :math:`\Delta y`, the average ocean depth :math:`\Delta z`, the proportion of ocean cover :math:`l_{cover}`, the specific heat capacity of water :math:`c_{p,w}` and the densitiy of water :math:`\\rho_w`.
 
