@@ -114,7 +114,7 @@ class flux_down:
                                             * unit: -
                                             * value: albedo.static, albedo.static_bud, albedo.dynamic_bud, albedo.smooth, albedo.dynamical_sel
 
-                                        * *albedoread*: Indicates if the albedo is provided as specific output
+                                        * *albedoread*: Indicates whether the albedo is provided as specific output
 
                                             * type: boolean 
                                             * unit: -
@@ -126,7 +126,7 @@ class flux_down:
                                             * unit: -
                                             * value: depending on function chosen
 
-                                        * *noise*: Indicates if solar noise is activated
+                                        * *noise*: Indicates whether solar noise is activated or not
 
                                             * type: boolean 
                                             * unit: -
@@ -144,7 +144,7 @@ class flux_down:
                                             * unit: number of iteration steps
                                             * value: minimum 1 (every iteration cycle)
 
-                                        * *seed*: Indicates if a specific seed is used to ensure that the random numbers are the one created by this specific seed (useful for comparisons to other simulation with the same solar noise)
+                                        * *seed*: Indicates whether a specific seed is used to ensure that the random numbers are the one created by this specific seed (useful for comparisons to other simulation with the same solar noise)
 
                                             * type: boolean
                                             * unit: -
@@ -156,13 +156,13 @@ class flux_down:
                                             * unit: dimensionless
                                             * value: any (if 0 it is everytime another seed)
 
-                                        * *solarinput*: Indicates if solar insolation distribution from ``climlab.solar.insolation`` are used (recommended for 1D EBMs), which are called from ``lowEBMs.Packages.Functions.earthsystem.solarradiation``
+                                        * *solarinput*: Indicates whether the solar insolation distribution from ``climlab.solar.insolation`` are used (recommended for 1D EBMs), which are called from ``lowEBMs.Packages.Functions.earthsystem.solarradiation``
 
                                             * type: boolean
                                             * unit: -
                                             * value: True/False
 
-                                        * *convfactor*: Determines if a conversation factor is used to change the solar insolation to another unit than Watt/m^2
+                                        * *convfactor*: Determines whether a conversation factor is used to change the solar insolation to another unit than Watt/m^2
 
                                             * type: float
                                             * unit: depending on the conversion applied
@@ -174,7 +174,7 @@ class flux_down:
                                             * unit: -
                                             * value: 'annualmean' (average annualy and give :math:`Q` as Watt/m^2), 'year', 'month', 'day', 'second' 
 
-                                        * *orbital*: Indicates if the solar insolation considers manipulation through orbital parameters over time (this will replace ``lowEBMs.Packages.Functions.earthsystem.solarradiation`` by ``lowEBMs.Packages.Functions.earthsystem.solarradiation_orbital``
+                                        * *orbital*: Indicates whether the solar insolation considers manipulation through orbital parameters over time (this will replace ``lowEBMs.Packages.Functions.earthsystem.solarradiation`` by ``lowEBMs.Packages.Functions.earthsystem.solarradiation_orbital``
 
                                             * type: boolean
                                             * unit: -
@@ -571,7 +571,7 @@ class flux_up:
     """ 
     Class defining radiative fluxes directed upwards.
 
-    The equations used here are, expect from ``flux_up.plack``, are estimated empirically and the standard parameters are mostly tailored to specific applications where they are used by the authors. 
+    The equations used here are, expect from ``flux_up.planck``, are estimated empirically and the standard parameters are mostly tailored to specific applications where they are used by the authors. 
 
     .. autosummary::
         :toctree:
@@ -642,7 +642,7 @@ class flux_up:
     
         .. math::
 
-            R_{up}(\phi) = - \left((A + B \cdot T(\phi)) - f_c\cdot (A_1+B_1\cdot T(\phi))\right)
+            R_{up}(\phi) = - ((A + B \cdot T(\phi)) - f_c\cdot (A_1+B_1\cdot T(\phi)))
                 
         with the temperature :math:`T(\phi)` and empirical constants :math:`A`, :math:`B`, :math:`A_1` and :math:`B_1`. The Temperature is hereby converted to Celcius because the constants are optimized for Celcius not Kelvin 
         
@@ -701,7 +701,7 @@ class flux_up:
     
         .. math::
 
-            R_{up}(\phi) = - \espilon \cdot \sigma \cdot T(\phi)^4
+            R_{up}(\phi) = - \epsilon \cdot \sigma \cdot T(\phi)^4
                 
         with the temperature :math:`T(\phi)`, the emissivity :math:`\epsilon` and stefan-boltzmann constant :math:`\sigma`.
         
@@ -743,11 +743,11 @@ class flux_up:
     
         .. math::
 
-            R_{up}(\phi) = - \sigma \cdot T(\phi)^4 \cdot \left(1-m\cdot tanh(\gamma \cdot T(\phi)^6)\right)
+            R_{up}(\phi) = - \sigma \cdot T(\phi)^4 \cdot (1-m\cdot tanh(\gamma \cdot T(\phi)^6)
                 
         with the temperature :math:`T(\phi)`, the stefan-boltzmann constant :math:`\sigma`, the atmospheric attenuation :math:`m` and an empirical constant :math:`\gamma`. 
 
-To make this function more adjustable there is an additional emissivity introduced (similar to ``flux_up.planck``).
+        To make this function more adjustable there is an additional emissivity introduced (similar to ``flux_up.planck``).
         
         **Function-call arguments** \n
 
@@ -796,11 +796,75 @@ To make this function more adjustable there is an additional emissivity introduc
 
 
 class transfer:
-    """
-    Class defining latitudinal transfer fluxes
+    """ 
+    Class defining latitudinal energy transfer transfer fluxes.
+
+    The equations used here are estimated empirically based on research of :ref:`Michail Budyko <Budyko>` and :ref:`William Sellers <Sellers>`. 
+
+    .. autosummary::
+        :toctree:
+        :nosignatures:
+
+        budyko
+        sellers
+        watervapour_sel
+        sensibleheat_air_sel
+        sensibleheat_ocean_sel
+
+    Only ``transfer.budyko`` and ``transfer.sellers`` are transfer fluxes fully representing the globes meridional energy transfer, where ``transfer.sellers`` is built up from the three specific transfer fluxes ``transfer.watervapour_sel``, ``transfer.sensibleheat_air_sel`` and ``transfer.sensibleheat_ocean_sel``. 
+
+    .. autofunction:: lowEBMs.Packages.Functions.transfer.budyko
+
+    .. autofunction:: lowEBMs.Packages.Functions.transfer.sellers
+
+    .. autofunction:: lowEBMs.Packages.Functions.transfer.watervapour_sel
+
+    .. autofunction:: lowEBMs.Packages.Functions.transfer.sensibleheat_air_sel
+
+    .. autofunction:: lowEBMs.Packages.Functions.transfer.sensibleheat_ocean_sel
 
     """
     def budyko(funcparam):
+        """ 
+        A poleward energy transfer flux based on the local to global temperature difference introduced by :ref:`Michail Budyko <Budyko>`.
+
+        It can be shown that it is equivalent to the diffusive heat transfer of the globe (North, 1975b). 
+ 
+        It is given by:
+    
+        .. math::
+
+            F_{transfer}= \beta\cdot(T(\phi)-T_g)
+                
+        with the temperature :math:`T(\phi)` of latitude :math:`\phi`, the global mean temperature :math:`T_g` and the transport parameter :math:`\beta`. 
+        
+        **Function-call arguments** \n
+
+        :param dict funcparams:     a dictionary of the function's parameters directly parsed from ``lowEBMs.Packages.ModelEquation.model_equation``
+                                  
+                                        * *beta*: The transport parameter
+
+                                            * type: float 
+                                            * unit: Watt/meter^2/Kelvin
+                                            * value: any (standard 3.74)
+                                  
+                                        * *Read*: Indicates whether the transfer flux is specifically provided as output
+
+                                            * type: boolean 
+                                            * unit:  -
+                                            * value: True/False (standard True)
+                                  
+                                        * *Activated*: Indicates whether the transfer flux is actually activated
+
+                                            * type: boolean 
+                                            * unit: -
+                                            * value: True/False (standard True)
+
+        :returns:                   The Budyko energy transfer flux :math:`F_{transfer}`
+
+        :rtype:                     array(floats)  (1D) 
+
+        """
         #Diffusive transfer flow by Budyko
         #A_budpama=[beta]
         list_parameters=list(funcparam.values())
@@ -816,6 +880,188 @@ class transfer:
         return F
 
     def sellers(funcparam):
+        """ 
+        A energy transfer flux based on a combination of several transfer fluxes introduced by :ref:`William Sellers <Sellers>`.
+
+        It is defined as the difference of a sum of northward and a sum of southward transfer fluxes of one latitudinal belt. The sum (in one direction) :math:`P` consists of ``transfer.watervapour_sel``, ``transfer.sensibleheat_air_sel`` and ``transfer.sensibleheat_ocean_sel``:
+    
+        .. math::
+
+            P(\phi)= L\cdot c_{wv}(\phi) + C_{air}(\phi) + F_{oc}(\phi)
+                
+        with the energy transfer through watervapour :math:`c_{wv}(\phi)`, the energy transfer through atmospheric sensible heat :math:`C_{air}(\phi)` and  the energy transfer through oceanic sensible heat :math:`F_{oc}(\phi)` of latitude :math:`\phi` and the latent heat of condensation :math:`L`.
+        
+        The total energy flux, the difference of the southward and northward flux :math:`P(\phi)` weighted with the length of a latitudinal circle :math`l(\phi)` and the area of the latitudinal belt :math:`A(\phi)`, is given by:
+
+        .. math::
+
+            F_{transfer} = (P(\phi)\cdot l(\phi) - P (\phi+d\phi)\cdot l (\phi+d\phi))\cdot \\frac{1}{A(\phi)}
+
+        where :math:`P(\phi)\cdot l(\phi)` is the sum of energy transfer from the latitudinal belt to the southern boundary and :math:`P (\phi+d\phi)\cdot l (\phi+d\phi)` the one to the nothern boundary (:math:`d\phi` indicates the step to the next northern gridpoint).
+        
+        .. Note::
+
+            The Sellers energy transfer flux comes with a large set of parameters, some given as scalars and some as distribution over the latitudes. In order to simplify the input of these parameters, the module ``lowEBMs.Packages.Configuration.add_sellersparameters`` can be called before running the algorithm which imports the parameter distributions into the *funcparam* dictionary. **Scalars are not included there!** The easiest way is to copy the prewritten configuration of this function from the *FunctionCalls.txt* in *lowEBMs/Turotials* and use ``Configuration.add_sellersparameters``.  
+
+        **Function-call arguments** \n
+
+        :param dict funcparams:     a dictionary of the function's parameters directly parsed from ``lowEBMs.Packages.ModelEquation.model_equation``
+                                  
+                                        * *Readout*: Indicates whether **all** sellers transfer fluxes are provided as output
+
+                                            * type: boolean 
+                                            * unit: -
+                                            * value: True/False (standard True)
+                                  
+                                        * *Activated*: Indicates if the transfer flux is actually activated
+
+                                            * type: boolean 
+                                            * unit: -
+                                            * value: True/False (standard True)
+                                  
+                                        * *K_wv*: The thermal diffusivity of the watervapour term
+
+                                            * type: float 
+                                            * unit: meter^2/second
+                                            * value: :math:`10^5` (imported by ``Configuration.add_sellersparameters``)
+                                  
+                                        * *K_h*: The thermal diffusivity of the atmospheric sensible heat term
+
+                                            * type: float 
+                                            * unit: meter^2/second
+                                            * value: :math:`10^6` (imported by ``Configuration.add_sellersparameters``)
+                                  
+                                        * *K_o*: The thermal diffusivity of the oceanic sensible heat term
+
+                                            * type: float 
+                                            * unit: meter^2/second
+                                            * value: :math:`10^2` (imported by ``Configuration.add_sellersparameters``)
+                                  
+                                        * *g*: The gravitational acceleration
+
+                                            * type: float 
+                                            * unit: meter/second^2
+                                            * value: :math:`9.81`
+                                  
+                                        * *a*: Empricial constant to calculate the meridional windspeed
+
+                                            * type: float 
+                                            * unit: meter/second/°Celcius
+                                            * value: :math:`10^-2` (imported by ``Configuration.add_sellersparameters``)
+                                  
+                                        * *eps*: Empirical constant of the saturation specific humidity
+
+                                            * type: float 
+                                            * unit: dimensionless
+                                            * value: 0.622
+                                  
+                                        * *p*: The average sea level pressure
+
+                                            * type: float 
+                                            * unit: mbar
+                                            * value: 1000
+                                  
+                                        * *e0*: The mean sea level saturation vapour pressure
+
+                                            * type: float 
+                                            * unit: mbar
+                                            * value: 17
+                                  
+                                        * *L*: The latent heat of condensation
+
+                                            * type: float 
+                                            * unit: Joule/gramm
+                                            * value: :math:`2.5\cdot 10^3`
+                                  
+                                        * *Rd*: The gas constant
+
+                                            * type: float 
+                                            * unit: Joule/gramm/Kelvin
+                                            * value: :math:`0.287`
+                                  
+                                        * *dy*: The width of an latitudinal belt
+
+                                            * type: float 
+                                            * unit: meter
+                                            * value: :math:`1.11\cdot 10^6`
+                                  
+                                        * *dp*: The tropospheric pressure depth
+
+                                            * type: float 
+                                            * unit: mbar
+                                            * value: 700-900 (imported by ``Configuration.add_sellersparameters``)
+                                  
+                                        * *cp*: The specific heat capacity of air at constant pressure
+
+                                            * type: float 
+                                            * unit: Joule/gramm/Kelvin
+                                            * value: :math:`1.004`
+                                  
+                                        * *dz*: The average zonal ocean depth
+
+                                            * type: float 
+                                            * unit: meter
+                                            * value: 1000-4000 (imported by ``Configuration.add_sellersparameters``)
+                                  
+                                        * *l_cover*: The proportion of ocean covered surface
+
+                                            * type: float 
+                                            * unit: dimensionless
+                                            * value: 0.5
+                                  
+                                        * *re*: The earth's radius
+
+                                            * type: float 
+                                            * unit: meter
+                                            * value: :math:`6.371\cdot 10^6`
+                                  
+                                        * *cp_w*: The specific heat capacity of sea water
+
+                                            * type: float 
+                                            * unit: Joule/gramm/Kelvin
+                                            * value: :math:`4182`
+                                  
+                                        * *dens_w*: The density of water
+
+                                            * type: float 
+                                            * unit: gramm/meter^3
+                                            * value: :math:`0.997\cdot 10^6`
+                                  
+                                        * *factor_wv*: A tuning factor applied to the watervapour term
+
+                                            * type: float 
+                                            * unit: dimensionless
+                                            * value: any
+                                  
+                                        * *factor_air*: A tuning factor applied to the atmospheric sensible heat term
+
+                                            * type: float 
+                                            * unit: dimensionless
+                                            * value: any
+                                  
+                                        * *factor_oc*: A tuning factor applied to the oceanic sensible heat term (or it's diffusivity)
+
+                                            * type: float 
+                                            * unit: dimensionless
+                                            * value: any
+                                  
+                                        * *factor_kwv*: A tuning factor applied to the thermal diffusivity of the watervapour term
+
+                                            * type: float 
+                                            * unit: dimensionless
+                                            * value: any
+                                  
+                                        * *factor_kair*: A tuning factor applied to the thermal diffusivity of the atmospheric sensible heat term
+
+                                            * type: float 
+                                            * unit: dimensionless
+                                            * value: any
+
+        :returns:                   The Sellers energy transfer flux :math:`F_{transfer}`
+
+        :rtype:                     array(floats)  (1D) 
+
+        """
         #Combined transfer fluxes, Sellers
         #Transfer_Sel=WV_Sel+SH_airSel+SH_oceanSel
         #Transfer_Selparam=[K_wv,g,a,eps,p,e0,L,Rd,dy,dp,K_h,cp,K_o,dz,l_cover,re]
@@ -845,6 +1091,7 @@ class transfer:
                 Vars.Area=earthsystem.area_latitudes(re)
                 
             #Converting Arrays to two arrays with an one element shift
+            #Apply parallelization if activated
             if parallelization==True: 
                 P1=[0]*number_of_parallels
                 P0=[0]*number_of_parallels
@@ -873,6 +1120,95 @@ class transfer:
         return Transfer
 
     def watervapour_sel(funcparam):
+        """ 
+        The energy transfer flux through watervapour used in ``transfer.sellers``.
+        
+        It is based on the transport of watervapour to another latitudinal belt and it's condensation which releases energy. It is described through:
+
+        .. math::
+
+            c_{wv}=(v q - K_{wv}\\frac{\Delta q}{\Delta y})\cdot \\frac{\Delta p}{g}
+
+        with the meridional windspeed :math:`v` provided by ``earthsstem.meridionalwind_sel``, the specific saturation humidity :math:`q` provided by ``earthsystem.specific_saturation_humidity_sel`` and the humidity difference :math:`dq` provided by ``earthsystem.humidity_difference``. Additional parameters are the thermal diffusivity of watervapour :math:`K_{wv}`, the width of the latitudinal belts :math:`\Delta y`, the tropospheric pressure depth :math:`\Delta p` and the gravitational acceleration :math:`g`.
+
+        For purposes of tuning, :math:`c_{wv}` and :math:`K_{wv} are provided with the scaling factors *factor_wv* and *factor_kwv*.
+
+        **Function-call arguments** \n
+
+        :param dict funcparams:     a dictionary of the function's parameters directly parsed from ``lowEBMs.Packages.ModelEquation.model_equation``
+                                  
+                                        * *K_wv*: The thermal diffusivity of the watervapour term
+
+                                            * type: float 
+                                            * unit: meter^2/second
+                                            * value: :math:`10^5` (imported by ``Configuration.add_sellersparameters``)
+                                  
+                                        * *g*: The gravitational acceleration
+
+                                            * type: float 
+                                            * unit: meter/second^2
+                                            * value: :math:`9.81`
+                                  
+                                        * *eps*: Empirical constant of the saturation specific humidity
+
+                                            * type: float 
+                                            * unit: dimensionless
+                                            * value: 0.622
+                                  
+                                        * *p*: The average sea level pressure
+
+                                            * type: float 
+                                            * unit: mbar
+                                            * value: 1000
+                                  
+                                        * *e0*: The mean sea level saturation vapour pressure
+
+                                            * type: float 
+                                            * unit: mbar
+                                            * value: 17
+                                  
+                                        * *L*: The latent heat of condensation
+
+                                            * type: float 
+                                            * unit: Joule/gramm
+                                            * value: :math:`2.5\cdot 10^3`
+                                  
+                                        * *Rd*: The gas constant
+
+                                            * type: float 
+                                            * unit: Joule/gramm/Kelvin
+                                            * value: :math:`0.287`
+                                  
+                                        * *dy*: The width of an latitudinal belt
+
+                                            * type: float 
+                                            * unit: meter
+                                            * value: :math:`1.11\cdot 10^6`
+                                  
+                                        * *dp*: The tropospheric pressure depth
+
+                                            * type: float 
+                                            * unit: mbar
+                                            * value: 700-900 (imported by ``Configuration.add_sellersparameters``)
+                                  
+                                        * *factor_wv*: A tuning factor applied to the watervapour term
+
+                                            * type: float 
+                                            * unit: dimensionless
+                                            * value: any
+                                  
+                                        * *factor_kwv*: A tuning factor applied to the thermal diffusivity of the watervapour term
+
+                                            * type: float 
+                                            * unit: dimensionless
+                                            * value: any
+                                  
+
+        :returns:                   The watervapour energy transfer flux :math:`c_{wv}`
+
+        :rtype:                     array(floats)  (1D) 
+
+        """
         #Transfer flow of water vapour across latitudinal bands
         #WV_Selparam=[K_wv,g,a,eps,p,e0,L,Rd,dy,dp]
         #list_parameters=list(funcparam.values())
@@ -892,6 +1228,70 @@ class transfer:
         return cL
 
     def sensibleheat_air_sel(funcparam):
+        """ 
+        The energy transfer flux through atmospheric sensible heat used in ``transfer.sellers``.
+
+        It is based on the heat transport through wind and convection to another latitudinal belt. It is described through:
+
+        .. math::
+
+            C_{air}=(v T - K_h\\frac{\Delta T}{\Delta y})\cdot \\frac{c_p}{g} \Delta p
+
+        with the meridional windspeed :math:`v` provided by ``earthsstem.meridionalwind_sel``, and the temperature difference :math:`\Delta T` provided by ``earthsystem.tempdif``. Additional parameters are the temperature :math:`T`, the thermal diffusivity of air :math:`K_{h}`, the width of the latitudinal belts :math:`\Delta y`, the tropospheric pressure depth :math:`\Delta p`, the specific heat capacity of air :math:`c_p` and the gravitational acceleration :math:`g`.
+
+        For purposes of tuning, :math:`C_{air}` and :math:`K_{h} are provided with the scaling factors *factor_air* and *factor_kair*.
+
+        **Function-call arguments** \n
+
+        :param dict funcparams:     a dictionary of the function's parameters directly parsed from ``lowEBMs.Packages.ModelEquation.model_equation``
+                                  
+                                        * *K_h*: The thermal diffusivity of the atmospheric sensible heat term
+
+                                            * type: float 
+                                            * unit: meter^2/second
+                                            * value: :math:`10^6` (imported by ``Configuration.add_sellersparameters``)
+                                                                    
+                                        * *g*: The gravitational acceleration
+
+                                            * type: float 
+                                            * unit: meter/second^2
+                                            * value: :math:`9.81`
+
+                                        * *dy*: The width of an latitudinal belt
+
+                                            * type: float 
+                                            * unit: meter
+                                            * value: :math:`1.11\cdot 10^6`
+                                  
+                                        * *dp*: The tropospheric pressure depth
+
+                                            * type: float 
+                                            * unit: mbar
+                                            * value: 700-900 (imported by ``Configuration.add_sellersparameters``)
+                                  
+                                        * *cp*: The specific heat capacity of air at constant pressure
+
+                                            * type: float 
+                                            * unit: Joule/gramm/Kelvin
+                                            * value: :math:`1.004`
+                                  
+                                        * *factor_air*: A tuning factor applied to the atmospheric sensible heat term
+
+                                            * type: float 
+                                            * unit: dimensionless
+                                            * value: any
+                                  
+                                        * *factor_kair*: A tuning factor applied to the thermal diffusivity of the atmospheric sensible heat term
+
+                                            * type: float 
+                                            * unit: dimensionless
+                                            * value: any
+
+        :returns:                   The atmospheric sensible heat energy transfer flux :math:`C_{air}`
+
+        :rtype:                     array(floats)  (1D) 
+
+        """
         #Transfer flux due to atmosphere sensible heat transfer across latitudinal bands
         #SH_airSelparam=[K_h,g,a,dy,cp,dp]
         #list_parameters=list(funcparam.values())
@@ -900,14 +1300,72 @@ class transfer:
         #equation of the atmosphere sensible heat transfer, with dependence on Temperature and Temperature difference
         if parallelization==True:
             a1=Vars.meridional*Vars.T[:,:-1]
-            a2=K_h**factor_kair*Vars.tempdif/dy
+            a2=K_h*factor_kair*Vars.tempdif/dy
             a3=cp*dp*const.mb_to_Pa/g
             C=(a1-a2)*a3*factor_air
         else:
-            C=(Vars.meridional*Vars.T[:-1]-K_h**factor_kair*(Vars.tempdif/(dy)))*(cp*dp*const.mb_to_Pa/g)*factor_air
+            C=(Vars.meridional*Vars.T[:-1]-K_h*factor_kair*(Vars.tempdif/(dy)))*(cp*dp*const.mb_to_Pa/g)*factor_air
         return C
         
     def sensibleheat_ocean_sel(funcparam):
+        """ 
+        The energy transfer flux through oceanic sensible heat used in ``transfer.sellers``.
+
+        It is based on the heat transport through oceanic convection to another latitudinal belt. It is described through:
+
+        .. math::
+
+            F_{oc}= - K_o\Delta z l_{cover}\\frac{\Delta T}{\Delta y}\cdot C_{p,w}\rho_{w}
+
+        with the temperature difference :math:`\Delta T` provided by ``earthsystem.tempdif``. Additional parameters are the thermal diffusivity of the ocean :math:`K_{o}`, the width of the latitudinal belts :math:`\Delta y`, the average ocean depth :math:`\Delta z`, the proportion of ocean cover :math:`l_{cover}`, the specific heat capacity of water :math:`c_{p,w}` and the densitiy of water :math:`\rho_w`.
+
+        For purposes of tuning, a scaling factors *factor_oc* is provided.
+
+        **Function-call arguments** \n
+
+        :param dict funcparams:     a dictionary of the function's parameters directly parsed from ``lowEBMs.Packages.ModelEquation.model_equation``
+                                       
+                                        * *K_o*: The thermal diffusivity of the oceanic sensible heat term
+
+                                            * type: float 
+                                            * unit: meter^2/second
+                                            * value: :math:`10^2` (imported by ``Configuration.add_sellersparameters``)
+                                  
+                                        * *dz*: The average zonal ocean depth
+
+                                            * type: float 
+                                            * unit: meter
+                                            * value: 1000-4000 (imported by ``Configuration.add_sellersparameters``)
+                                  
+                                        * *l_cover*: The proportion of ocean covered surface
+
+                                            * type: float 
+                                            * unit: dimensionless
+                                            * value: 0.5
+                                  
+                                        * *cp_w*: The specific heat capacity of sea water
+
+                                            * type: float 
+                                            * unit: Joule/gramm/Kelvin
+                                            * value: :math:`4182`
+                                  
+                                        * *dens_w*: The density of water
+
+                                            * type: float 
+                                            * unit: gramm/meter^3
+                                            * value: :math:`0.997\cdot 10^6`
+                                  
+                                        * *factor_oc*: A tuning factor applied to the oceanic sensible heat term (or it's diffusivity)
+
+                                            * type: float 
+                                            * unit: dimensionless
+                                            * value: any
+
+        :returns:                   The oceanic sensible heat energy transfer flux :math:`F_{oc}`
+
+        :rtype:                     array(floats)  (1D) 
+
+        """
         #Transer flux due to sensible heat transfer from ocean currents
         #SH_oceanSelparam=[K_o,dz,l_cover,dy,re]
         #list_parameters=list(funcparam.values())
