@@ -286,7 +286,7 @@ class albedo:
 
                                     * type: float
                                     * unit: -
-                                    * value: 0 :math:`\leq alpha :math:`\leq` 1
+                                    * value: 0 :math:`\leq` alpha :math:`\leq` 1
 
         :returns:                   The globally averaged albedo value
 
