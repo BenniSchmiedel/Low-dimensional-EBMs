@@ -32,10 +32,6 @@ Additionally defined are tools for evaluation or simplification in the class:
 
     tools
 
-
-
-     
-
 """
 
 import numpy as np
@@ -190,9 +186,9 @@ class flux_down:
                                             * unit: kiloyear
                                             * value: -5000 to 0 (if 0, the year 1950 is used)
 
-        :returns:                   A scalar or distribution of scalars over latitude of absorbed solar insolation :math:`R_{down}` (depending on 0D, 1D and gridresolution)
+        :returns:                   The absorbed solar insolation :math:`R_{down}`
 
-        :rtype:                     Float / Array(Floats)
+        :rtype:                     float / array(floats)  (0D / 1D)
 
 
         """
@@ -294,7 +290,7 @@ class albedo:
 
         :returns:                   The globally averaged albedo value
 
-        :rtype:                     float       
+        :rtype:                     float (0D)      
         """
         return alpha
 
@@ -338,7 +334,7 @@ class albedo:
 
         :returns:                   The latitudinal albedo distribution
 
-        :rtype:                     array(floats)  
+        :rtype:                     array(floats)  (1D) 
         """
         #Albedo function as used in budyko (1969), with  2albedo transitions fixed to latitudes (border_1, border_2)
         #and fixed albedos, with intermediate case +0.18 and arctic case +0.3
@@ -407,7 +403,7 @@ class albedo:
 
         :returns:                   The latitudinal albedo distribution
 
-        :rtype:                     array(floats)
+        :rtype:                     array(floats) (1D)
   
         """        
 
@@ -490,7 +486,7 @@ class albedo:
 
         :returns:                   The latitudinal albedo distribution
 
-        :rtype:                     array(floats) (also possible in 0D)
+        :rtype:                     float / array(floats)  (0D / 1D)
   
         """
         #Defining a smooth abledotransition from an icefree albedo alpha_f to an icecovered albedo alpha_i
@@ -531,7 +527,7 @@ class albedo:
 
         :returns:                   The latitudinal albedo distribution
 
-        :rtype:                     array(floats)
+        :rtype:                     array(floats)  (1D)
   
         """
         #Defining the albedo function defined by sellers (1969), with a linear dependency 
@@ -573,11 +569,62 @@ class albedo:
 
 class flux_up:
     """ 
-    Class defining upward radiative fluxes
+    Class defining radiative fluxes directed upwards.
+
+    The equations used here are, expect from ``flux_up.plack``, are estimated empirically and the standard parameters are mostly tailored to specific applications where they are used by the authors. 
+
+    .. autosummary::
+        :toctree:
+        :nosignatures:
+
+        budyko_noclouds
+        budyko_clouds
+        planck
+        sellers
+
+    .. autofunction:: lowEBMs.Packages.Functions.flux_up.budyko_noclouds
+
+    .. autofunction:: lowEBMs.Packages.Functions.flux_up.budyko_clouds
+
+    .. autofunction:: lowEBMs.Packages.Functions.flux_up.planck
+
+    .. autofunction:: lowEBMs.Packages.Functions.flux_up.sellers
 
     """
 
-    def budyko_noclouds(funcparam):     
+    def budyko_noclouds(funcparam):  
+        """ 
+        An empirically determined upward radiative energy flux which approximates the top of the atmosphere radiation emitted to space to be dependant linear on temperature. The presence of clouds is not specifically taken into account.
+
+        The upward radiative energy flux :math:`R_{up}` of latitude :math:`\phi` is given by:
+    
+        .. math::
+
+            R_{up}(\phi) = - (A + B \cdot T(\phi))
+                
+        with the temperature :math:`T(\phi)` and empirical constants :math:`A` and :math:`B`. The Temperature is hereby converted to Celcius because the constants are optimized for Celcius not Kelvin. 
+        
+        **Function-call arguments** \n
+
+        :param dict funcparams:     a dictionary of the function's parameters directly parsed from ``lowEBMs.Packages.ModelEquation.model_equation``
+                                    
+                                        * *A*: Empirical offset parameter
+
+                                            * type: float 
+                                            * unit: Watt/meter^2
+                                            * value: any (standard 222.74)
+                                    
+                                        * *B*: Empirical gradient parameter
+
+                                            * type: float 
+                                            * unit: Watt/meter^2/°Celcius
+                                            * value: any (standard 2.23)
+
+        :returns:                   The upward radiative energy flux :math:`R_{up}`
+
+        :rtype:                     float / array(floats)  (0D / 1D) 
+
+        """
         #Outgoing radiation, from empirical approximation formula by Budyko (no clouds)
         #R_outbudncparam=[A,B]
         list_parameters=list(funcparam.values())
@@ -588,6 +635,55 @@ class flux_up:
         return R_out
 
     def budyko_clouds(funcparam):
+        """ 
+        An empirically determined upward radiative energy flux which approximates the top of the atmosphere radiation emitted to space to be dependant linear on temperature. The presence of clouds is specifically taken into account with a second temperature dependant term.
+
+        The upward radiative energy flux :math:`R_{up}` of latitude :math:`\phi` is given by:
+    
+        .. math::
+
+            R_{up}(\phi) = - \left((A + B \cdot T(\phi)) - f_c\cdot (A_1+B_1\cdot T(\phi))\right)
+                
+        with the temperature :math:`T(\phi)` and empirical constants :math:`A`, :math:`B`, :math:`A_1` and :math:`B_1`. The Temperature is hereby converted to Celcius because the constants are optimized for Celcius not Kelvin 
+        
+        **Function-call arguments** \n
+
+        :param dict funcparams:     a dictionary of the function's parameters directly parsed from ``lowEBMs.Packages.ModelEquation.model_equation``
+                                    
+                                        * *A*: Empirical offset parameter
+
+                                            * type: float 
+                                            * unit: Watt/meter^2
+                                            * value: any (standard 222.74)
+                                    
+                                        * *B*: Empirical gradient parameter
+
+                                            * type: float 
+                                            * unit: Watt/meter^2/°Celcius
+                                            * value: any (standard 2.23)
+
+                                        * *A1*: Empirical offset parameter cloud term
+
+                                            * type: float 
+                                            * unit: Watt/meter^2
+                                            * value: any (standard 47.73)
+
+                                        * *B1*: Empirical gradient parameter cloud term
+
+                                            * type: float 
+                                            * unit: Watt/meter^2/°Celcius
+                                            * value: any (standard 1.59)
+
+                                        * *f_c*: Cloud fraction
+
+                                            * type: float 
+                                            * unit: dimensionless
+                                            * value: 0 :math:`\leq` f_c :math:`\leq` 1 (standard 0.5)
+
+        :returns:                   The upward radiative energy flux :math:`R_{up}`
+
+        :rtype:                     float / array(floats)  (0D / 1D) 
+        """
         #Outgoing radiation, from empirical approximation formula by Budyko (clouds)
         #R_outbudcparam=[A,B,A1,B1,f_c]
         list_parameters=list(funcparam.values())
@@ -598,6 +694,38 @@ class flux_up:
         return R_out
 
     def planck(funcparam):
+        """ 
+        The stefan-boltzmann radiation for a grey body as radiative energy flux directed upward. The ideal stefan-boltzmann radiation with a temperature to the power of 4 scaled with an emissivity factor :math:`\epsilon`.
+
+        The upward radiative energy flux :math:`R_{up}` of latitude :math:`\phi` is given by:
+    
+        .. math::
+
+            R_{up}(\phi) = - \espilon \cdot \sigma \cdot T(\phi)^4
+                
+        with the temperature :math:`T(\phi)`, the emissivity :math:`\epsilon` and stefan-boltzmann constant :math:`\sigma`.
+        
+        **Function-call arguments** \n
+
+        :param dict funcparams:     a dictionary of the function's parameters directly parsed from ``lowEBMs.Packages.ModelEquation.model_equation``
+                                    
+                                        * *grey*: The emissivity (greyness)
+
+                                            * type: float 
+                                            * unit: dimensionless
+                                            * value: 0 :math:`\leq` grey :math:`\leq` 1 (standard 0.612)
+                                    
+                                        * *sigma*: Stefan-boltzmann constant
+
+                                            * type: float 
+                                            * unit: Watt/meter^2/Kelvin^4
+                                            * value: :math:`5,67\cdot 10^{-8}` (use const.sigma to load it from ``climlab.constants``)
+
+        :returns:                   The upward radiative energy flux :math:`R_{up}`
+
+        :rtype:                     float / array(floats)  (0D / 1D) 
+
+        """
         #Outgoing radiation, from plancks radiation law
         #R_outplanckparam=[grey,sig]
         list_parameters=list(funcparam.values())
@@ -608,11 +736,57 @@ class flux_up:
         return R_out
 
     def sellers(funcparam):
+        """ 
+        An empirically, by :ref:`William Sellers <Sellers>` adjusted stefan-boltzmann radiation as radiative energy flux directed upward. The ideal stefan-boltzmann radiation with a temperature to the power of 4 and an additional tangens hyperbolicus term with the temperature to the power of 6 to take into account that cloud formation is temperature dependant.
+ 
+        The upward radiative energy flux :math:`R_{up}` of latitude :math:`\phi` is given by:
+    
+        .. math::
+
+            R_{up}(\phi) = - \sigma \cdot T(\phi)^4 \cdot \left(1-m\cdot tanh(\gamma \cdot T(\phi)^6)\right)
+                
+        with the temperature :math:`T(\phi)`, the stefan-boltzmann constant :math:`\sigma`, the atmospheric attenuation :math:`m` and an empirical constant :math:`\gamma`. 
+
+To make this function more adjustable there is an additional emissivity introduced (similar to ``flux_up.planck``).
+        
+        **Function-call arguments** \n
+
+        :param dict funcparams:     a dictionary of the function's parameters directly parsed from ``lowEBMs.Packages.ModelEquation.model_equation``
+                                    
+                                        * *m*: The atmospheric attenuation
+
+                                            * type: float 
+                                            * unit: dimensionless
+                                            * value: 0 :math:`\leq` m :math:`\leq` 1 (standard 0.5)
+                                    
+                                        * *sigma*: Stefan-boltzmann constant
+
+                                            * type: float 
+                                            * unit: Watt/meter^2/Kelvin^4
+                                            * value: :math:`5,67\cdot 10^{-8}` (use const.sigma to load it from ``climlab.constants``)
+                                    
+                                        * *gamma*: Empirical constant in the cloud term
+
+                                            * type: float 
+                                            * unit: 1/Kelvin^6
+                                            * value: :math:`1.9\cdot 10^{-15}`
+                                    
+                                        * *grey*: The emissivity (greyness)
+
+                                            * type: float 
+                                            * unit: dimensionless
+                                            * value: 0 :math:`\leq` grey :math:`\leq` 1 (standard 1)
+
+        :returns:                   The upward radiative energy flux :math:`R_{up}`
+
+        :rtype:                     float / array(floats)  (0D / 1D) 
+
+        """
         #Outgoing radiation, from Sellers earth-atmosphere model
         #R_outselparam=[sig,grey,gamma,m]"""
         list_parameters=list(funcparam.values())
-        m,sig,gamma,grey=list_parameters
-        R_out=np.transpose(-grey*sig*np.transpose(Vars.T)**4*(1-m*np.tanh(gamma*np.transpose(Vars.T)**6)))
+        m,sigma,gamma,grey=list_parameters
+        R_out=np.transpose(-grey*sigma*np.transpose(Vars.T)**4*(1-m*np.tanh(gamma*np.transpose(Vars.T)**6)))
         if Runtime_Tracker % 4*data_readout == 0:    #Only on 4th step (due to rk4)
             Vars.Read[11][int(Runtime_Tracker/(4*data_readout))]=R_out
         return R_out
