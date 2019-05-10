@@ -109,7 +109,7 @@ The summary of what you need to get the model running. Import packages::
     from lowEBMs.Packages.RK4 import rk4alg
     from lowEBMs.Packages.ModelEquation import model_equation
 
-and run the specific functions::
+and run the specific modules::
 
     configuration=importer('EBM0D_simple_config.ini')
     eq=configuration['eqparam']
