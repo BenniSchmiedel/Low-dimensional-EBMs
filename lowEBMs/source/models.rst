@@ -10,7 +10,7 @@ However, the versatility of the resolution is limited to low dimensional EBMs fr
 Physical Background
 ===================
 
-In general, energy balance models describe the behaviour of a planet's energy balance over time. Here, the focus is obviously on the earth's energy balance, but EBMs can simulate the climate of other planets as well, which is done by the PlaSIM_ model for example.
+In general, energy balance models describe the behaviour of a planet's energy balance over time. Here, the focus is obviously on the earth's energy balance, but EBMs are generally not restricted to describe the earth's energy balance.
 
 .. figure:: _static/EB.png
     :align: center
@@ -45,7 +45,7 @@ If one is interested in the 0D case, the model equation above suffices to descri
     R_{down} & = (1-\alpha)\cdot Q \\
     R_{up} & = - \epsilon\sigma T^4
 
-with the albedo :math:`\alpha`, the solar insolation :math:`Q`, the Stefan-Boltzmann constant :math:`\sigma`, and the emissivity :math:`\espilon`, the simplest form of an EBM is described by:
+with the albedo :math:`\alpha`, the solar insolation :math:`Q`, the Stefan-Boltzmann constant :math:`\sigma`, and the emissivity :math:`\epsilon`, the simplest form of an EBM is described by:
 
 .. math::
 
@@ -64,9 +64,9 @@ With the chapter :doc:`How to use <howtouse>` it will be investigated in detail 
 1D EBMs do not differ much from 0D ones. In 1D EBMs the earth is commonly described by a grid of latitudinal bands.
 The model equation as introduced above_ can directly be transfered to be valid for each latitudinal band seperately. 
 
-As already mentioned, 1D EBMs use latitudinal transfer energy fluxes :math:`F_{transfer}` which consider an exchange of energy between those latitudinal bands. This term is crucial, because the energy balance resolved over the latitudes shows strong differences between equator and poles, which is logical due to the stronger insolation at the equator.
+As already mentioned, 1D EBMs use latitudinal transfer energy fluxes :math:`F_{transfer}` which consider an exchange of energy between latitudinal bands. This term is crucial, because the energy balance resolved over the latitudes shows strong differences between equator and poles due to the stronger insolation at the equator.
 
-By indentifying each latitudinal band and all its parameters with an index i, the simplest form of an 1D-EBM is described by:
+By identifying each latitudinal band and all its parameters with an index i, the simplest form of an 1D-EBM is described by:
 
 .. math::
 
@@ -97,7 +97,7 @@ An example zonal mean temperature distribution:
 Sellers-type model
 ^^^^^^^^^^^^^^^^^^
 
-The EBM constructed :doc:`William Seller  <references>` is adapted even more to global earth observation data and thereby is constructed with more complex terms than the EBM from Budyko. The key features of this model are:
+The EBM constructed by :doc:`William Seller  <references>` is adapted even more to global earth observation data than the Budyko-type model and thereby is constructed with more complex terms. The key features of this model are:
 
 - The Stefan-Boltzmann radiation law as upward radiation flux extended with a term considering atmospheric attenuation.
 

@@ -38,7 +38,7 @@ Alternatively, you can clone the git repository of the source code and manually 
 Export Tutorial Files
 =====================
 
-``lowEBMs`` comes with a :doc:`list of tutorial files <tutorials>` supplemented in a subfolder of the package. When the package is installed via pip, it is automatically inbound in your specific python environment. To easily extract this tutorial files, a copy function is added which allows you to export the *jupyter notebooks* and *configuration.ini* files to your prefered directory.
+``lowEBMs`` comes with a :doc:`list of tutorial files <tutorials>` supplemented in a subfolder of the package. When the package is installed via pip, it is automatically inbound in your specific python environment. To easily extract this tutorial files, a copy function is added which allows you to export the *jupyter notebooks* and *configuration.ini* files to your preferred directory.
 
 There are two options:
 Go to the command line, change your directory to the one where you want the files and use::

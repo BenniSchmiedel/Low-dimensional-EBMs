@@ -8,7 +8,7 @@ As already mentioned in the section :doc:`How to use <howtouse>`:
 
 .. Important::
 
-   The configuration.ini file will provide the physical sense of the EBM!
+   The configuration.ini file will provide the model setup and physical sense of the EBM!
 
 Here shown is, how this file is structured and which syntax has to be maintained to make it readable to the ``importer`` function.
 
@@ -16,12 +16,16 @@ There are four main components of the file, the modelequation parameters ``eqpar
 
 If you want to put together a new model simply create a textfile with the suffix **.ini**. These four main components will be used as header of a section, whereas the headers the ``funccomp`` has to be replaced by ``func0``, ``func1``,... depending on how many functions you want to include. It will look like this::
 
+    #Initial model setup & algorithm parameters 
+    #------------------------------------------
     [eqparam]
 
     [rk4input]
     
     [initials]
 
+    #Model structure & physical equation parameters
+    #----------------------------------------------
     [func1]
     
     [func2]
@@ -29,14 +33,30 @@ If you want to put together a new model simply create a textfile with the suffix
     .
     [func_]
 
-Now each section has to be filled with parameters. ``eqparam``, ``rk4input`` and ``initials`` always contain the same parameters since they define **how** the algorithm runs. The func-sections have to be modified since they define **which** model equation the algorithm solves. 
-
 .. Note::
 
    The order of your sections doesn't matter as long as the headers are correctly labeled.
 
-The parameters of the sections look like this (which is the configuration of the 0D-EBM given as demo)::
+.. Important::
+    
+   To define which function you add, insert the name of the function as parameter ``func=name``, then add the required parameters below (see :doc:`Functions <code/functions>`).
 
+Now each section has to be filled with parameters. ``eqparam``, ``rk4input`` and ``initials`` always contain the same parameters since they define **how** the algorithm runs. The func-sections have to be modified since they define **which** model equation the algorithm solves. 
+
+A detailed definition of the parameters for the model setup can be looked up here:
+
+.. toctree::
+    :maxdepth: 2
+    
+    configdescription
+
+Example Input 0D EBM
+====================
+
+For a 0D-EBM (the *EBM0D_simple_config.ini*), the model setup might look like this::
+
+    #Initial model setup & algorithm parameters 
+    #------------------------------------------
     [eqparam]
     C_ao=70*4.2e6
 
@@ -66,10 +86,10 @@ The parameters of the sections look like this (which is the configuration of the
     initial_temperature_noise=True
     initial_temperature_noise_amplitude=5
 
-If the meaning of parameters is unclear, there is a detailed definition of the parameters given in the attached Readme.txt.
+If you now want to give a model structure with a downward radiative energy flux and a upward radiative energy flux, this might look like this::
 
-If you now want to add functions you can write them into the configfile with the scheme shown above. If we want to add two functions, one for incoming radiative energy flux and one for outgoing radiative energy flux, this might look like this::
-
+    #Model structure & physical equation parameters
+    #----------------------------------------------
     [func0]
     func=flux_down.insolation
     Q=342
@@ -97,11 +117,5 @@ If you now want to add functions you can write them into the configfile with the
     grey=0.612
     sigma=const.sigma
 
-.. Important::
-    
-   To define which function you add, insert the name at *func=*, then add the parameters below.
 
-A detailed description of the function parameters is given along with the implementation of the :doc:`Functions <code/functions>`.
-
-With this content the **EBM0D_simple_config.ini** is complete and the OD-EBM can be run the way it is described in :doc:`How to use <howtouse>`.
 

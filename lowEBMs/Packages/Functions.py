@@ -7,7 +7,7 @@ The classes which define energy fluxes are:
 
 .. Important::
 
-    These contain the physical functions available for the EBM. To correctly run them they need parameters as input which are parsed by ``Configuration.importer()`` but **have to be given manually into the configuration.ini**. To add a function, extend your *configuration.ini* with a [func] section and insert all parameters below which are given in documentation here of the specific function. As example see :doc:`Input <../input>`, where ``flux_down.insolation`` is added.
+    These contain the physical functions available for the EBM. To correctly run them they need parameters as input which are parsed by ``Configuration.importer`` but **have to be given manually into the configuration.ini**. To add a function, extend your *configuration.ini* with a [func] section and insert all parameters below which are given in documentation here of the specific function. As example see :doc:`Input <../input>`, where ``flux_down.insolation`` is added.
 
 .. autosummary::
     :toctree:
