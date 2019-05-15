@@ -8,8 +8,13 @@ def Tutorial_copy(*args,**kwargs):
     for trypath in possible_paths:
         exists = os.path.isdir(trypath)
         if exists:
-            shutil.copytree(trypath+'/Notebooks',path+'/Tutorials/Notebooks')
-            shutil.copytree(trypath+'/Config',path+'/Tutorials/Config')   
+            existsout= os.path.isdir(path)
+            if existsout:
+                print('Copy tutorial files to:'+path)
+                shutil.copytree(trypath+'/Notebooks',path+'/Tutorials/Notebooks')
+                shutil.copytree(trypath+'/Config',path+'/Tutorials/Config')
+            else:
+                print('Path could not be found, please insert a full path or relative paths')
             break
 
 def update_plotstyle():

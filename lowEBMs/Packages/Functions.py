@@ -1374,8 +1374,113 @@ class transfer:
 
 
 class forcing:
-    """Class defining forcing terms"""
+    """
+    Class defining radiative forcing terms 
+
+    Radiative forcing essentially can be comprehended as manipulation of the solar insolation which defines the amount of energy available in the system. This class defines terms which change the amount of energy in the system which can be derived from properties of the system (e.g. atmospheric CO2-concentrations). One has to be cautious when operating with these forcing because they are only used to mimic a radiative forcing detached from the systems propagation and therefore don't represent interactions of the property which causes the forcing (e.g. the carbon cycle is not considered, only measured or projected trends). 
+
+    .. autosummary::
+        :nosignatures:
+        :toctree:
+
+        random
+        predefined
+        co2_myhre
+    
+
+    .. autofunction:: lowEBMs.Packages.Functions.forcing.random
+
+    .. autofunction:: lowEBMs.Packages.Functions.forcing.predefined
+
+    .. autofunction:: lowEBMs.Packages.Functions.forcing.co2_myhre
+
+    """
     def random(funcparam):
+        """ 
+        The random forcing mimic randomly occuring radiative forcing.
+
+        The random forcing is mainly used to mimic volcanic eruptions which are based on the idea that dust clouds, appearing after volcanic eruptions, affect the radiative balance. The consequence of an eruption is a negative radiative forcing over a specific time which generally causes a decrease in temperature, depending on the time and strentgh the forcing acts. 
+
+        With this module such events are randomly generated. The parameters which have to be provided will determine a rough guess of frequency, strength and length of the events and many more. By setting a time of start and stop, this can be used to turn on/off the random radiative forcing for specifc times.
+
+        
+        **Function-call arguments** \n
+
+        :param dict funcparams:     * *forcingnumber* the number of the radiative forcing term (relevant if multiple forcings are used)
+
+                                        * type: int 
+                                        * unit: -
+                                        * value: 0, 1,...
+                                                                
+                                    * *start*: The time when the forcing starts
+
+                                        * type: float 
+                                        * unit: depending on *timeunit*
+                                        * value: any
+
+                                    * *stop*: The time when the forcing stops
+
+                                        * type: float 
+                                        * unit: depending on *timeunit*
+                                        * value: any
+                              
+                                    * *steps*: The amount of steps (timeresolution) between start and stop
+
+                                        * type: int 
+                                        * unit: -
+                                        * value: any (preferably the same as ``stepsize_of_integration``)
+                              
+                                    * *timeunit*: The unit of time for the forcing
+
+                                        * type: string 
+                                        * unit: -
+                                        * value: 'minute', 'hour', 'day', 'week', 'month', 'year' (if none then seconds are used)
+                              
+                                    * *strength*: The maximal radiative forcing which can be randomly generated
+
+                                        * type: float 
+                                        * unit: -
+                                        * value: any
+                              
+                                    * *frequency*: A classification how often an event occurs. Creates a window of frequency, from a minimal duration between two events towards a maximal from which the duration to the next event is randomly chosen.
+
+                                        * type: string 
+                                        * unit: -
+                                        * value:    * 'common': the next event is in the following 0-4 steps/total_steps
+                                                    * 'intermediate': the next event is in the following 4-12 steps/total_steps
+                                                    * 'rare': the next event is in the following 12-30 steps/total_steps
+                                                    * 'superrare': the next event is in the following 30-60 steps/total_steps                              
+
+                                    * *behaviour*: The behaviour/shape of the radiative forcing
+
+                                        * type: string 
+                                        * unit: -
+                                        * value:    * 'step': radiative forcing acts as stepfunction with width of one step defined by *lifetime*
+                                                    * 'exponential': radiative forcing acts exponentially with a halflife defined by *lifetime*s                                                            
+
+                                    * *lifetime*: The length on event appears (coupled to *behaviour*)
+
+                                        * type: float 
+                                        * unit: depending on *timeunit*
+                                        * value: any
+                              
+                                    * *seed*: Indicates whether the random numbers are generated from a specific seed (for comparison)
+
+                                        * type: int 
+                                        * unit: -
+                                        * value: any (if None, the every call is random)
+                              
+                                    * *sign*: The sign of the resulting radiative forcing
+
+                                        * type: string 
+                                        * unit: -
+                                        * value: 'negative', 'positive'
+
+        :returns:                   A randomly generated radiative forcing
+
+        :rtype:                     float
+
+        """
         list_parameters=list(funcparam.values())
         forcingnumber,start,stop,steps,timeunit,strength,frequency,behaviour,lifetime,seed,sign=list_parameters
         if Runtime_Tracker==0:
