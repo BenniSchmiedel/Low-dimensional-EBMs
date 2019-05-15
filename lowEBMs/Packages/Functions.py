@@ -1443,7 +1443,6 @@ class forcing:
                                         * value: any
                               
                                     * *frequency*: A classification how often an event occurs. Creates a window of frequency, from a minimal duration between two events towards a maximal from which the duration to the next event is randomly chosen.
-
                                         * type: string 
                                         * unit: -
                                         * value:    
@@ -1812,6 +1811,21 @@ class earthsystem:
     """
     Class defining earthsystem properties
 
+    .. autosummary::
+        :nosignatures:
+        :toctree:
+
+        globalmean_temperature
+        zonalmean_insolation
+        solarradiation
+        solarradiation_orbital
+        specific_saturation_humidity_sel
+        saturation_pressure
+        humidity_difference
+        temperature_difference_latitudes
+        length_latitudes
+        area_latitudes
+
   
     .. autofunction:: lowEBMs.Packages.Functions.earthsystem.globalmean_temperature
 
@@ -1837,6 +1851,24 @@ class earthsystem:
 
     """
     def globalmean_temperature():
+        """ 
+        The GMT calculated from the ZMT with a gridspcific areaweighting.
+ 
+        The GMT :math:`T_{global} is given by:
+    
+        .. math::
+
+            T_{global}= \int_{\phi_s}^{\phi_n} T(\phi) \cdot cos(\phi) d\phi
+                
+        with the ZMT :math:`T(\phi)` of latitude :math:`\phi`, and the borders of the grid :math:`\phi_s`/:math:`\phi_n`. 
+        
+        **Function-call arguments** \n
+
+        :returns:                   The global mean temperature in Kelvin
+
+        :rtype:                     float 
+
+        """
         #Returning the cosine weighted sum of the mean annual latitudal temperature 
         #as global mean annual temperature 
         if parallelization==True:
@@ -1853,6 +1885,29 @@ class earthsystem:
         return Q
 
     def solarradiation(convfactor,timeunit,orbitalyear):
+        """ 
+        The of solar insolation over the latitudes :math:`Q`.
+      
+        The distribution of the solar insolation is imported from ``climlab.solar.insolation.daily_insolation``.
+        As described in ``flux_up.insolation`` the orbital parameters can be adjusted to another time (in spaces of kiloyears).
+        
+        **Function-call arguments** \n
+
+        :param float convfactor:    Conversionfactor if another unit is desired
+                                        * type: float 
+                                        * unit: depending on the conversion
+                                        * value: any
+
+        :param string timeunit:     Indicates over which timewindow the insolation is averaged
+                                        * type: string 
+                                        * unit: -
+                                        * value: 'annualmean'
+
+        :returns:                   The global mean temperature in Kelvin
+
+        :rtype:                     float 
+
+        """
         #Calculation of the mean solar radiation over latitude with time specification
         
         #Adjustment of orbital parameters to specfific year (from climlab), else present day
