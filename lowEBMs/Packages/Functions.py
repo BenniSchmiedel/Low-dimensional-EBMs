@@ -1127,7 +1127,7 @@ class transfer:
 
         .. math::
 
-            c_{wv}=(v q - K_{wv}\\frac{\Delta q}{\Delta y})\cdot \\frac{\Delta p}{g}
+            c_{wv}=\left(v q - K_{wv}\\frac{\Delta q}{\Delta y}\\right) \cdot \\frac{\Delta p}{g}
 
         with the meridional windspeed :math:`v` provided by ``earthsstem.meridionalwind_sel``, the specific saturation humidity :math:`q` provided by ``earthsystem.specific_saturation_humidity_sel`` and the humidity difference :math:`dq` provided by ``earthsystem.humidity_difference``. Additional parameters are the thermal diffusivity of watervapour :math:`K_{wv}`, the width of the latitudinal belts :math:`\Delta y`, the tropospheric pressure depth :math:`\Delta p` and the gravitational acceleration :math:`g`.
 
@@ -1233,7 +1233,7 @@ class transfer:
 
         .. math::
 
-            C_{air}=(v T - K_h\\frac{\Delta T}{\Delta y})\cdot \\frac{c_p}{g} \Delta p
+            C_{air}=\left(v T - K_h\\frac{\Delta T}{\Delta y}\\right) \cdot \\frac{c_p}{g} \Delta p
 
         with the meridional windspeed :math:`v` provided by ``earthsstem.meridionalwind_sel``, and the temperature difference :math:`\Delta T` provided by ``earthsystem.tempdif``. Additional parameters are the temperature :math:`T`, the thermal diffusivity of air :math:`K_{h}`, the width of the latitudinal belts :math:`\Delta y`, the tropospheric pressure depth :math:`\Delta p`, the specific heat capacity of air :math:`c_p` and the gravitational acceleration :math:`g`.
 
@@ -1443,9 +1443,11 @@ class forcing:
                                         * value: any
                               
                                     * *frequency*: A classification how often an event occurs. Creates a window of frequency, from a minimal duration between two events towards a maximal from which the duration to the next event is randomly chosen.
+
                                         * type: string 
                                         * unit: -
-                                        * value:    
+                                        * value: options
+ 
                                                     * 'common': the next event is in the following 0-4 steps/total_steps
                                                     * 'intermediate': the next event is in the following 4-12 steps/total_steps
                                                     * 'rare': the next event is in the following 12-30 steps/total_steps
@@ -1455,7 +1457,8 @@ class forcing:
 
                                         * type: string 
                                         * unit: -
-                                        * value:    
+                                        * value: options
+  
                                                     * 'step': radiative forcing acts as stepfunction with width of one step defined by *lifetime*
                                                     * 'exponential': radiative forcing acts exponentially with a halflife defined by *lifetime*s                                                            
 
@@ -2009,9 +2012,9 @@ class earthsystem:
 
         .. math::
 
-            v = - a\cdot (\Delta T \pm \\abs{\overline{\Delta T}})
+            v = - a\cdot (\Delta T \pm |{\overline{\Delta T}|)
         
-        with :math:`+` north of 5°N and :math:`-` south of 5°N, the temperature difference between latitudes :math:`\Delta T` provided by ``earthsystem.temperature_difference_latitudes``, empirical constants :math:`a` and the area weighted mean temperature difference math:`\\abs{\overline{\Delta T}}`. 
+        with :math:`+` north of 5°N and :math:`-` south of 5°N, the temperature difference between latitudes :math:`\Delta T` provided by ``earthsystem.temperature_difference_latitudes``, empirical constants :math:`a` and the area weighted mean temperature difference math:`|\overline{\Delta T}|`. 
 
         The required parameters are directly parsed from the ``transfer.sellers`` module, for details see :doc:`here <transfer>`.
 
@@ -2019,7 +2022,7 @@ class earthsystem:
 
         :param float a:             Empirical constants estimating the windspeed of a latitudinal belt
                                         
-                                    * unit: :math:`meter\cdot second^{-1} \cdot Kelvin^{-1} 
+                                    * unit: :math:`meter\cdot second^{-1} \cdot Kelvin^{-1} `
                                     * value: (imported by ``Configuration.add_sellersparameters``)
 
         
@@ -2301,7 +2304,7 @@ class earthsystem:
 
         .. math::
 
-            A = \pi r^2 [(sin(90-\phi_s)^2+(1-cos(90-\phi_s)^2) - (sin(90-\phi_n)^2 + (1+cos(90-\phi_n)^2)]
+            A = \pi r^2 \left([sin(90-\phi_s)^2+(1-cos(90-\phi_s)^2] - [sin(90-\phi_n)^2 + (1+cos(90-\phi_n)^2]\\right)
         
         with the earths radius :math:`r` and the degree of northern and southern latitudinal circle :math:`\phi_n`, :math:`\phi_s`.
        
