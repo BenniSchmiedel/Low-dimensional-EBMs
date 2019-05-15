@@ -2012,9 +2012,9 @@ class earthsystem:
 
         .. math::
 
-            v = - a\cdot (\Delta T \pm \\mid {\overline{\Delta T} \\mid )
+            v = - a\cdot (\Delta T \pm | {\overline{\Delta T} | )
         
-        with :math:`+` north of 5°N and :math:`-` south of 5°N, the temperature difference between latitudes :math:`\Delta T` provided by ``earthsystem.temperature_difference_latitudes``, empirical constants :math:`a` and the area weighted mean temperature difference math:`\mid \overline{\Delta T} \mid`. 
+        with :math:`+` north of 5°N and :math:`-` south of 5°N, the temperature difference between latitudes :math:`\Delta T` provided by ``earthsystem.temperature_difference_latitudes``, empirical constants :math:`a` and the area weighted mean temperature difference math:` | \overline{\Delta T} |`. 
 
         The required parameters are directly parsed from the ``transfer.sellers`` module, for details see :doc:`here <transfer>`.
 
