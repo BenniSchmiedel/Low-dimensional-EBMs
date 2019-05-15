@@ -2012,9 +2012,9 @@ class earthsystem:
 
         .. math::
 
-            v = - a\cdot (\Delta T \pm |{\overline{\Delta T}|)
+            v = - a\cdot (\Delta T \pm \mid {\overline{\Delta T} \mid )
         
-        with :math:`+` north of 5°N and :math:`-` south of 5°N, the temperature difference between latitudes :math:`\Delta T` provided by ``earthsystem.temperature_difference_latitudes``, empirical constants :math:`a` and the area weighted mean temperature difference math:`|\overline{\Delta T}|`. 
+        with :math:`+` north of 5°N and :math:`-` south of 5°N, the temperature difference between latitudes :math:`\Delta T` provided by ``earthsystem.temperature_difference_latitudes``, empirical constants :math:`a` and the area weighted mean temperature difference math:`\mid \overline{\Delta T} \mid`. 
 
         The required parameters are directly parsed from the ``transfer.sellers`` module, for details see :doc:`here <transfer>`.
 
@@ -2022,7 +2022,7 @@ class earthsystem:
 
         :param float a:             Empirical constants estimating the windspeed of a latitudinal belt
                                         
-                                    * unit: :math:`meter\cdot second^{-1} \cdot Kelvin^{-1} `
+                                    * unit: :math:`meter\cdot second^{-1} \cdot Kelvin^{-1}`
                                     * value: (imported by ``Configuration.add_sellersparameters``)
 
         
