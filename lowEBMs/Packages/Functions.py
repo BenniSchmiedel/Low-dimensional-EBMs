@@ -1672,84 +1672,96 @@ class forcing:
         """ 
         The co2_myhre forcing calculates a radiative forcing from imported atmospheric CO2 conenctration data.
 
-        This module imports atmospheric CO2 concentrations from a data file and converts them to a change in energy :math:`F_{CO2}` (:math:`Watt \cdot meter^{-2}`) after :ref:`Myhre (1998) <Myhre>`:
+        This module imports atmospheric CO2 concentrations from a data file and converts them to a change in energy :math:`F_{CO2}` (:math:`W/m^2`) after :ref:`Myhre (1998) <Myhre>`:
 
         .. math::
 
             F_{CO2}= A\cdot ln(C / C_0)
 
-        With the atmospheric CO2 concentration :math:`C` (:math:`ppmv`), the preindustrial atmospheric CO2 concentration :math:`C_0` and an empricial constant A (:math:`5.35\;Watt\cdot meter^{-2}`. 
+        With the atmospheric CO2 concentration :math:`C` (:math:`ppmv`), the preindustrial atmospheric CO2 concentration :math:`C_0` and an empricial constant A (:math:`5.35\;W/m^2`). 
 
         **Function-call arguments** \n
 
-        :param dict funcparam:      a dictionary of the functions parameters directly parsed from ``lowEBMs.Packages.ModelEquation.model_equation`` with the following entries
+        :param dict funcparams:     * *A* The empirical constant A
 
-        :param float A:             The empirical constant A
-
+                                        * type: float 
                                         * unit: :math:`Watt \cdot meter^{-2}`
                                         * value: 5.35
                               
-        :param float C_0:           The preindustrial atmospheric CO2 concentration
+                                    * *C_0*: The preindustrial atmospheric CO2 concentration
 
+                                        * type: float 
                                         * unit: :math:`ppmv`
                                         * value: 280
                               
-        :param float C02_base:      The CO2 concentration to use before the forcing starts and after it ends
+                                    * *C02_base*: The CO2 concentration to use before the forcing starts and after it ends
 
+                                        * type: float 
                                         * unit: :math:`ppmv`
                                         * value: any
                                                                 
-        :param string datapath:     The path to the file (give full path or relative path!)
+                                    * *datapath*: The path to the file (give full path or relative path!)
 
+                                        * type: string 
                                         * unit: -
                                         * value: example: '/insert/path/to/file'
 
-        :param string name:         The name of the file which is used
+                                    * *name*: The name of the file which is used
 
+                                        * type: string 
                                         * unit: -
                                         * value: example: 'datafile.txt' 
                               
-        :param string delimiter:    How the data is delimited in the file
+                                    * *delimiter*: How the data is delimited in the file
 
+                                        * type: string 
                                         * unit: -
                                         * value: example: ','
                               
-        :param integer header:      The number of header rows to exclude
- 
+                                    * *header*: The number of header rows to exclude
+
+                                        * type: int 
                                         * unit: -
                                         * value: any
                               
-        :param integer footer:      The number of footer rows to exclude
+                                    * *footer*: The number of footer rows to exclude
 
+                                        * type: int 
                                         * unit: -
                                         * value: any
                               
-        :param integer col_time:    The column where the time is stored
+                                    * *col_time*: The column where the time is stored
 
+                                        * type: int 
                                         * unit: -
                                         * value: any
                               
-        :param integer col_conc:   The column where the concentration in stored
+                                    * *col_conc*: The column where the concentration in stored
 
+                                        * type: int 
                                         * unit: -
                                         * value:  any 
 
-        :param string timeunit:     The unit of time which is used in the file to convert it to seconds
+                                    * *timeunit*: The unit of time which is used in the file to convert it to seconds
 
+                                        * type: string 
                                         * unit: -
                                         * value: 'minute', 'hour', 'day', 'week', 'month', 'year' (if none, seconds are used)  
                                                              
 
-        :param boolean BP:          If the time is given as "Before present"
+                                    * *BP*: If the time is given as "Before present"
 
+                                        * type: boolean 
                                         * unit: -
                                         * value: True / False
                               
-        :param float time_start:    The time of the first entry (or the time when is should be started to apply it)
+                                    * *time_start*: The time of the first entry (or the time when is should be started to apply it)
 
-                                        * unit: depending on *timeunit*
+                                        * type: float 
+                                        * unit: depending *timeunit*
                                         * value: any
                               
+                                   
         :returns:                   The radiative forcing for a specific time calculated from atmospheric CO2-concentrations imported from a data file
 
         :rtype:                     float
@@ -1874,7 +1886,7 @@ class earthsystem:
 
     def solarradiation(convfactor,timeunit,orbitalyear):
         """ 
-        The of solar insolation over the latitudes :math:`Q`.
+        The solar insolation over the latitudes :math:`Q`.
       
         The distribution of the solar insolation is imported from ``climlab.solar.insolation.daily_insolation``.
         As described in ``flux_down.insolation`` the orbital parameters can be adjusted to another time (in spaces of kiloyears), import from ``climlab.solar.orbital``.
@@ -1933,6 +1945,37 @@ class earthsystem:
         return Q
 
     def solarradiation_orbital(convfactor,orbitalyear,unit):
+        """ 
+        The solar insolation over the latitudes :math:`Q` with changing orbital parameters.
+      
+        The functionality of this module is in its main features the same as ``earthsystem.solarradiation`` with the addition that the orbital parameters are imported from ``climlab.solar.orbital`` and updated continously if ``Vars.t`` passes to the next century (can only be updated in kiloyears).
+        
+        **Function-call arguments** \n
+
+        :param float convfactor:    Conversionfactor if another unit is desired
+                                        
+                                    * unit: depending on the conversion
+                                    * value: any
+
+        
+        :param string orbitalyear:  Indicates for which year the orbitalparameters are chosen and updated from
+                                    
+                                    * unit: :math:`kyear`
+                                    * value: -5000 to 0 
+
+        :param string unit:     Indicates which unit of time is used in the simulation
+                                    
+                                    * unit: -
+                                    * value: various options
+
+                                        * 'year': Returns the solarinsolation at time t which is given in unit years
+                                        * None: Use the value given in the **Configuration.ini**
+
+        :returns:                   The solar insolation over latitudes with update of orbital parameters
+
+        :rtype:                     float / array(float) (0D / 1D) 
+
+        """
         #Calculation of solar insolations running with variable orbital parameters (for longterm runs)
         #
         
@@ -1959,6 +2002,37 @@ class earthsystem:
         return Q
 
     def meridionalwind_sel(a,re):
+        """ 
+        The meridional wind :math:`v` between latitudinal belts.
+      
+        This function is part of the ``transfer.sellers`` module which calculates the meridional windspeed depending on a latitudes temperature. It is given by:
+
+        .. math::
+
+            v = - a\cdot (\Delta T \pm \\abs{\overline{\Delta T}})
+        
+        with :math:`+` north of 5°N and :math:`-` south of 5°N, the temperature difference between latitudes :math:`\Delta T` provided by ``earthsystem.temperature_difference_latitudes``, empirical constants :math:`a` and the area weighted mean temperature difference math:`\\abs{\overline{\Delta T}}`. 
+
+        The required parameters are directly parsed from the ``transfer.sellers`` module, for details see :doc:`here <transfer>`.
+
+        **Function-call arguments** \n
+
+        :param float a:             Empirical constants estimating the windspeed of a latitudinal belt
+                                        
+                                    * unit: :math:`meter\cdot second^{-1} \cdot Kelvin^{-1} 
+                                    * value: (imported by ``Configuration.add_sellersparameters``)
+
+        
+        :param float re:            The earth's radius
+                                    
+                                    * unit: meter
+                                    * value: :math:`6.371\cdot 10^6`
+
+        :returns:                   The meridional windspeed
+
+        :rtype:                     array(float) (1D) 
+
+        """
         #Calculating the global wind patterns, with the function from sellers (1969)
         #Meriwind_Selparam=[a]"""
         
@@ -2000,11 +2074,96 @@ class earthsystem:
         return v
 
     def specific_saturation_humidity_sel(e0,eps,L,Rd,p):
+        """ 
+        The specific saturation humidity of a latitudinal belt.
+      
+        This function is part of the ``transfer.sellers`` module which calculates provides the required properties for ``transfer.watervapour_sel``. It is given by:
+
+        .. math::
+
+            q = \\frac{\epsilon \cdot e}{p} 
+        
+        with an empirical constant :math:`\epsilon`, the average sea level pressure p and the saturation pressure e from ``earthsystem.saturation_pressure``.
+
+        The required parameters are directly parsed from the ``transfer.sellers`` module, for details see :doc:`here <transfer>`.
+
+        **Function-call arguments** \n
+
+        :param float e0:            The mean sea level saturation vapour pressure
+
+                                    * unit: :math:`mbar`
+                                    * value: 17
+        
+        :param float eps:           Empirical constant of the saturation specific humidity
+ 
+                                    * unit: -
+                                    * value: 0.622
+        
+        :param float L:             The latent heat of condensation
+
+                                    * unit: :math:`Joule\cdot gramm^{-1}`
+                                    * value: :math:`2.5\cdot 10^3`
+        
+        :param float Rd:            The gas constant
+
+                                    * unit: :math:`Joule\cdot gramm^{-1}\cdot Kelvin^{-1}`
+                                    * value: :math:`0.287`
+    
+        :param float p:             The average sea level pressure
+
+                                    * unit: :math:`mbar`
+                                    * value: 1000
+                              
+        :returns:                   The specific saturation humidity
+
+        :rtype:                     array(float) (1D) 
+
+        """
         #equation of specific saturation humidity for WV_sel with the saturation pressure SatPr
         q=eps*earthsystem.saturation_pressure(e0,eps,L,Rd)/p
         return q
         
     def saturation_pressure(e0,eps,L,Rd):
+        """ 
+        The saturation pressure of a latitudinal belt.
+      
+        This function is part of the ``transfer.sellers`` module which calculates provides the required properties for ``earthsystem.humidity_difference`` and ``earthsystem.specific_saturation_humidity_sel``. It is given by:
+
+        .. math::
+
+            e = e_0 \left(1 - 0.5 \\frac{\epsilon L \Delta T}{R_d T^2} \\right) 
+        
+        with the temperature difference between latitudes :math:`\Delta T` provided by ``earthsystem.temperature_difference_latitudes``, the empirical constant :math:`\epsilon`, the gas constant :math:`R_d`, the latent heat of condensation :math:`L`, the mean sea level saturation vapour pressure :math:`e_0` and the temperature of the southern latitudinal belt :math:`T`.
+
+        The required parameters are directly parsed from the ``earthsystem.specific_saturation_humidity_sel`` module, for details see :doc:`here <transfer>`.
+
+        **Function-call arguments** \n
+
+        :param float e0:            The mean sea level saturation vapour pressure
+
+                                    * unit: :math:`mbar`
+                                    * value: 17
+        
+        :param float eps:           Empirical constant of the saturation specific humidity
+ 
+                                    * unit: -
+                                    * value: 0.622
+        
+        :param float L:             The latent heat of condensation
+
+                                    * unit: :math:`Joule\cdot gramm^{-1}`
+                                    * value: :math:`2.5\cdot 10^3`
+        
+        :param float Rd:            The gas constant
+
+                                    * unit: :math:`Joule\cdot gramm^{-1}\cdot Kelvin^{-1}`
+                                    * value: :math:`0.287`
+                              
+        :returns:                   The saturation pressure
+
+        :rtype:                     array(float) (1D) 
+
+        """
         #temperature dependant equation of saturation pressure
         if parallelization==True:
             e=e0*(1-0.5*eps*L*Vars.tempdif/(Rd*Vars.T[:,1:]**2))
@@ -2013,6 +2172,51 @@ class earthsystem:
         return e
 
     def humidity_difference(e0,eps,L,Rd,p):
+        """ 
+        The humidity difference between latitudinal belts.
+      
+        This function is part of the ``transfer.sellers`` module which calculates provides the required properties for ``transfer.watervapour_sel``. It is given by:
+
+        .. math::
+
+            \Delta q = \\frac{e \epsilon^2 L \Delta T}{p R_d T^2} 
+        
+        with the temperature difference between latitudes :math:`\Delta T` provided by ``earthsystem.temperature_difference_latitudes``, the empirical constant :math:`\epsilon`, the average sea level pressure p, the gas constant :math:`R_d`, the latent heat of condensation :math:`L`, the mean sea level saturation vapour pressure :math:`e_0` and the temperature of the southern latitudinal belt :math:`T`.
+
+        The required parameters are directly parsed from the ``transfer.sellers`` module, for details see :doc:`here <transfer>`.
+
+        **Function-call arguments** \n
+
+        :param float e0:            The mean sea level saturation vapour pressure
+
+                                    * unit: :math:`mbar`
+                                    * value: 17
+        
+        :param float eps:           Empirical constant of the saturation specific humidity
+ 
+                                    * unit: -
+                                    * value: 0.622
+        
+        :param float L:             The latent heat of condensation
+
+                                    * unit: :math:`Joule\cdot gramm^{-1}`
+                                    * value: :math:`2.5\cdot 10^3`
+        
+        :param float Rd:            The gas constant
+
+                                    * unit: :math:`Joule\cdot gramm^{-1}\cdot Kelvin^{-1}`
+                                    * value: :math:`0.287`
+    
+        :param float p:             The average sea level pressure
+
+                                    * unit: :math:`mbar`
+                                    * value: 1000
+                              
+        :returns:                   The humidity difference between two latitudinal belts
+
+        :rtype:                     array(float) (1D) 
+
+        """
         #equation of difference in humidity
         
         e=earthsystem.saturation_pressure(e0,eps,L,Rd)
@@ -2023,6 +2227,26 @@ class earthsystem:
         return dq
         
     def temperature_difference_latitudes():
+        """ 
+        The temperature difference between latitudinal belts.
+      
+        It is given by
+
+        .. math::
+
+            \Delta T = T_{north}-T_{south}
+        
+        with the temperature of the southern and northern latitudinal belt :math:`T_{south}`, :math:`T_{south}`.
+
+       
+        **Function-call arguments** \n
+
+                  
+        :returns:                   The temperature difference between the latitudinal belts over the latitudes
+
+        :rtype:                     array(float) (1D) 
+
+        """
         #Returning the temperature difference between the northern and southern latitudinal boundary
         if latitudinal_belt==True:
             if parallelization==True:
@@ -2040,12 +2264,60 @@ class earthsystem:
             dT=f(Lat_new)[1:]-f(Lat_new)[:-1]
         return dT
 
-    def length_latitudes(radius):
+    def length_latitudes(re):
+        """ 
+        The length (circumference) of the latitudinal circles.
+      
+        It is given by
+
+        .. math::
+
+            l = 2\pi\cdot r\cdot cos (\phi)
+        
+        with the earths radius :math:`r` and the degree of latitude :math:`\phi`.
+       
+        **Function-call arguments** \n
+        
+        :param float re:        The earth's radius
+                            
+                                * unit: meter
+                                * value: :math:`6.371\cdot 10^6`
+
+                  
+        :returns:               The length of the latitudinal circles
+
+        :rtype:                 array(float) (1D) 
+
+        """
         #Returning the length of a latitudinal circle
-        r_new=radius*cosd(Vars.Lat2)
+        r_new=re*cosd(Vars.Lat2)
         return 2*np.pi*r_new
 
     def area_latitudes(re):
+        """ 
+        The area of the latitudinal belts.
+      
+        It is given by
+
+        .. math::
+
+            A = \pi r^2 [(sin(90-\phi_s)^2+(1-cos(90-\phi_s)^2) - (sin(90-\phi_n)^2 + (1+cos(90-\phi_n)^2)]
+        
+        with the earths radius :math:`r` and the degree of northern and southern latitudinal circle :math:`\phi_n`, :math:`\phi_s`.
+       
+        **Function-call arguments** \n
+        
+        :param float re:        The earth's radius
+                            
+                                * unit: meter
+                                * value: :math:`6.371\cdot 10^6`
+
+                  
+        :returns:               The area of the latitudinal belts
+
+        :rtype:                 array(float) (1D) 
+
+        """
         #Returning the area of a latitudinal belt
         
         #using latitudinal boundaries from circle defined latitudes 
@@ -2054,12 +2326,12 @@ class earthsystem:
         lat_northbound=Vars.Lat2
         lat_northbound=np.append(lat_northbound,90)
         #calculation from the areaportions of a sphere
-        S_p=np.pi*re**2*(sind((90-lat_southbound))**2+(1-cosd(90-lat_southbound))**2)-         np.pi*re**2*(np.sin((90-lat_northbound)*np.pi/180)**2+(1-np.cos((90-lat_northbound)*np.pi/180))**2)
+        A=np.pi*re**2*(sind((90-lat_southbound))**2+(1-cosd(90-lat_southbound))**2)-         np.pi*re**2*(np.sin((90-lat_northbound)*np.pi/180)**2+(1-np.cos((90-lat_northbound)*np.pi/180))**2)
         
         #define globally
-        Vars.Area=S_p
+        Vars.Area=A
         Vars.bounds=[lat_southbound,lat_northbound]
-        return S_p 
+        return A
         
 #class tools:
     """
