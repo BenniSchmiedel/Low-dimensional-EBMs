@@ -1397,13 +1397,13 @@ class forcing:
     """
     def random(funcparam):
         """ 
-        The random forcing mimic randomly occuring radiative forcing.
+        The random forcing mimics randomly occuring radiative forcing events.
 
         The random forcing is mainly used to mimic volcanic eruptions which are based on the idea that dust clouds, appearing after volcanic eruptions, affect the radiative balance. The consequence of an eruption is a negative radiative forcing over a specific time which generally causes a decrease in temperature, depending on the time and strentgh the forcing acts. 
 
         With this module such events are randomly generated. The parameters which have to be provided will determine a rough guess of frequency, strength and length of the events and many more. By setting a time of start and stop, this can be used to turn on/off the random radiative forcing for specifc times.
+      
 
-        
         **Function-call arguments** \n
 
         :param dict funcparams:     * *forcingnumber* the number of the radiative forcing term (relevant if multiple forcings are used)
@@ -1434,7 +1434,7 @@ class forcing:
 
                                         * type: string 
                                         * unit: -
-                                        * value: 'minute', 'hour', 'day', 'week', 'month', 'year' (if none then seconds are used)
+                                        * value: 'minute', 'hour', 'day', 'week', 'month', 'year' (if none, seconds are used)
                               
                                     * *strength*: The maximal radiative forcing which can be randomly generated
 
@@ -1446,7 +1446,8 @@ class forcing:
 
                                         * type: string 
                                         * unit: -
-                                        * value:    * 'common': the next event is in the following 0-4 steps/total_steps
+                                        * value:    
+                                                    * 'common': the next event is in the following 0-4 steps/total_steps
                                                     * 'intermediate': the next event is in the following 4-12 steps/total_steps
                                                     * 'rare': the next event is in the following 12-30 steps/total_steps
                                                     * 'superrare': the next event is in the following 30-60 steps/total_steps                              
@@ -1455,7 +1456,8 @@ class forcing:
 
                                         * type: string 
                                         * unit: -
-                                        * value:    * 'step': radiative forcing acts as stepfunction with width of one step defined by *lifetime*
+                                        * value:    
+                                                    * 'step': radiative forcing acts as stepfunction with width of one step defined by *lifetime*
                                                     * 'exponential': radiative forcing acts exponentially with a halflife defined by *lifetime*s                                                            
 
                                     * *lifetime*: The length on event appears (coupled to *behaviour*)
@@ -1468,7 +1470,7 @@ class forcing:
 
                                         * type: int 
                                         * unit: -
-                                        * value: any (if None, the every call is random)
+                                        * value: any (if None, every call is random)
                               
                                     * *sign*: The sign of the resulting radiative forcing
 
@@ -1553,6 +1555,85 @@ class forcing:
 
 
     def predefined(funcparam):
+        """ 
+        The predefined forcing imports data containing external radiative forcings.
+
+        This module imports radiative forcing data given as change in energy (:math:`Watt \cdot meter^{-2}`) and applies it to the model run.
+
+        **Function-call arguments** \n
+
+        :param dict funcparams:     * *forcingnumber* the number of the radiative forcing term (relevant if multiple forcings are used)
+
+                                        * type: int 
+                                        * unit: -
+                                        * value: 0, 1,...
+                                                                
+                                    * *datapath*: The path to the file (give full path or relative path!)
+
+                                        * type: string 
+                                        * unit: -
+                                        * value: example: '/insert/path/to/file'
+
+                                    * *name*: The name of the file which is used
+
+                                        * type: string 
+                                        * unit: -
+                                        * value: example: 'datafile.txt' 
+                              
+                                    * *delimiter*: How the data is delimited in the file
+
+                                        * type: string 
+                                        * unit: -
+                                        * value: example: ','
+                              
+                                    * *header*: The number of header rows to exclude
+
+                                        * type: int 
+                                        * unit: -
+                                        * value: any
+                              
+                                    * *col_time*: The column where the time is stored
+
+                                        * type: int 
+                                        * unit: -
+                                        * value: any
+                              
+                                    * *col_forcing*: The column where the forcing in stored
+
+                                        * type: int 
+                                        * unit: -
+                                        * value:  any 
+
+                                    * *timeunit*: The unit of time which is used in the file to convert it to seconds
+
+                                        * type: string 
+                                        * unit: -
+                                        * value: 'minute', 'hour', 'day', 'week', 'month', 'year' (if none, seconds are used)  
+                                                             
+
+                                    * *BP*: If the time is given as "Before present"
+
+                                        * type: boolean 
+                                        * unit: -
+                                        * value: True / False
+                              
+                                    * *time_start*: The time of the first entry (or the time when is should be started to apply it)
+
+                                        * type: float 
+                                        * unit: depending *timeunit*
+                                        * value: any
+                              
+                                    * *k*: Scaling factor
+
+                                        * type: float 
+                                        * unit: -
+                                        * value: any
+
+        :returns:                   The radiative forcing for a specific time imported from a data file
+
+        :rtype:                     float
+
+        """
         list_parameters=list(funcparam.values())
         forcingnumber,datapath,name,delimiter,header,col_time,col_forcing,timeunit,BP,time_start,k=list_parameters
         if Runtime_Tracker==0:
@@ -1589,6 +1670,104 @@ class forcing:
 
 
     def co2_myhre(funcparam):
+        """ 
+        The co2_myhre forcing calculates a radiative forcing from imported atmospheric CO2 conenctration data.
+
+        This module imports atmospheric CO2 concentrations from a data file and converts them to a change in energy :math:`F_{CO2}` (:math:`Watt \cdot meter^{-2}`) after :ref:`Myhre (1998) <Myhre>`:
+
+        .. math::
+
+            F_{CO2}= A\cdot ln(C / C_0)
+
+        With the atmospheric CO2 concentration :math:`C` (:math:`ppmv`), the preindustrial atmospheric CO2 concentration :math:`C_0` and an empricial constant A (:math:`5.35\;Watt\cdot meter^{-2}`. 
+
+        **Function-call arguments** \n
+
+        :param dict funcparams:     * *A* The empirical constant A
+
+                                        * type: float 
+                                        * unit: :math:`Watt \cdot meter^{-2}`
+                                        * value: 5.35
+                              
+                                    * *C_0*: The preindustrial atmospheric CO2 concentration
+
+                                        * type: float 
+                                        * unit: :math:`ppmv`
+                                        * value: 280
+                              
+                                    * *C02_base*: The CO2 concentration to use before the forcing starts and after it ends
+
+                                        * type: float 
+                                        * unit: :math:`ppmv`
+                                        * value: any
+                                                                
+                                    * *datapath*: The path to the file (give full path or relative path!)
+
+                                        * type: string 
+                                        * unit: -
+                                        * value: example: '/insert/path/to/file'
+
+                                    * *name*: The name of the file which is used
+
+                                        * type: string 
+                                        * unit: -
+                                        * value: example: 'datafile.txt' 
+                              
+                                    * *delimiter*: How the data is delimited in the file
+
+                                        * type: string 
+                                        * unit: -
+                                        * value: example: ','
+                              
+                                    * *header*: The number of header rows to exclude
+
+                                        * type: int 
+                                        * unit: -
+                                        * value: any
+                              
+                                    * *footer*: The number of footer rows to exclude
+
+                                        * type: int 
+                                        * unit: -
+                                        * value: any
+                              
+                                    * *col_time*: The column where the time is stored
+
+                                        * type: int 
+                                        * unit: -
+                                        * value: any
+                              
+                                    * *col_conc*: The column where the concentration in stored
+
+                                        * type: int 
+                                        * unit: -
+                                        * value:  any 
+
+                                    * *timeunit*: The unit of time which is used in the file to convert it to seconds
+
+                                        * type: string 
+                                        * unit: -
+                                        * value: 'minute', 'hour', 'day', 'week', 'month', 'year' (if none, seconds are used)  
+                                                             
+
+                                    * *BP*: If the time is given as "Before present"
+
+                                        * type: boolean 
+                                        * unit: -
+                                        * value: True / False
+                              
+                                    * *time_start*: The time of the first entry (or the time when is should be started to apply it)
+
+                                        * type: float 
+                                        * unit: depending *timeunit*
+                                        * value: any
+                              
+                                   
+        :returns:                   The radiative forcing for a specific time calculated from atmospheric CO2-concentrations imported from a data file
+
+        :rtype:                     float
+
+        """
         list_parameters=list(funcparam.values())
         A,C_0,CO2_base,datapath,name,delimiter,header,footer,col_time,col_conc,timeunit,BP,time_start=list_parameters
         if Runtime_Tracker==0:
