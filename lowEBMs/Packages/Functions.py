@@ -1682,86 +1682,74 @@ class forcing:
 
         **Function-call arguments** \n
 
-        :param dict funcparams:     * *A* The empirical constant A
+        :param dict funcparam:      a dictionary of the functions parameters directly parsed from ``lowEBMs.Packages.ModelEquation.model_equation`` with the following entries
 
-                                        * type: float 
+        :param float A:             The empirical constant A
+
                                         * unit: :math:`Watt \cdot meter^{-2}`
                                         * value: 5.35
                               
-                                    * *C_0*: The preindustrial atmospheric CO2 concentration
+        :param float C_0:           The preindustrial atmospheric CO2 concentration
 
-                                        * type: float 
                                         * unit: :math:`ppmv`
                                         * value: 280
                               
-                                    * *C02_base*: The CO2 concentration to use before the forcing starts and after it ends
+        :param float C02_base:      The CO2 concentration to use before the forcing starts and after it ends
 
-                                        * type: float 
                                         * unit: :math:`ppmv`
                                         * value: any
                                                                 
-                                    * *datapath*: The path to the file (give full path or relative path!)
+        :param string datapath:     The path to the file (give full path or relative path!)
 
-                                        * type: string 
                                         * unit: -
                                         * value: example: '/insert/path/to/file'
 
-                                    * *name*: The name of the file which is used
+        :param string name:         The name of the file which is used
 
-                                        * type: string 
                                         * unit: -
                                         * value: example: 'datafile.txt' 
                               
-                                    * *delimiter*: How the data is delimited in the file
+        :param string delimiter:    How the data is delimited in the file
 
-                                        * type: string 
                                         * unit: -
                                         * value: example: ','
                               
-                                    * *header*: The number of header rows to exclude
-
-                                        * type: int 
+        :param integer header:      The number of header rows to exclude
+ 
                                         * unit: -
                                         * value: any
                               
-                                    * *footer*: The number of footer rows to exclude
+        :param integer footer:      The number of footer rows to exclude
 
-                                        * type: int 
                                         * unit: -
                                         * value: any
                               
-                                    * *col_time*: The column where the time is stored
+        :param integer col_time:    The column where the time is stored
 
-                                        * type: int 
                                         * unit: -
                                         * value: any
                               
-                                    * *col_conc*: The column where the concentration in stored
+        :param integer col_conc:   The column where the concentration in stored
 
-                                        * type: int 
                                         * unit: -
                                         * value:  any 
 
-                                    * *timeunit*: The unit of time which is used in the file to convert it to seconds
+        :param string timeunit:     The unit of time which is used in the file to convert it to seconds
 
-                                        * type: string 
                                         * unit: -
                                         * value: 'minute', 'hour', 'day', 'week', 'month', 'year' (if none, seconds are used)  
                                                              
 
-                                    * *BP*: If the time is given as "Before present"
+        :param boolean BP:          If the time is given as "Before present"
 
-                                        * type: boolean 
                                         * unit: -
                                         * value: True / False
                               
-                                    * *time_start*: The time of the first entry (or the time when is should be started to apply it)
+        :param float time_start:    The time of the first entry (or the time when is should be started to apply it)
 
-                                        * type: float 
-                                        * unit: depending *timeunit*
+                                        * unit: depending on *timeunit*
                                         * value: any
                               
-                                   
         :returns:                   The radiative forcing for a specific time calculated from atmospheric CO2-concentrations imported from a data file
 
         :rtype:                     float
@@ -1889,23 +1877,34 @@ class earthsystem:
         The of solar insolation over the latitudes :math:`Q`.
       
         The distribution of the solar insolation is imported from ``climlab.solar.insolation.daily_insolation``.
-        As described in ``flux_up.insolation`` the orbital parameters can be adjusted to another time (in spaces of kiloyears).
+        As described in ``flux_down.insolation`` the orbital parameters can be adjusted to another time (in spaces of kiloyears), import from ``climlab.solar.orbital``.
         
         **Function-call arguments** \n
 
         :param float convfactor:    Conversionfactor if another unit is desired
-                                        * type: float 
-                                        * unit: depending on the conversion
-                                        * value: any
+                                        
+                                    * unit: depending on the conversion
+                                    * value: any
 
         :param string timeunit:     Indicates over which timewindow the insolation is averaged
-                                        * type: string 
-                                        * unit: -
-                                        * value: 'annualmean'
+                                    
+                                    * unit: -
+                                    * value: various options
 
-        :returns:                   The global mean temperature in Kelvin
+                                        * 'annualmean': Returns a static distribution from the annually averaged insolation
+                                        * 'year': Returns the solarinsolation at time t which is given in unit years
+                                        * 'month': Returns the solarinsolation at time t which is given in unit months 
+                                        * 'day': Returns the solarinsolation at time t which is given in unit days
+                                        * 'second': Returns the solarinsolation at time t which is given in unit seconds
 
-        :rtype:                     float 
+        :param string orbitalyear:  Indicates for which year the orbitalparameters are chosen
+                                    
+                                    * unit: :math:`kyear`
+                                    * value: -5000 to 0 
+
+        :returns:                   The solar insolation over latitudes
+
+        :rtype:                     float / array(float) (0D / 1D) 
 
         """
         #Calculation of the mean solar radiation over latitude with time specification
