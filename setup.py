@@ -7,7 +7,7 @@ import setuptools
 
 
 setuptools.setup(name='lowEBMs',
-      version='0.1.1',
+      version='0.1.2.1',
       description='A python implementation of low-dimensional EBMs',
       url='https://github.com/BenniSchmiedel/Climate-Modelling',
       author='Benjamin Schmiedel',
