@@ -77,14 +77,14 @@ There is only one option::
 flux_up Options
 ---------------
 
-Option 1, :ref:`Budyko clear sky <code/Budykonoclouds>`::
+Option 1, :ref:`Budyko clear sky <code/functioncode/flux_up.Budykonoclouds>`::
 
     [func1]
     func=flux_up.budyko_noclouds
     A=230.31
     B=2.2274
 
-Option 2, :ref:`Budyko cloudy sky <code/Budykoclouds>`::
+Option 2, :ref:`Budyko cloudy sky <code/functioncode/flux_up/Budykoclouds>`::
 
     [func1]
     func=flux_up.budyko_clouds
