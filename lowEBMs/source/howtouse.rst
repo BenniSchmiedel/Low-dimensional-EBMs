@@ -25,12 +25,14 @@ First Step: Import model configuration
 ======================================
 
 The way this project is built up enables to take any physical function implemented and merge them to create the basis of a desired EBM, which will be our input.
-The input will be created manually and is stored in a **configuration.ini** file. Details on how to create and structure this **.ini** file will be given in the :doc:`input <input>`-section. 
+The input will be created manually and is stored in a **configuration.ini** file. Details on how to create and structure **.ini** files is given in :doc:`input <input>`. 
 
 .. Important::
     The configuration.ini file will provide the physical sense of the EBM!
 
 For now you can simply use the **EBM0D_simple_config.ini** file which imports a 0D EBM with a model run over 10 year and a stepsize of integration of 1 day.
+A demonstration on how to reproduce this **.ini** file is given in :ref:`Example Input 0D-EBM <0Dconf>`.
+
 To import this file use the ``importer``-function::
 
     configuration=importer('filename',path='path/to/your/configuration.ini')
@@ -60,7 +62,7 @@ Third Step: Let the model/algorithm run
 
 Now we are ready to run the algorithm with the ``rk4alg`` function. It requires the ``model_equation`` function and the dictionaries we seperated before (maintain the order)::
 
-    outputdata=rk4alg(model_equation,eq,rk4,fun)
+    outputdata=rk4alg(model_equation,eq,fun)
 
 Depending on your settings the algorithm will need some time until it prints *Finished!*.
 
@@ -116,7 +118,7 @@ and run the specific modules::
     rk4=configuration['rk4input']
     fun=configuration['funccomp']
     variable_importer(configuration)
-    outputdata=rk4alg(model_equation,eq,rk4,fun)
+    outputdata=rk4alg(model_equation,eq,fun)
 
 This demonstration also exists as a jupyter notebook in the *'Tutorials/'* directive of this project (*EBM0D_simple.ipynb*).
 

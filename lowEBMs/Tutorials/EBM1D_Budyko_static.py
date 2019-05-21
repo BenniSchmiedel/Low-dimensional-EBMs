@@ -11,6 +11,6 @@ def main():
     rk=configdic['rk4input']
     fun=configdic['funccomp']
     variable_importer(configdic)
-    outputdata=rk4alg(model_equation,eq,rk,fun)
+    outputdata=rk4alg(model_equation,eq,fun)
     return outputdata
 

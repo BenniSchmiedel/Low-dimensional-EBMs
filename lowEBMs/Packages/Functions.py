@@ -5,10 +5,6 @@ This module is structured through classes which distinguish the type of energy f
 
 The classes which define energy fluxes are:
 
-.. Important::
-
-    These contain the physical functions available for the EBM. To correctly run them they need parameters as input which are parsed by ``Configuration.importer`` but **have to be given manually into the configuration.ini**. To add a function, extend your *configuration.ini* with a [func] section and insert all parameters below which are given in documentation here of the specific function. As example see :doc:`Input <../input>`, where ``flux_down.insolation`` is added.
-
 .. autosummary::
     :toctree:
 
@@ -16,6 +12,10 @@ The classes which define energy fluxes are:
     flux_up
     transfer
     forcing
+
+.. Important::
+
+    These contain the physical functions available for the EBM. To correctly run them they need parameters as input which are parsed by ``Configuration.importer`` but **have to be given manually into the configuration.ini**. To add a function, extend your *configuration.ini* with an enumerated [func_] section (with _ a number) and insert all parameters below which are given in the documentation here of the specific function. For examples see :ref:`Configuration Options <confoptions>`.
 
 The classes which contain definitions of earth system properties are:
 
@@ -594,6 +594,8 @@ class flux_up:
 
     def budyko_noclouds(funcparam):  
         """ 
+        .. _Budykonoclouds::
+
         An empirically determined upward radiative energy flux which approximates the top of the atmosphere radiation emitted to space to be dependant linear on temperature. The presence of clouds is not specifically taken into account.
 
         The upward radiative energy flux :math:`R_{up}` of latitude :math:`\phi` is given by:
@@ -636,6 +638,8 @@ class flux_up:
 
     def budyko_clouds(funcparam):
         """ 
+        .. _Budykoclouds::
+
         An empirically determined upward radiative energy flux which approximates the top of the atmosphere radiation emitted to space to be dependant linear on temperature. The presence of clouds is specifically taken into account with a second temperature dependant term.
 
         The upward radiative energy flux :math:`R_{up}` of latitude :math:`\phi` is given by:
@@ -695,6 +699,8 @@ class flux_up:
 
     def planck(funcparam):
         """ 
+        .. _Planck::
+ 
         The stefan-boltzmann radiation for a grey body as radiative energy flux directed upward. The ideal stefan-boltzmann radiation with a temperature to the power of 4 scaled with an emissivity factor :math:`\epsilon`.
 
         The upward radiative energy flux :math:`R_{up}` of latitude :math:`\phi` is given by:
@@ -737,6 +743,8 @@ class flux_up:
 
     def sellers(funcparam):
         """ 
+        .. _Sellersradiation::
+ 
         An empirically, by :ref:`William Sellers <Sellers>` adjusted stefan-boltzmann radiation as radiative energy flux directed upward. The ideal stefan-boltzmann radiation with a temperature to the power of 4 and an additional tangens hyperbolicus term with the temperature to the power of 6 to take into account that cloud formation is temperature dependant.
  
         The upward radiative energy flux :math:`R_{up}` of latitude :math:`\phi` is given by:
@@ -826,6 +834,8 @@ class transfer:
     """
     def budyko(funcparam):
         """ 
+        .. _Budykotransfer::
+
         A poleward energy transfer flux based on the local to global temperature difference introduced by :ref:`Michail Budyko <Budyko>`.
 
         It can be shown that it is equivalent to the diffusive heat transfer of the globe (North, 1975b). 
@@ -881,6 +891,8 @@ class transfer:
 
     def sellers(funcparam):
         """ 
+        .. _Sellerstransfer::
+
         A energy transfer flux based on a combination of several transfer fluxes introduced by :ref:`William Sellers <Sellers>`.
 
         It is defined as the difference of a sum of northward and a sum of southward transfer fluxes of one latitudinal belt. The sum (in one direction) :math:`P` consists of ``transfer.watervapour_sel``, ``transfer.sensibleheat_air_sel`` and ``transfer.sensibleheat_ocean_sel``:
@@ -1397,6 +1409,8 @@ class forcing:
     """
     def random(funcparam):
         """ 
+        .. _Randomforcing::
+
         The random forcing mimics randomly occuring radiative forcing events.
 
         The random forcing is mainly used to mimic volcanic eruptions which are based on the idea that dust clouds, appearing after volcanic eruptions, affect the radiative balance. The consequence of an eruption is a negative radiative forcing over a specific time which generally causes a decrease in temperature, depending on the time and strentgh the forcing acts. 
@@ -1558,6 +1572,8 @@ class forcing:
 
     def predefined(funcparam):
         """ 
+        .. _Predefinedforcing::
+
         The predefined forcing imports data containing external radiative forcings.
 
         This module imports radiative forcing data given as change in energy (:math:`Watt \cdot meter^{-2}`) and applies it to the model run.
@@ -1673,6 +1689,8 @@ class forcing:
 
     def co2_myhre(funcparam):
         """ 
+        .. _CO2forcing::
+
         The co2_myhre forcing calculates a radiative forcing from imported atmospheric CO2 conenctration data.
 
         This module imports atmospheric CO2 concentrations from a data file and converts them to a change in energy :math:`F_{CO2}` (:math:`W/m^2`) after :ref:`Myhre (1998) <Myhre>`:
