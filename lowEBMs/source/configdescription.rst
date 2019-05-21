@@ -50,7 +50,7 @@ The functions and examples of their required parameters are listed here after th
 flux_down Options
 -----------------
 
-There is only one option::
+There is only one option, the :ref:`insolation <fluxdown>`::
 
     [func0]
     func=flux_down.insolation
@@ -77,7 +77,7 @@ There is only one option::
 flux_up Options
 ---------------
 
-Option 1, :ref:`Budyko clear sky <code/functioncode/flux_up.Budykonoclouds>`::
+Option 1, :ref:`Budyko clear sky <code.functioncode.flux_up.Budykonoclouds>`::
 
     [func1]
     func=flux_up.budyko_noclouds
@@ -94,7 +94,7 @@ Option 2, :ref:`Budyko cloudy sky <code/functioncode/flux_up/Budykoclouds>`::
     B1=0.1*15.91
     fc=0.5
 
-Option 3, :ref:`Stefan-Boltzmann radiation <Planck>`::
+Option 3, :ref:`Stefan-Boltzmann radiation <fluxdown>`::
 
     [func1]
     func=flux_up.planck

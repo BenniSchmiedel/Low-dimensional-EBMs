@@ -573,6 +573,8 @@ class flux_up:
     """ 
     Class defining radiative fluxes directed upwards.
 
+    .. _fluxup:
+
     The equations used here are, expect from ``flux_up.planck``, are estimated empirically and the standard parameters are mostly tailored to specific applications where they are used by the authors. 
 
     .. autosummary::
