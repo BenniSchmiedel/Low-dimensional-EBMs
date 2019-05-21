@@ -64,6 +64,8 @@ class flux_down:
 
     def insolation(funcparam):
         """
+        .. _Insolation:
+
         Function defining the absorbed solar insolation. Physically there is an important difference between the insolation, which is denoted as :math:`Q` and the absorbed insolation, which is the output of this function denoted as :math:`R_{down}`. The absorbed insolation in it's simplest form is written (as introduced in the :doc:`physical background <../models>`): 
 
         .. math::
@@ -594,7 +596,7 @@ class flux_up:
 
     def budyko_noclouds(funcparam):  
         """ 
-        .. _Budykonoclouds::
+        .. _Budykonoclouds:
 
         An empirically determined upward radiative energy flux which approximates the top of the atmosphere radiation emitted to space to be dependant linear on temperature. The presence of clouds is not specifically taken into account.
 
@@ -638,7 +640,7 @@ class flux_up:
 
     def budyko_clouds(funcparam):
         """ 
-        .. _Budykoclouds::
+        .. _Budykoclouds:
 
         An empirically determined upward radiative energy flux which approximates the top of the atmosphere radiation emitted to space to be dependant linear on temperature. The presence of clouds is specifically taken into account with a second temperature dependant term.
 
@@ -699,7 +701,7 @@ class flux_up:
 
     def planck(funcparam):
         """ 
-        .. _Planck::
+        .. _Planck:
  
         The stefan-boltzmann radiation for a grey body as radiative energy flux directed upward. The ideal stefan-boltzmann radiation with a temperature to the power of 4 scaled with an emissivity factor :math:`\epsilon`.
 
@@ -743,7 +745,7 @@ class flux_up:
 
     def sellers(funcparam):
         """ 
-        .. _Sellersradiation::
+        .. _Sellersradiation:
  
         An empirically, by :ref:`William Sellers <Sellers>` adjusted stefan-boltzmann radiation as radiative energy flux directed upward. The ideal stefan-boltzmann radiation with a temperature to the power of 4 and an additional tangens hyperbolicus term with the temperature to the power of 6 to take into account that cloud formation is temperature dependant.
  
@@ -834,7 +836,7 @@ class transfer:
     """
     def budyko(funcparam):
         """ 
-        .. _Budykotransfer::
+        .. _Budykotransfer:
 
         A poleward energy transfer flux based on the local to global temperature difference introduced by :ref:`Michail Budyko <Budyko>`.
 
@@ -891,7 +893,7 @@ class transfer:
 
     def sellers(funcparam):
         """ 
-        .. _Sellerstransfer::
+        .. _Sellerstransfer:
 
         A energy transfer flux based on a combination of several transfer fluxes introduced by :ref:`William Sellers <Sellers>`.
 
@@ -1409,7 +1411,7 @@ class forcing:
     """
     def random(funcparam):
         """ 
-        .. _Randomforcing::
+        .. _Randomforcing:
 
         The random forcing mimics randomly occuring radiative forcing events.
 
@@ -1572,7 +1574,7 @@ class forcing:
 
     def predefined(funcparam):
         """ 
-        .. _Predefinedforcing::
+        .. _Predefinedforcing:
 
         The predefined forcing imports data containing external radiative forcings.
 
@@ -1689,7 +1691,7 @@ class forcing:
 
     def co2_myhre(funcparam):
         """ 
-        .. _CO2forcing::
+        .. _CO2forcing:
 
         The co2_myhre forcing calculates a radiative forcing from imported atmospheric CO2 conenctration data.
 

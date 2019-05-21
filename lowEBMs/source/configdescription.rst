@@ -5,7 +5,7 @@ Configuration-Section Options
 [eqparam], [rk4input] and [initials]
 ====================================
 
-The options of these sections are always the same and are always required! After the ``Configuration.importer`` function processes the **.ini**-file, these options are distributed to the functions of the model algorithm. For more information about the parameters, for ``[eqparam]`` see :doc:`ModelEquation <code/ModelEquation>, for ``[rk4input]`` see :doc:`variable_importer <code/variables>` and for ``[initials]`` see :doc:`variable_importer <code/variables>`. 
+The options of these sections are always the same and are always required! After the ``Configuration.importer`` function processes the **.ini**-file, these options are distributed to the functions of the model algorithm. For more information about the parameters, for ``[eqparam]`` see :doc:`ModelEquation <code/ModelEquation>`, for ``[rk4input]`` see :doc:`variable_importer <code/variables>` and for ``[initials]`` see :doc:`variable_importer <code/variables>`::
 
     [eqparam]
     C_ao=70*4.2e6
@@ -77,14 +77,14 @@ There is only one option::
 flux_up Options
 ---------------
 
-Option 1, :ref:`Budyko clear sky <Budykonoclouds>`::
+Option 1, :ref:`Budyko clear sky <code/Budykonoclouds>`::
 
     [func1]
     func=flux_up.budyko_noclouds
     A=230.31
     B=2.2274
 
-Option 2, :ref:`Budyko cloudy sky <Budykoclouds>`::
+Option 2, :ref:`Budyko cloudy sky <code/Budykoclouds>`::
 
     [func1]
     func=flux_up.budyko_clouds
@@ -160,53 +160,53 @@ forcing Options
 
 Option 1, :ref:`Random forcing <Randomforcing>`::
 
-[func3]
-func=forcing.random
-forcingnumber=0
-start=1958
-stop=2018
-steps=1/365
-timeunit='year'
-strength=10
-frequency='rare'
-behaviour='exponential'
-lifetime=365
-seed=None
-sign='negative'
+    [func3]
+    func=forcing.random
+    forcingnumber=0
+    start=1958
+    stop=2018
+    steps=1/365
+    timeunit='year'
+    strength=10
+    frequency='rare'
+    behaviour='exponential'
+    lifetime=365
+    seed=None
+    sign='negative'
 
 Option 2, :ref:`Imported predefined forcing <Predefinedforcing>`::
 
-[func4]
-func=PredefinedForcing
-forcingnumber=1
-datapath="../Config"
-name="Forcingdata.csv"
-delimiter=","
-header=1
-col_time=1
-col_forcing=2
-timeunit='year'
-BP=False
-time_start=7362.5
-k=1
+    [func4]
+    func=PredefinedForcing
+    forcingnumber=1
+    datapath="../Config"
+    name="Forcingdata.csv"
+    delimiter=","
+    header=1
+    col_time=1
+    col_forcing=2
+    timeunit='year'
+    BP=False
+    time_start=7362.5
+    k=1
 
 Option 3, :ref:`Imported CO2 forcing after Myhre <CO2forcing>`::
 
-[func5]
-func=forcing.co2_myhre
-A=5.35
-C_0=280
-CO2_base=280
-datapath="../Config/Data/"
-name="CO2data.csv"
-delimiter=","
-header=0
-footer=0
-col_time=3
-col_forcing=8
-timeunit='year'
-BP=False
-time_start=0
+    [func5]
+    func=forcing.co2_myhre
+    A=5.35
+    C_0=280
+    CO2_base=280
+    datapath="../Config/Data/"
+    name="CO2data.csv"
+    delimiter=","
+    header=0
+    footer=0
+    col_time=3
+    col_forcing=8
+    timeunit='year'
+    BP=False
+    time_start=0
 
 
 
