@@ -22,3 +22,7 @@ References
 
 - G. R. North and K. Kwang-Yul: Energy Balance Climate Models. Wiley-VCH Verlag GmbH \& Co. KGaA, 2017.
 
+.. _Myhre:
+
+- G. Myhre, E. J. Highwood, K. P. Shine and Frode Stordal: New estimates of radiative forcing due to well mixed greenhouse gases. Geophysical Research Letters, 25(14):2715–2718, 1998.
+

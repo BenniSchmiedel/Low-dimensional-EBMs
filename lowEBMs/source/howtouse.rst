@@ -30,8 +30,7 @@ The input will be created manually and is stored in a **configuration.ini** file
 .. Important::
     The configuration.ini file will provide the physical sense of the EBM!
 
-For now you can simply use the **EBM0D_simple_config.ini** file which imports a 0D EBM with a model run over 10 year and a stepsize of integration of 1 day.
-A demonstration on how to reproduce this **.ini** file is given in :ref:`Example Input 0D-EBM <0Dconf>`.
+For now you can simply use the **EBM0D_simple_config.ini** file which imports a 0D EBM with a model run over 10 year and a stepsize of integration of 1 day. A demonstration on how to reproduce this **.ini** file is given in :ref:`Example Input 0D-EBM <0Dconf>`.
 
 To import this file use the ``importer``-function::
 
@@ -79,13 +78,13 @@ and then call the desired variables by their name, for example::
 
 For detailed information about output variables see section :doc:`output <output>`. 
 
-If you look at the output of the algorithm (initialized with the **EBM0D_simple_config.ini** file) and plot the global temperature over time with::
+You can plot the global temperature over time with::
 
     plt.plot(np.array(outputdata[0])/stepsize_of_integration/365,outputdata[2])
     plt.xlabel('time [years]')
     plt.ylabel('GMT [K]')
 
-you get something like this:
+and you get something like this (for the simple 0D EBM):
 
 .. figure:: _static/GMT12.png
    :align: center

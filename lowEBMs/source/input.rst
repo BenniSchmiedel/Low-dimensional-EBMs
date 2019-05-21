@@ -16,9 +16,9 @@ There are four main components of the file, the modelequation parameters ``[eqpa
 
 .. Important::
     
-   To define which function you add in ``[func]``, insert the name of the function as parameter ``func=name``, then add the required parameters below (for available options see :ref:`Configuration options` and for their physical background see :doc:`Functions <code/functions>`).
+   To define which function you add in ``[func]``, insert the name of the function as parameter ``func=name``, then add the required parameters below (for available options see :ref:`Configuration options <confoptions>` and for their physical background see :doc:`Functions <code/functions>`).
 
-If you want to put together a new model simply create a textfile with the suffix **.ini** and the following style:
+If you want to put together a new model simply create a textfile with the suffix **.ini** and the following style::
 
     #Initial model setup & algorithm parameters 
     #------------------------------------------
@@ -33,9 +33,10 @@ If you want to put together a new model simply create a textfile with the suffix
     [func1]
     
     [func2]
+
     .
     .
-    [func_]
+    .
 
 .. Note::
 
@@ -44,7 +45,7 @@ If you want to put together a new model simply create a textfile with the suffix
 
 Now each section has to be filled with parameters. ``[eqparam]``, ``[rk4input]`` and ``[initials]`` always contain the same parameters since they define **how** the algorithm runs. The func-sections have to be modified since they define **which** model equation the algorithm solves. 
 
-.. _confoptions::
+.. _confoptions:
 
 Configuration options
 =====================
@@ -52,11 +53,11 @@ Configuration options
 For a detailed definition of the options available for the model setup see here:
 
 .. toctree::
-    :maxdepth: 2
+    :maxdepth: 3
     
     configdescription
 
-.. _0Dconf::
+.. _0Dconf:
 
 Example Input 0D EBM
 ====================
