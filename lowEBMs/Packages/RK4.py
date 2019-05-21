@@ -48,7 +48,7 @@ import numpy as np
 import builtins
 import time
 
-def rk4alg(func,eqparam,rk4input,funccomp):
+def rk4alg(func,eqparam,funccomp):
     """This functions main task is performing the numerical integration explained above by using the solution of the model equation from ``lowEBMs.Packages.ModelEquations``. 
 
     In some cases the scheme only needs to run until an equilibrium state (a sufficient amount of data points without any change) is reached.

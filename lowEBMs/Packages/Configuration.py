@@ -1,6 +1,5 @@
-"""Package for importing system configuration.
-   The needed data is imported from a specific config.ini and placed in different arrays
-   which can be called """
+"""Package with functions for importing model configurations and system structures.
+   """
 import configparser
 import os
 import sys

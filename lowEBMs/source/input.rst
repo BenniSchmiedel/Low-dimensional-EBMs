@@ -12,9 +12,13 @@ As already mentioned in the section :doc:`How to use <howtouse>`:
 
 Here shown is, how this file is structured and which syntax has to be maintained to make it readable to the ``importer`` function.
 
-There are four main components of the file, the modelequation parameters ``eqparam``, the runge-kutta parameters ``rk4input``, the initial condition parameters ``initials`` and a compilation of physical functions with their specific parameters ``funccomp``.
+There are four main components of the file, the modelequation parameters ``[eqparam]``, the runge-kutta parameters ``[rk4input]``, the initial condition parameters ``[initials]`` and physical functions with their specific parameters enumerated with ``[func0]``, ``[func1]`` and so on.
 
-If you want to put together a new model simply create a textfile with the suffix **.ini**. These four main components will be used as header of a section, whereas the headers the ``funccomp`` has to be replaced by ``func0``, ``func1``,... depending on how many functions you want to include. It will look like this::
+.. Important::
+    
+   To define which function you add in ``[func]``, insert the name of the function as parameter ``func=name``, then add the required parameters below (for available options see :ref:`Configuration options` and for their physical background see :doc:`Functions <code/functions>`).
+
+If you want to put together a new model simply create a textfile with the suffix **.ini** and the following style:
 
     #Initial model setup & algorithm parameters 
     #------------------------------------------
@@ -37,23 +41,27 @@ If you want to put together a new model simply create a textfile with the suffix
 
    The order of your sections doesn't matter as long as the headers are correctly labeled.
 
-.. Important::
-    
-   To define which function you add, insert the name of the function as parameter ``func=name``, then add the required parameters below (see :doc:`Functions <code/functions>`).
 
-Now each section has to be filled with parameters. ``eqparam``, ``rk4input`` and ``initials`` always contain the same parameters since they define **how** the algorithm runs. The func-sections have to be modified since they define **which** model equation the algorithm solves. 
+Now each section has to be filled with parameters. ``[eqparam]``, ``[rk4input]`` and ``[initials]`` always contain the same parameters since they define **how** the algorithm runs. The func-sections have to be modified since they define **which** model equation the algorithm solves. 
 
-A detailed definition of the parameters for the model setup can be looked up here:
+.. _confoptions::
+
+Configuration options
+=====================
+
+For a detailed definition of the options available for the model setup see here:
 
 .. toctree::
     :maxdepth: 2
     
     configdescription
 
+.. _0Dconf::
+
 Example Input 0D EBM
 ====================
 
-For a 0D-EBM (the *EBM0D_simple_config.ini*), the model setup might look like this::
+For the 0D-EBM (the *EBM0D_simple_config.ini*), the model setup might look like this::
 
     #Initial model setup & algorithm parameters 
     #------------------------------------------
@@ -77,11 +85,11 @@ For a 0D-EBM (the *EBM0D_simple_config.ini*), the model setup might look like th
 
     [initials]
     time=0
-    zmt=273+17
-    gmt=273+17
+    zmt=273+15
+    gmt=273+15
     latitude_c=0
     latitude_b=0
-    initial_temperature_cosine=True
+    initial_temperature_cosine=False
     initial_temperature_amplitude=30
     initial_temperature_noise=True
     initial_temperature_noise_amplitude=5

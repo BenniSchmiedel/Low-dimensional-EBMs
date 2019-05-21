@@ -12,6 +12,6 @@ def main():
     eq=configdic1['eqparam']
     rk=configdic1['rk4input']
     fun=configdic1['funccomp']
-    outputdata=rk4alg(model_equation,eq,rk,fun)
+    outputdata=rk4alg(model_equation,eq,fun)
     return outputdata
 
