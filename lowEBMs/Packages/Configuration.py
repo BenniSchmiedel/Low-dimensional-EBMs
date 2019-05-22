@@ -454,6 +454,62 @@ def parameterinterpolatorstepwise(filename,*args,**kwargs):
 #Hardcoded! So take care on which index the sellers functions are placed, standard is:
 #func0 = Incoming Radiation , func1 = Outgoing Radiation, func2 = Transfer, ...
 def add_sellersparameters(config,importer,file,transfernumber,incomingnumber,solar,albedo,*args,**kwargs): 
+    """
+    Function which returns an overwritten configuration with one-dimensional sellers parameters. It takes a model configuration with 0D sellers parameters, the filename of new parameters and a method of interpolation.
+
+    This function uses either the method ``Configuration.parameterinterpolator`` or ``Configuration.parameterinterpolatorstepwise`` which both use the import function ``Configuration.parameterimporter``, therefore it requires their attributes too.
+
+    **Function-call arguments** \n
+
+    :param dict config:             The original config dictionary to overwrite
+                                
+                                        * type: dictionary 
+                                        * value: created by ``Configuration.importer``
+
+    :param function importer:       The name of the interpolator method
+                                
+                                        * type: functionname 
+                                        * value: **parameterinterpolator** or **parameterinterpolatorstepwise**     
+
+    :param string file:             The name of the **parameter.ini-file**
+                                
+                                        * type: string 
+                                        * value: standard: 'SellersParameterization.ini'
+
+    :param integer transfernumber:  The [func] header-number in the **configuration.ini-file** which describes the transfer flux 
+                                
+                                        * type: integer 
+                                        * value: any  
+
+    :param integer incomingnumber:  The [func] header-number in the **configuration.ini-file** which describes the downward flux 
+                                
+                                        * type: integer 
+                                        * value: any    
+
+    :param boolean solar:           Indicates whether the insolation by Sellers is used
+                                
+                                        * type: boolean 
+                                        * value: True / False
+
+    :param boolean albedo:          Indicates whether the albedo parameters by Sellers are used
+                                    
+                                        * type: boolean 
+                                        * value: True / False                        
+
+    :param args:        
+
+    :param kwargs:                  Optional Keyword arguments:
+
+                                    * *path*: The directory path where the **parameter.ini-file** is located.
+
+                                        * type: string
+                                        * value: **full path** ('/home/user/dir0/dir1/filedir/') or **relative path** ('../../filedir/')
+                                    
+
+    :returns:                       configuration, parameters
+
+    :rtype:                         Dictionary, List
+    """
     from lowEBMs.Packages.Variables import Vars
     #solar and albedo are to be set to True or False 
 
@@ -483,7 +539,9 @@ def add_sellersparameters(config,importer,file,transfernumber,incomingnumber,sol
     return configout, paras
     
 def import_parallelparameter(fitconfig_filename,*args,**kwargs):
+    """
     
+    """
     path=kwargs.get('path',None)
     
     #Importing the configfile.ini from path
@@ -518,36 +576,36 @@ def import_parallelparameter(fitconfig_filename,*args,**kwargs):
             fitparams[i].update({str(j):eval(fitconfigini[i][j])})
     return fitparams
 
-def allocate_parallelparameter(fitparameter_raw):
-    num_params=fitparameter_raw['parametersetup']['number_of_parameters']
-    num_cycles=fitparameter_raw['parametersetup']['number_of_cycles']
-    parametersetup=fitparameter_raw.pop('parametersetup')
+def allocate_parallelparameter(parameter_raw):
+    num_params=parameter_raw['parametersetup']['number_of_parameters']
+    num_cycles=parameter_raw['parametersetup']['number_of_cycles']
+    parametersetup=parameter_raw.pop('parametersetup')
     parametersetup = dict((k,int(v)) for k,v in parametersetup.items())
 
-    fitparameter_raw_minus=fitparameter_raw
-    fitparameter_allocated=dict()
-    for i in list(fitparameter_raw_minus.keys()):
-        fitparameter_allocated.update({i:dict()})
-        for j in list(fitparameter_raw_minus[i].keys()):
-            paramrange=np.linspace(fitparameter_raw_minus[i][j][0],
-                                   fitparameter_raw_minus[i][j][1],num_cycles)
-            fitparameter_allocated[i].update({j:paramrange})
-    return fitparameter_allocated, parametersetup
+    parameter_raw_minus=parameter_raw
+    parameter_allocated=dict()
+    for i in list(parameter_raw_minus.keys()):
+        parameter_allocated.update({i:dict()})
+        for j in list(parameter_raw_minus[i].keys()):
+            paramrange=np.linspace(parameter_raw_minus[i][j][0],
+                                   parameter_raw_minus[i][j][1],num_cycles)
+            parameter_allocated[i].update({j:paramrange})
+    return parameter_allocated, parametersetup
 
-def write_parallelparameter(config,fitparameter,parametersetup):
+def write_parallelparameter(config,parameter,parametersetup):
     num_params=parametersetup['number_of_parameters']
     num_cycles=parametersetup['number_of_cycles']
 
     #for s in range(num_cycles):
     paralleldict=dict()
-    for key in list(fitparameter.keys()):
+    for key in list(parameter.keys()):
         paralleldict.update({key:dict()})
-        for paramkey in list(fitparameter[key].keys()):
+        for paramkey in list(parameter[key].keys()):
             paralleldict[key].update({paramkey:dict()})
-    key=list(fitparameter.keys())  
+    key=list(parameter.keys())  
     paramkey=[]
     for l in key:
-        paramkey.append(list(fitparameter[l].keys()))
+        paramkey.append(list(parameter[l].keys()))
     for n in range(num_cycles):
         for m in range(num_cycles):
             #for o in range(num_cycles):
@@ -555,12 +613,12 @@ def write_parallelparameter(config,fitparameter,parametersetup):
             if n==0 and m==0:
                 x.update({paramkey[1][0]:[]})
             x.update({paramkey[1][0]:np.append(x.get(paramkey[1][0]),
-                                                 fitparameter[key[1]][paramkey[1][0]][m])})
+                                                 parameter[key[1]][paramkey[1][0]][m])})
             y=paralleldict[key[2]]
             if n==0 and m==0:
                 y.update({paramkey[2][0]:[]})
             y.update({paramkey[2][0]:np.append(y.get(paramkey[2][0]),
-                                                 fitparameter[key[2]][paramkey[2][0]][n])})
+                                                 parameter[key[2]][paramkey[2][0]][n])})
             paralleldict.update({key[2]:y})
 
             """z=paralleldict[key[0]]
