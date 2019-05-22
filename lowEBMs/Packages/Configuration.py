@@ -18,24 +18,24 @@ def importer(filename,*args,**kwargs):
 
     **Function-call arguments** \n
 
-        :param string filename:         The name of the **configuration.ini-file**
+    :param string filename:         The name of the **configuration.ini-file**
+                                
+                                        * type: string 
+                                        * value: example: 'Configuration.ini'
+                                
+    :param args:        
+
+    :param kwargs:                  Optional Keyword arguments:
+
+                                    * *path*: The directory path where the **configuration.ini-file** is located.
+
+                                        * type: string
+                                        * value: **full path** ('/home/user/dir0/dir1/filedir/') or **relative path** ('../../filedir/')
                                     
-                                            * type: string 
-                                            * value: example: 'Configuration.ini'
-                                    
-        :param args:        
 
-        :param kwargs:                  Optional Keyword arguments:
+    :returns:                       configdic: Dictionary of model setup parameters distributed over several subdictionaries
 
-                                        * *path*: The directory path where the **configuration.ini-file** is located.
-
-                                            * type: string
-                                            * value: **full path** ('/home/user/dir0/dir1/filedir/') or **relative path** ('../../filedir/')
-                                        
-
-        :returns:                   configdic: Dictionary of model setup parameters distributed over several subdictionaries
-
-        :rtype:                     Dictionary
+    :rtype:                         Dictionary
  
     """
     path=kwargs.get('path',None)
@@ -124,11 +124,11 @@ def dict_to_list(dic):
 
     **Function-call arguments** \n
 
-        :param dict dic:            The dictionary to convert
-                     
-        :returns:                   List with same structure as input dictionary
+    :param dict dic:            The dictionary to convert
+                 
+    :returns:                   List with same structure as input dictionary
 
-        :rtype:                     List
+    :rtype:                     List
     """
     dic_to_list=list(dic.values())
     to_list=dic_to_list
@@ -182,24 +182,24 @@ def parameterimporter(filename,*args,**kwargs):
 
     **Function-call arguments** \n
 
-        :param string filename:         The name of the **parameter.ini-file**
+    :param string filename:         The name of the **parameter.ini-file**
+                                
+                                        * type: string 
+                                        * value: standard: 'SellersParameterization.ini'
+                                
+    :param args:        
+
+    :param kwargs:                  Optional Keyword arguments:
+
+                                    * *path*: The directory path where the **parameter.ini-file** is located.
+
+                                        * type: string
+                                        * value: **full path** ('/home/user/dir0/dir1/filedir/') or **relative path** ('../../filedir/')
                                     
-                                            * type: string 
-                                            * value: standard: 'SellersParameterization.ini'
-                                    
-        :param args:        
 
-        :param kwargs:                  Optional Keyword arguments:
+    :returns:                       circlecomb, beltcomb: List of parameters defined on a latitudinal circle, and latitudinal belt
 
-                                        * *path*: The directory path where the **parameter.ini-file** is located.
-
-                                            * type: string
-                                            * value: **full path** ('/home/user/dir0/dir1/filedir/') or **relative path** ('../../filedir/')
-                                        
-
-        :returns:                   circlecomb, beltcomb: List of parameters defined on a latitudinal circle, and latitudinal belt
-
-        :rtype:                     List, List
+    :rtype:                         List, List
 
     """
     path=kwargs.get('path',None)
@@ -268,24 +268,24 @@ def parameterinterpolator(filename,*args,**kwargs):
 
     **Function-call arguments** \n
 
-        :param string filename:         The name of the **parameter.ini-file**
+    :param string filename:         The name of the **parameter.ini-file**
+                                
+                                        * type: string 
+                                        * value: standard: 'SellersParameterization.ini'
+                                
+    :param args:        
+
+    :param kwargs:                  Optional Keyword arguments:
+
+                                    * *path*: The directory path where the **parameter.ini-file** is located.
+
+                                        * type: string
+                                        * value: **full path** ('/home/user/dir0/dir1/filedir/') or **relative path** ('../../filedir/')
                                     
-                                            * type: string 
-                                            * value: standard: 'SellersParameterization.ini'
-                                    
-        :param args:        
 
-        :param kwargs:                  Optional Keyword arguments:
+    :returns:                       newcircle, newbelt: List of interpolated parameters defined on a latitudinal circle, and latitudinal belt
 
-                                        * *path*: The directory path where the **parameter.ini-file** is located.
-
-                                            * type: string
-                                            * value: **full path** ('/home/user/dir0/dir1/filedir/') or **relative path** ('../../filedir/')
-                                        
-
-        :returns:                   newcircle, newbelt: List of interpolated parameters defined on a latitudinal circle, and latitudinal belt
-
-        :rtype:                     List, List
+    :rtype:                         List, List
     """
     path=kwargs.get('path',None)
     #Importing parameters 
@@ -340,24 +340,24 @@ def parameterinterpolatorstepwise(filename,*args,**kwargs):
 
     **Function-call arguments** \n
 
-        :param string filename:         The name of the **parameter.ini-file**
+    :param string filename:         The name of the **parameter.ini-file**
+                                
+                                        * type: string 
+                                        * value: standard: 'SellersParameterization.ini'
+                                
+    :param args:        
+
+    :param kwargs:                  Optional Keyword arguments:
+
+                                    * *path*: The directory path where the **parameter.ini-file** is located.
+
+                                        * type: string
+                                        * value: **full path** ('/home/user/dir0/dir1/filedir/') or **relative path** ('../../filedir/')
                                     
-                                            * type: string 
-                                            * value: standard: 'SellersParameterization.ini'
-                                    
-        :param args:        
 
-        :param kwargs:                  Optional Keyword arguments:
+    :returns:                       newcircle, newbelt: List of interpolated parameters defined on a latitudinal circle, and latitudinal belt
 
-                                        * *path*: The directory path where the **parameter.ini-file** is located.
-
-                                            * type: string
-                                            * value: **full path** ('/home/user/dir0/dir1/filedir/') or **relative path** ('../../filedir/')
-                                        
-
-        :returns:                   newcircle, newbelt: List of interpolated parameters defined on a latitudinal circle, and latitudinal belt
-
-        :rtype:                     List, List
+    :rtype:                         List, List
     """
     path=kwargs.get('path',None)
     #Importing parameters 
