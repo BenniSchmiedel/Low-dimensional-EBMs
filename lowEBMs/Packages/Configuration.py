@@ -7,6 +7,37 @@ from lowEBMs.Packages.Functions import *
 from lowEBMs.Packages.Variables import *
 
 def importer(filename,*args,**kwargs): 
+    """
+    This functions reads a **configuration.ini-file** and distributes its content into a dictionary required to run a model simulation. It is one of the coremodules of this project, mostly called as first step, because it gathers all information about the model setup and summarizes it.
+
+    .. Note::
+
+        The file from which the information is imported has to have a specific structure, please read :ref:`Input <../input>` first to see how the **configuration.ini-files** are created.
+
+    The specificaton of the path to the filedirectory is optional. If none is given some standard diretories will be tried (python sys.paths and relative paths like '../', '../Config/',..)
+
+    **Function-call arguments** \n
+
+        :param string filename:         The name of the **configuration.ini-file**
+                                    
+                                            * type: string 
+                                            * value: example: 'Configuration.ini'
+                                    
+        :param args:        
+
+        :param kwargs:                  Optional Keyword arguments:
+
+                                        * *path*: The directory path where the **configuration.ini-file** is located.
+
+                                            * type: string
+                                            * value: **full path** ('/home/user/dir0/dir1/filedir/') or **relative path** ('../../filedir/')
+                                        
+
+        :returns:                   configdic: Dictionary of model setup parameters distributed over several subdictionaries
+
+        :rtype:                     Dictionary
+ 
+    """
     path=kwargs.get('path',None)
     
     #Importing the configfile.ini from path
@@ -88,6 +119,17 @@ def importer(filename,*args,**kwargs):
     return configdic
 
 def dict_to_list(dic):
+    """
+    Function which converts the dictionary returned from ``Configuration.importer`` into a list with the same structure to allow calling the content by index not keyword. It works for a maximum of 3 dimensions of dictionaries (dictionary inside a dictionary).
+
+    **Function-call arguments** \n
+
+        :param dict dic:            The dictionary to convert
+                     
+        :returns:                   List with same structure as input dictionary
+
+        :rtype:                     List
+    """
     dic_to_list=list(dic.values())
     to_list=dic_to_list
     #print(to_list)
@@ -108,14 +150,61 @@ def dict_to_list(dic):
                 
         if i<len(to_list)-1:
             i+=1
-    return(to_list)
+    return to_list
 
-###Function to import parameters for the Sellers-EBM from a configfile
+###Function to import parameters for the Sellers-EBM from a parameterfile
 ###with arrays of values
 def parameterimporter(filename,*args,**kwargs):
+    """
+    A function purpose-built to import 1-dimensional parameters for the sellers-type functions. The standard parameters (:ref:`Sellers 1969`) are written into a **.ini-file** and will be extracted to override the 0-dimensional parameters with 1-dimensional ones.
+
+    .. Important::
+
+        This function is inbound into ``Configuration.parameterinterpolater`` or ``Configuration.parameterinterpolaterstepwise`` which interpolate the parameters to the gridresolution. **To import, interpolate and overwrite these parameter use** ``Configuration.add_sellersparameters``.     
+
+    Parameters which are imported 1-dimensionally:
+
+        * *b*: Empirical constant to estimate the albedo
+        * *Z*: Zonal mean altitude 
+        * *Q*: Solar insolation
+        * *dp*: The tropospheric pressure depth
+        * *dz*: The average zonal ocean depth
+        * *Kh*: The thermal diffusivity of the atmospheric sensible heat term
+        * *Kwv*: The thermal diffusivity of the watervapour term
+        * *Ko*: The thermal diffusivity of the oceanic sensible heat term
+        * *a*: Empricial constant to calculate the meridional windspeed
+
+    The parameters are divided into two types, one defined on a latitudinal circle (gridlines) and one defined on a latitudinal belt (center point between two latitudinal circles/gridlines)
+
+    .. Note::
+
+        The standard parameters from :ref:`Sellers (1969)` are already provided with this project in 'lowEBMs/Tutorials/Config/Data/'. By specifying no path (**path=None**) they can directly be used (advised since the parameters are structured in a special way).
+
+    **Function-call arguments** \n
+
+        :param string filename:         The name of the **parameter.ini-file**
+                                    
+                                            * type: string 
+                                            * value: standard: 'SellersParameterization.ini'
+                                    
+        :param args:        
+
+        :param kwargs:                  Optional Keyword arguments:
+
+                                        * *path*: The directory path where the **parameter.ini-file** is located.
+
+                                            * type: string
+                                            * value: **full path** ('/home/user/dir0/dir1/filedir/') or **relative path** ('../../filedir/')
+                                        
+
+        :returns:                   circlecomb, beltcomb: List of parameters defined on a latitudinal circle, and latitudinal belt
+
+        :rtype:                     List, List
+
+    """
     path=kwargs.get('path',None)
     
-    #Importing the configfile.ini from path
+    #Importing the paras.ini from path
     if path == None:
         possible_paths=['','Config/Data/','../Config/Data/']
         for i in sys.path:
@@ -172,6 +261,32 @@ def parameterimporter(filename,*args,**kwargs):
 ###Function to interpolate the parameterizations given from sellers, into an interpolated
 ####output with higher resolution
 def parameterinterpolator(filename,*args,**kwargs):
+    """
+    An interpolation method which interpolates the parameters by fitting a polynomial of degree 10 and outputs parameters suitable for the gridresolution.
+
+    This function includes the function ``Configuration.parameterimporter`` and takes the same arguments.
+
+    **Function-call arguments** \n
+
+        :param string filename:         The name of the **parameter.ini-file**
+                                    
+                                            * type: string 
+                                            * value: standard: 'SellersParameterization.ini'
+                                    
+        :param args:        
+
+        :param kwargs:                  Optional Keyword arguments:
+
+                                        * *path*: The directory path where the **parameter.ini-file** is located.
+
+                                            * type: string
+                                            * value: **full path** ('/home/user/dir0/dir1/filedir/') or **relative path** ('../../filedir/')
+                                        
+
+        :returns:                   newcircle, newbelt: List of interpolated parameters defined on a latitudinal circle, and latitudinal belt
+
+        :rtype:                     List, List
+    """
     path=kwargs.get('path',None)
     #Importing parameters 
     inputparas=parameterimporter(filename,path=path)
@@ -216,6 +331,34 @@ def parameterinterpolator(filename,*args,**kwargs):
 ###Function to interpolate the parameterizations given from sellers, into an interpolated
 ####output with higher resolution with stepwise interpolation and averaging
 def parameterinterpolatorstepwise(filename,*args,**kwargs):
+    """
+    An interpolation method which interpolates the parameters stepwise and outputs parameters suitable for the gridresolution.
+
+    The interpolation method is more advanced compared to ``Configuration.parameterinterpolator``. For each point (over the latitudes) a polynomial fit of degree 2 is made over the point plus the neighbouring points and estimates for the new gridresolution between these neighbouring points are stored. This is done for every point of the original parameters (except the endpoints). Because the interpolations overlap, the values are averaged to obtain a best estimate from multiple interpolations.  
+
+    This function includes the function ``Configuration.parameterimporter`` and takes the same arguments.
+
+    **Function-call arguments** \n
+
+        :param string filename:         The name of the **parameter.ini-file**
+                                    
+                                            * type: string 
+                                            * value: standard: 'SellersParameterization.ini'
+                                    
+        :param args:        
+
+        :param kwargs:                  Optional Keyword arguments:
+
+                                        * *path*: The directory path where the **parameter.ini-file** is located.
+
+                                            * type: string
+                                            * value: **full path** ('/home/user/dir0/dir1/filedir/') or **relative path** ('../../filedir/')
+                                        
+
+        :returns:                   newcircle, newbelt: List of interpolated parameters defined on a latitudinal circle, and latitudinal belt
+
+        :rtype:                     List, List
+    """
     path=kwargs.get('path',None)
     #Importing parameters 
     inputparas=parameterimporter(filename,path=path)
@@ -339,7 +482,7 @@ def add_sellersparameters(config,importer,file,transfernumber,incomingnumber,sol
     configout['funccomp']['funcparam']['func'+str(incomingnumber)]=funcin
     return configout, paras
     
-def import_fitparameter(fitconfig_filename,*args,**kwargs):
+def import_parallelparameter(fitconfig_filename,*args,**kwargs):
     
     path=kwargs.get('path',None)
     
@@ -375,7 +518,7 @@ def import_fitparameter(fitconfig_filename,*args,**kwargs):
             fitparams[i].update({str(j):eval(fitconfigini[i][j])})
     return fitparams
 
-def allocate_fitparameter(fitparameter_raw):
+def allocate_parallelparameter(fitparameter_raw):
     num_params=fitparameter_raw['parametersetup']['number_of_parameters']
     num_cycles=fitparameter_raw['parametersetup']['number_of_cycles']
     parametersetup=fitparameter_raw.pop('parametersetup')
@@ -391,7 +534,7 @@ def allocate_fitparameter(fitparameter_raw):
             fitparameter_allocated[i].update({j:paramrange})
     return fitparameter_allocated, parametersetup
 
-def write_fitparameter(config,fitparameter,parametersetup):
+def write_parallelparameter(config,fitparameter,parametersetup):
     num_params=parametersetup['number_of_parameters']
     num_cycles=parametersetup['number_of_cycles']
 

@@ -5,7 +5,7 @@ Configuration-Section Options
 [eqparam], [rk4input] and [initials]
 ====================================
 
-The options of these sections are always the same and are always required! After the ``Configuration.importer`` function processes the **.ini**-file, these options are distributed to the functions of the model algorithm. For more information about the parameters, for ``[eqparam]`` see :doc:`ModelEquation <code/ModelEquation>`, for ``[rk4input]`` see :doc:`variable_importer <code/variables>` and for ``[initials]`` see :doc:`variable_importer <code/variables>`::
+The options of these sections are always the same and are always required! After the ``Configuration.importer`` function processes the **.ini**-file, these options are distributed to the functions of the model algorithm. For more information about the parameters, for ``[eqparam]`` see :doc:`ModelEquation <code/modelequation>`, for ``[rk4input]`` see :doc:`variable_importer <code/variables>` and for ``[initials]`` see :doc:`variable_importer <code/variables>`::
 
     [eqparam]
     C_ao=70*4.2e6
