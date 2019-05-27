@@ -7,9 +7,9 @@ import setuptools
 
 
 setuptools.setup(name='lowEBMs',
-      version='0.1.2.2',
+      version='0.1.3',
       description='A python implementation of low-dimensional EBMs',
-      url='https://github.com/BenniSchmiedel/Climate-Modelling',
+      url='https://github.com/paleovar/lowEBMs',
       author='Benjamin Schmiedel',
       license='MIT',
       packages=setuptools.find_packages(),
