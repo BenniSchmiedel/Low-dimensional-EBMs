@@ -217,5 +217,5 @@ def rk4alg(func,eqparam,funccomp):
 
     return dataout
 
-def controlrun(
+#def controlrun(
 
