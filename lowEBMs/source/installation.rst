@@ -28,7 +28,7 @@ To download and install ``lowEBMs`` with all its dependencies, go to the command
 
 Alternatively, you can clone the git repository of the source code and manually run the setup.py which installs the package with all its dependencies::
 
-    git clone https://github.com/BenniSchmiedel/Climate-Modelling 
+    git clone https://github.com/paleovar/lowEBMs 
 
     python setup.py install
 
