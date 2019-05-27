@@ -72,7 +72,7 @@ pygments_style = 'default'
 
 html_theme = 'sphinx_rtd_theme'
 html_static_path = ['_static']
-html_logo = ['/_static/Stacy_logo_200.png']
+html_logo = '/_static/Stacy_logo_200.png'
 
 
 htmlhelp_basename = 'docdoc'
