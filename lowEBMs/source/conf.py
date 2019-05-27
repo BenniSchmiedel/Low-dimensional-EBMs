@@ -20,9 +20,9 @@ sys.path.insert(0, os.path.abspath('../../'))
 
 # -- Project information -----------------------------------------------------
 
-project = 'Low-dimensional Energybalance models'
-copyright = '2019, benni'
-author = 'benni'
+project = 'Low-dimensional Energy Balance Models'
+copyright = '2019, Benjamin Schmiedel'
+author = 'Benjamin Schmiedel'
 
 # The short X.Y version
 version = ''
