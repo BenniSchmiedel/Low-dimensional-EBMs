@@ -50,7 +50,7 @@ The functions and examples of their required parameters are listed here after th
 flux_down Options
 -----------------
 
-There is only one option, the :ref:`insolation <fluxdown>`::
+There is only one option, :ref:`Insolation <Insolation>`::
 
     [func0]
     func=flux_down.insolation
@@ -77,14 +77,14 @@ There is only one option, the :ref:`insolation <fluxdown>`::
 flux_up Options
 ---------------
 
-Option 1, :ref:`Budyko clear sky <code.functioncode.flux_up.Budykonoclouds>`::
+Option 1, :ref:`Budyko clear sky <Budykonoclouds>`::
 
     [func1]
     func=flux_up.budyko_noclouds
     A=230.31
     B=2.2274
 
-Option 2, :ref:`Budyko cloudy sky <code/functioncode/flux_up/Budykoclouds>`::
+Option 2, :ref:`Budyko cloudy sky <Budykoclouds>`::
 
     [func1]
     func=flux_up.budyko_clouds
@@ -94,7 +94,7 @@ Option 2, :ref:`Budyko cloudy sky <code/functioncode/flux_up/Budykoclouds>`::
     B1=0.1*15.91
     fc=0.5
 
-Option 3, :ref:`Stefan-Boltzmann radiation <fluxdown>`::
+Option 3, :ref:`Stefan-Boltzmann radiation <Planck>`::
 
     [func1]
     func=flux_up.planck
@@ -156,7 +156,7 @@ forcing Options
 
 .. Important::
     
-    If you use multiple ``forcing.random```and ``forcing.predefiend`` you have to increase the value of the option **forcingnumber** by 1, this will create an additional space in the output-array and an internal counter of the forcings.
+    If you use multiple ``forcing.random`` and ``forcing.predefiend`` you have to increase the value of the option **forcingnumber** by 1, this will create an additional space in the output-array and an internal counter of the forcings.
 
 Option 1, :ref:`Random forcing <Randomforcing>`::
 

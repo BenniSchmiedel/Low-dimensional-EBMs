@@ -1821,13 +1821,13 @@ class earthsystem:
         """ 
         The GMT calculated from the ZMT with a gridspcific areaweighting.
  
-        The GMT :math:`T_{global}` is given by:
+        The GMT, :math:`T_{global}`, is given by:
     
         .. math::
 
             T_{global}= \int_{\phi_s}^{\phi_n} T(\phi) \cdot cos(\phi) d\phi
                 
-        with the ZMT :math:`T(\phi)` of latitude :math:`\phi`, and the borders of the grid :math:`\phi_s`/:math:`\phi_n`. 
+        with the ZMT, :math:`T(\phi)`, of latitude :math:`\phi`, and the borders of the grid :math:`\phi_s`/:math:`\phi_n`. 
         
         **Function-call arguments** \n
 
@@ -1978,7 +1978,7 @@ class earthsystem:
 
             v = - a\cdot (\Delta T \pm | \overline{\Delta T} | )
         
-        with :math:`+` north of 5°N and :math:`-` south of 5°N, the temperature difference between latitudes :math:`\Delta T` provided by ``earthsystem.temperature_difference_latitudes``, empirical constants :math:`a` and the area weighted mean temperature difference :math:` | \overline{\Delta T} |`. 
+        with :math:`+` north of 5°N and :math:`-` south of 5°N, the temperature difference between latitudes :math:`\Delta T` provided by ``earthsystem.temperature_difference_latitudes``, empirical constants :math:`a` and the area weighted mean temperature difference :math:`| \overline{\Delta T} |`. 
 
         The required parameters are directly parsed from the ``transfer.sellers`` module, for details see :doc:`here <transfer>`.
 
