@@ -1,5 +1,19 @@
-"""Package with functions for importing model configurations and system structures.
-   """
+"""
+Package with functions for importing model configurations and system structures.
+
+.. autosummary::
+    :toctree:
+
+    importer
+    dict_to_list
+    parameterimporter
+    parameterinterpolator
+    parameterinterpolatorstepwise
+    add_sellersparameters
+    import_parallelparameter
+    allocate_parallelparameter
+    write_parallelparameter
+"""
 import configparser
 import os
 import sys
@@ -48,8 +62,8 @@ def importer(filename,*args,**kwargs):
         for trypath in possible_paths:
             exists = os.path.isfile(trypath+filename)
             if exists:
-                path=trypath+filename
-                print('Loading Configuration from: '+path)
+                path=trypath
+                print('Loading Configuration from: '+path+filename)
                 config=configparser.ConfigParser()  
                 config.read(path+filename)    
                 break 
@@ -212,8 +226,8 @@ def parameterimporter(filename,*args,**kwargs):
         for trypath in possible_paths:
             exists = os.path.isfile(trypath+filename)
             if exists:
-                path=trypath+filename
-                print('Loading Parameters from: '+path)
+                path=trypath
+                print('Loading Parameters from: '+path+filename)
                 paras=configparser.ConfigParser()  
                 paras.read(path+filename)    
                 break 
@@ -538,7 +552,7 @@ def add_sellersparameters(config,importer,file,transfernumber,incomingnumber,sol
     configout['funccomp']['funcparam']['func'+str(incomingnumber)]=funcin
     return configout, paras
     
-def import_parallelparameter(fitconfig_filename,*args,**kwargs):
+def import_parallelparameter(parallelconfig_filename,*args,**kwargs):
     """
     Function which imports information from a **.ini-file** which serves as configuration of a setup to parallelized run simulations. This shall allow time-efficient creation of ensemble run, focused to run simulations with various parameters to gain best-fit parameters.
 
@@ -574,22 +588,22 @@ def import_parallelparameter(fitconfig_filename,*args,**kwargs):
         for i in sys.path:
             possible_paths.append(i+'/lowEBMs/Tutorials/Config/Parameterfit/')
         for trypath in possible_paths:
-            exists = os.path.isfile(trypath+fitconfig_filename)
+            exists = os.path.isfile(trypath+parallelconfig_filename)
             if exists:
-                path=trypath+filename
-                print('Loading fit-configuration from: '+path)
+                path=trypath
+                print('Loading fit-configuration from: '+path+parallelconfig_filename)
                 fitconfigini=configparser.ConfigParser()  
-                fitconfigini.read(path+fitconfig_filename)    
+                fitconfigini.read(path+parallelconfig_filename)    
                 break 
             if trypath==possible_paths[-1]:
                 sys.exit('Error: File not found, please specify the path of the fitconfiguration.ini.  importer(filename,path= " ... ")')
     else:
     #Importing the configfile.ini
-        exists = os.path.isfile(path+fitconfig_filename)
+        exists = os.path.isfile(path+parallelconfig_filename)
         if exists:
             print('Loading fit-configuration from: '+path)
             fitconfigini=configparser.ConfigParser()  
-            fitconfigini.read(path+fitconfig_filename) 
+            fitconfigini.read(path+parallelconfig_filename) 
         else:         
             sys.exit('Error: File not found, please specify the path of the configuration.ini.  importer(filename,path= " ... ")')                  
        
