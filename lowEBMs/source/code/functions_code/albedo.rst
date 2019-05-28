@@ -3,7 +3,7 @@ albedo
 ******
 
 .. autoclass:: lowEBMs.Packages.Functions.albedo
-    :show-inheritance:
+    
 
 
 .. autofunction:: lowEBMs.Packages.Functions.albedo.static
