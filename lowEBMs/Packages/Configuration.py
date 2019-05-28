@@ -1,8 +1,9 @@
 """
-Package with functions for importing model configurations and system structures.
+Package with functions which configure the model setup.
 
 .. autosummary::
     :toctree:
+    :nosignatures:
 
     importer
     dict_to_list
@@ -22,7 +23,7 @@ from lowEBMs.Packages.Variables import *
 
 def importer(filename,*args,**kwargs): 
     """
-    This functions reads a **configuration.ini-file** and distributes its content into a dictionary required to run a model simulation. It is one of the coremodules of this project, mostly called as first step, because it gathers all information about the model setup and summarizes it.
+    Reads a **configuration.ini-file** and creates the model run setup in a dictionary. It is one of the coremodules of this project, mostly called as first step, because it gathers all information about the model setup and summarizes it.
 
     .. Note::
 
@@ -134,7 +135,7 @@ def importer(filename,*args,**kwargs):
 
 def dict_to_list(dic):
     """
-    Function which converts the dictionary returned from ``Configuration.importer`` into a list with the same structure to allow calling the content by index not keyword. It works for a maximum of 3 dimensions of dictionaries (dictionary inside a dictionary).
+    Converts dictionaries returned from ``Configuration.importer`` into a list with the same structure. This allows calling the content by index not keyword. It works for a maximum of 3 dimensions of dictionaries (dictionary inside a dictionary).
 
     **Function-call arguments** \n
 
@@ -276,7 +277,7 @@ def parameterimporter(filename,*args,**kwargs):
 ####output with higher resolution
 def parameterinterpolator(filename,*args,**kwargs):
     """
-    An interpolation method which interpolates the parameters by fitting a polynomial of degree 10 and outputs parameters suitable for the gridresolution.
+    An interpolation method fitting a polynomial of degree 10 to the parameter distributions. This creates parameter distributions suitable for the gridresolution (necessary if a higher resolution than 10° is used.
 
     This function includes the function ``Configuration.parameterimporter`` and takes the same arguments.
 
@@ -346,7 +347,7 @@ def parameterinterpolator(filename,*args,**kwargs):
 ####output with higher resolution with stepwise interpolation and averaging
 def parameterinterpolatorstepwise(filename,*args,**kwargs):
     """
-    An interpolation method which interpolates the parameters stepwise and outputs parameters suitable for the gridresolution.
+    An interpolation method stepwise fitting and averaging a polynomial of degree 2 to the parameter distribution.
 
     The interpolation method is more advanced compared to ``Configuration.parameterinterpolator``. For each point (over the latitudes) a polynomial fit of degree 2 is made over the point plus the neighbouring points and estimates for the new gridresolution between these neighbouring points are stored. This is done for every point of the original parameters (except the endpoints). Because the interpolations overlap, the values are averaged to obtain a best estimate from multiple interpolations.  
 
@@ -469,7 +470,7 @@ def parameterinterpolatorstepwise(filename,*args,**kwargs):
 #func0 = Incoming Radiation , func1 = Outgoing Radiation, func2 = Transfer, ...
 def add_sellersparameters(config,importer,file,transfernumber,incomingnumber,solar,albedo,*args,**kwargs): 
     """
-    Function which returns an overwritten configuration with one-dimensional sellers parameters. It takes a model configuration with 0D sellers parameters, the filename of new parameters and a method of interpolation.
+    Overwrites the model setup with one-dimensional sellers parameters. It takes a model configuration with 0D sellers parameters, the filename of new parameters and a method of interpolation.
 
     This function uses either the method ``Configuration.parameterinterpolator`` or ``Configuration.parameterinterpolatorstepwise`` which both use the import function ``Configuration.parameterimporter``, therefore it requires their attributes too.
 
@@ -554,39 +555,37 @@ def add_sellersparameters(config,importer,file,transfernumber,incomingnumber,sol
     
 def import_parallelparameter(parallelconfig_filename,*args,**kwargs):
     """
-    Function which imports information from a **.ini-file** which serves as configuration of a setup to parallelized run simulations. This shall allow time-efficient creation of ensemble run, focused to run simulations with various parameters to gain best-fit parameters.
-
-    
+    Imports information from a .ini-file to create a setup of parallelized simulations. This shall allow time-efficient creation of ensemble run, focused to run simulations with various parameters to gain best-fit parameters.    
 
     **Function-call arguments** \n
 
 
-    :param boolean albedo:          Indicates whether the albedo parameters by Sellers are used
+    :param string parallelconfig_filename:      The name of the **Parallelization.ini-file** for parallelization
                                     
-                                        * type: boolean 
-                                        * value: True / False                        
+                                                * type: string 
+                                                * value: standard: 'Parallelization.ini'                      
 
     :param args:        
 
-    :param kwargs:                  Optional Keyword arguments:
+    :param kwargs:                              Optional Keyword arguments:
 
-                                    * *path*: The directory path where the **parameter.ini-file** is located.
+                                                * *path*: The directory path where the **Parallelization.ini-file** is located.
 
-                                        * type: string
-                                        * value: **full path** ('/home/user/dir0/dir1/filedir/') or **relative path** ('../../filedir/')
-                                    
+                                                    * type: string
+                                                    * value: **full path** ('/home/user/dir0/dir1/filedir/') or **relative path** ('../../filedir/')
+                                                
 
-    :returns:                       configuration, parameters
+    :returns:                                   raw parallelization setup
 
-    :rtype:                         Dictionary, List
+    :rtype:                                     Dictionary
     """
     path=kwargs.get('path',None)
     
     #Importing the configfile.ini from path
     if path == None:
-        possible_paths=['','Config/Parameterfit/','../Config/Parameterfit/','/Tutorials/Config/Parameterfit/','../Tutorials/Config/Parameterfit/']
+        possible_paths=['','Config/Parallelization/','../Config/Parallelization/','/Tutorials/Config/Parallelization/','../Tutorials/Config/Parallelization/']
         for i in sys.path:
-            possible_paths.append(i+'/lowEBMs/Tutorials/Config/Parameterfit/')
+            possible_paths.append(i+'/lowEBMs/Tutorials/Config/Parallelization/')
         for trypath in possible_paths:
             exists = os.path.isfile(trypath+parallelconfig_filename)
             if exists:
@@ -615,6 +614,22 @@ def import_parallelparameter(parallelconfig_filename,*args,**kwargs):
     return fitparams
 
 def allocate_parallelparameter(parameter_raw):
+    """
+    Transforms parameters for parallelization from tuple *[start,end]* to list *[start,...,end]* of length *number_of_cycles*. This shall create lists of parameters to be tested in parallelized simulations.
+
+    **Function-call arguments** \n
+
+
+    :param dict parameter_raw:        A dictionary with parameters to allocate. The values of the parameters should have the form [start,end] to create *[start,...,end]* of length *number_of_cycles*
+                                    
+                                                * type: dictionary 
+                                                * value: as returned by **configuration.import_parallelparameter**               
+
+
+    :returns:                               allocated parallelization setup, parallelization information 
+
+    :rtype:                                 Dictionary, Dictionary
+    """
     num_params=parameter_raw['parametersetup']['number_of_parameters']
     num_cycles=parameter_raw['parametersetup']['number_of_cycles']
     parametersetup=parameter_raw.pop('parametersetup')
@@ -631,6 +646,32 @@ def allocate_parallelparameter(parameter_raw):
     return parameter_allocated, parametersetup
 
 def write_parallelparameter(config,parameter,parametersetup):
+    """
+    Overwrites the single run model setup with a parallelized model setup. This function uses the allocated parallelization setup as returned by ``Configuration.allocate_parallelparameter``. Depending on the number of paramters **n** to parallelize, a **n-dimensional** matrix is created. This matrix will be transformed to a **one-dimensional** list by placing one row after another.  
+
+    **Function-call arguments** \n
+
+
+    :param dict config:                 The original config dictionary to overwrite
+                                
+                                            * type: dictionary 
+                                            * value: created by ``Configuration.importer`` 
+
+    :param dict parameter:              A dictionary with allocated parameters for parallelization. First element returned by ``Configuration.allocate_parallelparameter``.
+                                
+                                            * type: dictionary 
+                                            * value: as returned by ``Configuration.allocate_parallelparameter`` 
+
+    :param dict parametersetup:         A dictionary with information about parallelization. Second element returned by ``Configuration.allocate_parallelparameter``.
+                                
+                                            * type: dictionary 
+                                            * value: as returned by ``Configuration.allocate_parallelparameter`` 
+
+
+    :returns:                           config: Updated dictionary of model setup parameters for parallelization
+
+    :rtype:                             Dictionary
+    """
     num_params=parametersetup['number_of_parameters']
     num_cycles=parametersetup['number_of_cycles']
 
