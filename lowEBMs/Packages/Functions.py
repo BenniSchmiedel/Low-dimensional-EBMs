@@ -1375,13 +1375,6 @@ class forcing:
         predefined
         co2_myhre
     
-
-    .. autofunction:: lowEBMs.Packages.Functions.forcing.random
-
-    .. autofunction:: lowEBMs.Packages.Functions.forcing.predefined
-
-    .. autofunction:: lowEBMs.Packages.Functions.forcing.co2_myhre
-
     """
     def random(funcparam):
         """ 
@@ -1828,7 +1821,7 @@ class earthsystem:
         """ 
         The GMT calculated from the ZMT with a gridspcific areaweighting.
  
-        The GMT :math:`T_{global} is given by:
+        The GMT :math:`T_{global}` is given by:
     
         .. math::
 
@@ -1983,7 +1976,7 @@ class earthsystem:
 
         .. math::
 
-            v = - a\cdot (\Delta T \pm | {\overline{\Delta T} | )
+            v = - a\cdot (\Delta T \pm | \overline{\Delta T} | )
         
         with :math:`+` north of 5°N and :math:`-` south of 5°N, the temperature difference between latitudes :math:`\Delta T` provided by ``earthsystem.temperature_difference_latitudes``, empirical constants :math:`a` and the area weighted mean temperature difference :math:` | \overline{\Delta T} |`. 
 
@@ -2275,7 +2268,7 @@ class earthsystem:
 
         .. math::
 
-            A = \pi r^2 \left([sin(90-\phi_s)^2+(1-cos(90-\phi_s)^2] - [sin(90-\phi_n)^2 + (1+cos(90-\phi_n)^2]\\right)
+            A = \pi r^2 \left([sin(90-\phi_s)^2+(1-cos(90-\phi_s))^2] - [sin(90-\phi_n)^2 + (1+cos(90-\phi_n))^2]\\right)
         
         with the earths radius :math:`r` and the degree of northern and southern latitudinal circle :math:`\phi_n`, :math:`\phi_s`.
        
