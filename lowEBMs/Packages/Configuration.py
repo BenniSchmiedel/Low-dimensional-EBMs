@@ -48,7 +48,7 @@ def importer(filename,*args,**kwargs):
         for trypath in possible_paths:
             exists = os.path.isfile(trypath+filename)
             if exists:
-                path=trypath
+                path=trypath+filename
                 print('Loading Configuration from: '+path)
                 config=configparser.ConfigParser()  
                 config.read(path+filename)    
@@ -212,7 +212,7 @@ def parameterimporter(filename,*args,**kwargs):
         for trypath in possible_paths:
             exists = os.path.isfile(trypath+filename)
             if exists:
-                path=trypath
+                path=trypath+filename
                 print('Loading Parameters from: '+path)
                 paras=configparser.ConfigParser()  
                 paras.read(path+filename)    
@@ -540,19 +540,43 @@ def add_sellersparameters(config,importer,file,transfernumber,incomingnumber,sol
     
 def import_parallelparameter(fitconfig_filename,*args,**kwargs):
     """
+    Function which imports information from a **.ini-file** which serves as configuration of a setup to parallelized run simulations. This shall allow time-efficient creation of ensemble run, focused to run simulations with various parameters to gain best-fit parameters.
+
     
+
+    **Function-call arguments** \n
+
+
+    :param boolean albedo:          Indicates whether the albedo parameters by Sellers are used
+                                    
+                                        * type: boolean 
+                                        * value: True / False                        
+
+    :param args:        
+
+    :param kwargs:                  Optional Keyword arguments:
+
+                                    * *path*: The directory path where the **parameter.ini-file** is located.
+
+                                        * type: string
+                                        * value: **full path** ('/home/user/dir0/dir1/filedir/') or **relative path** ('../../filedir/')
+                                    
+
+    :returns:                       configuration, parameters
+
+    :rtype:                         Dictionary, List
     """
     path=kwargs.get('path',None)
     
     #Importing the configfile.ini from path
     if path == None:
-        possible_paths=['','Config/Parameterfit/','../Config/Parameterfit/']
+        possible_paths=['','Config/Parameterfit/','../Config/Parameterfit/','/Tutorials/Config/Parameterfit/','../Tutorials/Config/Parameterfit/']
         for i in sys.path:
             possible_paths.append(i+'/lowEBMs/Tutorials/Config/Parameterfit/')
         for trypath in possible_paths:
             exists = os.path.isfile(trypath+fitconfig_filename)
             if exists:
-                path=trypath
+                path=trypath+filename
                 print('Loading fit-configuration from: '+path)
                 fitconfigini=configparser.ConfigParser()  
                 fitconfigini.read(path+fitconfig_filename)    
