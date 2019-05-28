@@ -57,16 +57,13 @@ class flux_down:
         :nosignatures:
 
         insolation
-
-    .. autofunction:: lowEBMs.Packages.Functions.flux_down.insolation
-
     """
 
     def insolation(funcparam):
         """
-        .. _Insolation:
-
         Function defining the absorbed solar insolation. Physically there is an important difference between the insolation, which is denoted as :math:`Q` and the absorbed insolation, which is the output of this function denoted as :math:`R_{down}`. The absorbed insolation in it's simplest form is written (as introduced in the :doc:`physical background <../models>`): 
+
+        .. _Insolation:
 
         .. math::
 
@@ -267,16 +264,6 @@ class albedo:
     .. Note::
 
         These are special functions which are used by ``flux_down.insolation``. In the *configuration.ini* they have to be inserted in its [func]-section with the parameters used (see :ref:`albedo <albedo>`). 
-
-    .. autofunction:: lowEBMs.Packages.Functions.albedo.static
-
-    .. autofunction:: lowEBMs.Packages.Functions.albedo.static_bud
-
-    .. autofunction:: lowEBMs.Packages.Functions.albedo.dynamic_bud
-
-    .. autofunction:: lowEBMs.Packages.Functions.albedo.smooth
-
-    .. autofunction:: lowEBMs.Packages.Functions.albedo.dynamic_sel
     """
     def static(alpha):
         """
@@ -586,21 +573,13 @@ class flux_up:
         planck
         sellers
 
-    .. autofunction:: lowEBMs.Packages.Functions.flux_up.budyko_noclouds
-
-    .. autofunction:: lowEBMs.Packages.Functions.flux_up.budyko_clouds
-
-    .. autofunction:: lowEBMs.Packages.Functions.flux_up.planck
-
-    .. autofunction:: lowEBMs.Packages.Functions.flux_up.sellers
-
     """
 
     def budyko_noclouds(funcparam):  
         """ 
-        .. _Budykonoclouds:
-
         An empirically determined upward radiative energy flux which approximates the top of the atmosphere radiation emitted to space to be dependant linear on temperature. The presence of clouds is not specifically taken into account.
+
+        .. _Budykonoclouds:
 
         The upward radiative energy flux :math:`R_{up}` of latitude :math:`\phi` is given by:
     
@@ -642,9 +621,9 @@ class flux_up:
 
     def budyko_clouds(funcparam):
         """ 
-        .. _Budykoclouds:
-
         An empirically determined upward radiative energy flux which approximates the top of the atmosphere radiation emitted to space to be dependant linear on temperature. The presence of clouds is specifically taken into account with a second temperature dependant term.
+
+        .. _Budykoclouds:
 
         The upward radiative energy flux :math:`R_{up}` of latitude :math:`\phi` is given by:
     
@@ -703,10 +682,10 @@ class flux_up:
 
     def planck(funcparam):
         """ 
-        .. _Planck:
- 
         The stefan-boltzmann radiation for a grey body as radiative energy flux directed upward. The ideal stefan-boltzmann radiation with a temperature to the power of 4 scaled with an emissivity factor :math:`\epsilon`.
 
+        .. _Planck:
+ 
         The upward radiative energy flux :math:`R_{up}` of latitude :math:`\phi` is given by:
     
         .. math::
@@ -747,9 +726,9 @@ class flux_up:
 
     def sellers(funcparam):
         """ 
-        .. _Sellersradiation:
- 
         An empirically, by :ref:`William Sellers <Sellers>` adjusted stefan-boltzmann radiation as radiative energy flux directed upward. The ideal stefan-boltzmann radiation with a temperature to the power of 4 and an additional tangens hyperbolicus term with the temperature to the power of 6 to take into account that cloud formation is temperature dependant.
+ 
+        .. _Sellersradiation:
  
         The upward radiative energy flux :math:`R_{up}` of latitude :math:`\phi` is given by:
     
@@ -823,24 +802,16 @@ class transfer:
         sensibleheat_air_sel
         sensibleheat_ocean_sel
 
-    Only ``transfer.budyko`` and ``transfer.sellers`` are transfer fluxes fully representing the globes meridional energy transfer, where ``transfer.sellers`` is built up from the three specific transfer fluxes ``transfer.watervapour_sel``, ``transfer.sensibleheat_air_sel`` and ``transfer.sensibleheat_ocean_sel``. 
+    .. Note::
 
-    .. autofunction:: lowEBMs.Packages.Functions.transfer.budyko
-
-    .. autofunction:: lowEBMs.Packages.Functions.transfer.sellers
-
-    .. autofunction:: lowEBMs.Packages.Functions.transfer.watervapour_sel
-
-    .. autofunction:: lowEBMs.Packages.Functions.transfer.sensibleheat_air_sel
-
-    .. autofunction:: lowEBMs.Packages.Functions.transfer.sensibleheat_ocean_sel
+        Only ``transfer.budyko`` and ``transfer.sellers`` are transfer fluxes fully representing the globes meridional energy transfer, where ``transfer.sellers`` is built up from the three specific transfer fluxes ``transfer.watervapour_sel``, ``transfer.sensibleheat_air_sel`` and ``transfer.sensibleheat_ocean_sel``. 
 
     """
     def budyko(funcparam):
         """ 
-        .. _Budykotransfer:
-
         A poleward energy transfer flux based on the local to global temperature difference introduced by :ref:`Michail Budyko <Budyko>`.
+        
+        .. _Budykotransfer:
 
         It can be shown that it is equivalent to the diffusive heat transfer of the globe (North, 1975b). 
  
@@ -895,9 +866,9 @@ class transfer:
 
     def sellers(funcparam):
         """ 
-        .. _Sellerstransfer:
-
         A energy transfer flux based on a combination of several transfer fluxes introduced by :ref:`William Sellers <Sellers>`.
+
+        .. _Sellerstransfer:
 
         It is defined as the difference of a sum of northward and a sum of southward transfer fluxes of one latitudinal belt. The sum (in one direction) :math:`P` consists of ``transfer.watervapour_sel``, ``transfer.sensibleheat_air_sel`` and ``transfer.sensibleheat_ocean_sel``:
     
@@ -1413,9 +1384,9 @@ class forcing:
     """
     def random(funcparam):
         """ 
-        .. _Randomforcing:
-
         The random forcing mimics randomly occuring radiative forcing events.
+
+        .. _Randomforcing:
 
         The random forcing is mainly used to mimic volcanic eruptions which are based on the idea that dust clouds, appearing after volcanic eruptions, affect the radiative balance. The consequence of an eruption is a negative radiative forcing over a specific time which generally causes a decrease in temperature, depending on the time and strentgh the forcing acts. 
 
@@ -1576,9 +1547,9 @@ class forcing:
 
     def predefined(funcparam):
         """ 
-        .. _Predefinedforcing:
-
         The predefined forcing imports data containing external radiative forcings.
+
+        .. _Predefinedforcing:
 
         This module imports radiative forcing data given as change in energy (:math:`Watt \cdot meter^{-2}`) and applies it to the model run.
 
@@ -1693,9 +1664,9 @@ class forcing:
 
     def co2_myhre(funcparam):
         """ 
-        .. _CO2forcing:
-
         The co2_myhre forcing calculates a radiative forcing from imported atmospheric CO2 conenctration data.
+
+        .. _CO2forcing:
 
         This module imports atmospheric CO2 concentrations from a data file and converts them to a change in energy :math:`F_{CO2}` (:math:`W/m^2`) after :ref:`Myhre (1998) <Myhre>`:
 
@@ -1850,29 +1821,6 @@ class earthsystem:
         temperature_difference_latitudes
         length_latitudes
         area_latitudes
-
-  
-    .. autofunction:: lowEBMs.Packages.Functions.earthsystem.globalmean_temperature
-
-    .. autofunction:: lowEBMs.Packages.Functions.earthsystem.zonalmean_insolation
-
-    .. autofunction:: lowEBMs.Packages.Functions.earthsystem.solarradiation
-
-    .. autofunction:: lowEBMs.Packages.Functions.earthsystem.solarradiation_orbital
-
-    .. autofunction:: lowEBMs.Packages.Functions.earthsystem.meridionalwind_sel
-
-    .. autofunction:: lowEBMs.Packages.Functions.earthsystem.specific_saturation_humidity_sel
-
-    .. autofunction:: lowEBMs.Packages.Functions.earthsystem.saturation_pressure
-
-    .. autofunction:: lowEBMs.Packages.Functions.earthsystem.humidity_difference
-
-    .. autofunction:: lowEBMs.Packages.Functions.earthsystem.temperature_difference_latitudes
-
-    .. autofunction:: lowEBMs.Packages.Functions.earthsystem.length_latitudes
-
-    .. autofunction:: lowEBMs.Packages.Functions.earthsystem.area_latitudes
 
     """
     def globalmean_temperature():
