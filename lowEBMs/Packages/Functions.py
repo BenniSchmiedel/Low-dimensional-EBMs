@@ -57,6 +57,10 @@ class flux_down:
         :nosignatures:
 
         insolation
+
+    
+.. autofunction:: lowEBMs.Packages.Functions.flux_down.insolation
+    :show-inheritance:
     """
 
     def insolation(funcparam):
