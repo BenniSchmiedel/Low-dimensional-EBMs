@@ -53,6 +53,8 @@ autosummary_generate = True
 
 autodoc_member_order = 'bysource'
 
+autodoc_default_flags = ['show-inheritance']
+
 autodoc_docstring_signature = False
 
 autodoc_mock_imports = ['matplotlib',
