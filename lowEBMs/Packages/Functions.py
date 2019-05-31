@@ -204,7 +204,8 @@ class flux_down:
         #Readout to give albedo as output
         if albedoread==True: 
             if Runtime_Tracker % 4*data_readout == 0:    #Only on 4th step (due to rk4)
-                Vars.Read[6][int(Runtime_Tracker/(4*data_readout))]=alpha
+                Vars.alpha=alpha
+                Vars.Read['alpha'][int(Runtime_Tracker/(4*data_readout))]=alpha
 
         #Noise factor z on the solar insolation        
         z=0
@@ -218,26 +219,26 @@ class flux_down:
                     z=np.random.normal(0,noiseamp)
                     #write to builtins and output
                     builtins.Noise_Tracker=z
-                    Vars.Read[9][int(Runtime_Tracker/(4*data_readout))]=z
+                    Vars.Read['noise'][int(Runtime_Tracker/(4*data_readout))]=z
         z=builtins.Noise_Tracker
         
         #Calculating solar insolation distribution from functions using climlab
         
         if spatial_resolution==0:
-            Vars.Solar=Q
+            Vars.solar=Q
         if solarinput==True:
             #with orbital variations (if False by default present day)
             if orbital==True:
                 if Runtime_Tracker % 4*data_readout == 0:
-                    Vars.Solar=earthsystem.solarradiation_orbital(convfactor,orbitalyear,timeunit)
-                    Vars.Read[8][int(Runtime_Tracker/(4*data_readout))]=Vars.Solar
+                    Vars.solar=earthsystem.solarradiation_orbital(convfactor,orbitalyear,timeunit)
+                    Vars.Read['solar'][int(Runtime_Tracker/(4*data_readout))]=Vars.solar
             else:
                 if Runtime_Tracker==0:
-                    Vars.Solar=earthsystem.solarradiation(convfactor,timeunit,orbitalyear)
+                    Vars.solar=earthsystem.solarradiation(convfactor,timeunit,orbitalyear)
                     if parallelization==True:
-                        Vars.Solar=np.array([Vars.Solar]*(number_of_parallels))
+                        Vars.solar=np.array([Vars.solar]*(number_of_parallels))
         #total solar insolation with possible offset
-        Q_total=Vars.Solar+dQ
+        Q_total=Vars.solar+dQ
             
         
         #Equation of incoming radiation
@@ -245,7 +246,7 @@ class flux_down:
         
         R_in=np.transpose((np.transpose(Q_total)+z)*factor_solar*(1-np.transpose(alpha)))
         if Runtime_Tracker % 4*data_readout == 0:    #Only on 4th step (due to rk4)
-            Vars.Read[10][int(Runtime_Tracker/(4*data_readout))]=R_in
+            Vars.Read['Rdown'][int(Runtime_Tracker/(4*data_readout))]=R_in
         return R_in
 
 class albedo:
@@ -617,7 +618,7 @@ class flux_up:
         A,B=list_parameters
         R_out=np.transpose(-(A+B*(np.transpose(Vars.T)-273.15)))
         if Runtime_Tracker % 4*data_readout == 0:    #Only on 4th step (due to rk4)
-            Vars.Read[11][int(Runtime_Tracker/(4*data_readout))]=R_out
+            Vars.Read['Rup'][int(Runtime_Tracker/(4*data_readout))]=R_out
         return R_out
 
     def budyko_clouds(funcparam):
@@ -678,7 +679,7 @@ class flux_up:
         A,B,A1,B1,f_c=list_parameters
         R_out=np.transpose(-(A+B*(np.transpose(Vars.T)-273.15)-(A1+B1*(np.transpose(Vars.T)-273.15))*f_c))
         if Runtime_Tracker % 4*data_readout == 0:    #Only on 4th step (due to rk4)
-            Vars.Read[11][int(Runtime_Tracker/(4*data_readout))]=R_out
+            Vars.Read['Rup'][int(Runtime_Tracker/(4*data_readout))]=R_out
         return R_out
 
     def planck(funcparam):
@@ -722,7 +723,7 @@ class flux_up:
         grey,sig=list_parameters
         R_out=np.transpose(-(grey*sig*np.transpose(Vars.T**4)))
         if Runtime_Tracker % 4*data_readout == 0:    #Only on 4th step (due to rk4)
-            Vars.Read[11][int(Runtime_Tracker/(4*data_readout))]=R_out
+            Vars.Read['Rup'][int(Runtime_Tracker/(4*data_readout))]=R_out
         return R_out
 
     def sellers(funcparam):
@@ -780,7 +781,7 @@ class flux_up:
         m,sigma,gamma,grey=list_parameters
         R_out=np.transpose(-grey*sigma*np.transpose(Vars.T)**4*(1-m*np.tanh(gamma*np.transpose(Vars.T)**6)))
         if Runtime_Tracker % 4*data_readout == 0:    #Only on 4th step (due to rk4)
-            Vars.Read[11][int(Runtime_Tracker/(4*data_readout))]=R_out
+            Vars.Read['Rup'][int(Runtime_Tracker/(4*data_readout))]=R_out
         return R_out
 
 
@@ -862,7 +863,7 @@ class transfer:
         #Reading the distribution to give an output
         if Read==True:
             if Runtime_Tracker % 4*data_readout == 0:
-                Vars.Read[7][int(Runtime_Tracker/(4*data_readout))]=F
+                Vars.Read['BudTransfer'][int(Runtime_Tracker/(4*data_readout))]=F
         return F
 
     def sellers(funcparam):
@@ -1068,15 +1069,15 @@ class transfer:
             Vars.meridional=earthsystem.meridionalwind_sel(a,re)
             
             #calculating the 3 transfer components
-            Lc=transfer.watervapour_sel(WV_Selparam)
+            cL=transfer.watervapour_sel(WV_Selparam)
             C=transfer.sensibleheat_air_sel(SH_airSelparam)
             F=transfer.sensibleheat_ocean_sel(SH_oceanSelparam)
-            P=Lc+C+F              
+            P=cL+C+F              
             
             #calculation of gridparameters (for 1st step only)
             if Runtime_Tracker==0:
                 Vars.latlength=earthsystem.length_latitudes(re)
-                Vars.Area=earthsystem.area_latitudes(re)
+                Vars.area=earthsystem.area_latitudes(re)
                 
             #Converting Arrays to two arrays with an one element shift
             #Apply parallelization if activated
@@ -1095,14 +1096,15 @@ class transfer:
             l0=np.append(Vars.latlength,0)
             
             #resulting latitudinal transfer flow, weighted with the gridparameters
-            Transfer=(P1*l1-P0*l0)/Vars.Area
-            Readdata=[Lc,C,F,Vars.meridional,P,Transfer]
-            
+            Transfer=(P1*l1-P0*l0)/Vars.area
+            Readdata=[cL,C,F,P,Transfer]
+            Readdatakeys=['cL','C','F','P','Transfer']
+
             #reading for output
             if Readout==True:
                 if Runtime_Tracker % 4*data_readout == 0:
-                    for l in range(6):
-                        Vars.Read[l][int(Runtime_Tracker/(4*data_readout))]=Readdata[l]
+                    for l in range(len(Readdata)):
+                        Vars.Read[Readdatakeys[l]][int(Runtime_Tracker/(4*data_readout))]=Readdata[l]
         else:
             Transfer=0
         return Transfer
@@ -1760,40 +1762,40 @@ class forcing:
         list_parameters=list(funcparam.values())
         A,C_0,CO2_base,datapath,name,delimiter,header,footer,col_time,col_conc,timeunit,BP,time_start=list_parameters
         if Runtime_Tracker==0:
-            Vars.CO2=np.genfromtxt(str(datapath)+str(name),delimiter=str(delimiter),skip_header=header,skip_footer=footer,usecols=(col_time,col_conc),unpack=True,encoding='ISO-8859-1')  
+            Vars.CO2Input=np.genfromtxt(str(datapath)+str(name),delimiter=str(delimiter),skip_header=header,skip_footer=footer,usecols=(col_time,col_conc),unpack=True,encoding='ISO-8859-1')  
             Vars.CO2_time_start=time_start    
             if BP==True:
-                Vars.CO2[0]=-(lna(Vars.CO2[0])-Vars.CO2_time_start)
+                Vars.CO2Input[0]=-(lna(Vars.CO2Input[0])-Vars.CO2_time_start)
             if BP==False:
-                Vars.CO2[0]=lna(Vars.CO2[0])+Vars.CO2_time_start
+                Vars.CO2Input[0]=lna(Vars.CO2Input[0])+Vars.CO2_time_start
             if timeunit=='minute':
-                Vars.CO2[0]=lna(Vars.CO2[0])*60
+                Vars.CO2Input[0]=lna(Vars.CO2Input[0])*60
             if timeunit=='hour':
-                Vars.CO2[0]=lna(Vars.CO2[0])*60*60
+                Vars.CO2Input[0]=lna(Vars.CO2Input[0])*60*60
             if timeunit=='day':
-                Vars.CO2[0]=lna(Vars.CO2[0])*60*60*24
+                Vars.CO2Input[0]=lna(Vars.CO2Input[0])*60*60*24
             if timeunit=='week':
-                Vars.CO2[0]=lna(Vars.CO2[0])*60*60*24*7
+                Vars.CO2Input[0]=lna(Vars.CO2Input[0])*60*60*24*7
             if timeunit=='month':
-                Vars.CO2[0]=lna(Vars.CO2[0])*60*60*24*365/12
+                Vars.CO2Input[0]=lna(Vars.CO2Input[0])*60*60*24*365/12
             if timeunit=='year':
-                Vars.CO2[0]=lna(Vars.CO2[0])*60*60*24*365
+                Vars.CO2Input[0]=lna(Vars.CO2Input[0])*60*60*24*365
             
-            if Vars.CO2[0][0]>Vars.CO2[0][1]:
-                Vars.CO2[0]=np.flip(Vars.CO2[0],axis=0)
-                Vars.CO2[1]=np.flip(Vars.CO2[1],axis=0)
+            if Vars.CO2Input[0][0]>Vars.CO2Input[0][1]:
+                Vars.CO2Input[0]=np.flip(Vars.CO2Input[0],axis=0)
+                Vars.CO2Input[1]=np.flip(Vars.CO2Input[1],axis=0)
             Vars.CO2Tracker[1]=A*(np.log(CO2_base/C_0))
-        while Vars.t>Vars.CO2[0][Vars.CO2Tracker[0]]:
-            if Vars.CO2Tracker[0]==(len(Vars.CO2[0])-1):
+        while Vars.t>Vars.CO2Input[0][Vars.CO2Tracker[0]]:
+            if Vars.CO2Tracker[0]==(len(Vars.CO2Input[0])-1):
                 Vars.CO2Tracker[1]=A*(np.log(CO2_base/C_0))
                 break
             else:
                 
-                Vars.CO2Tracker[1] = A*(np.log(Vars.CO2[1][Vars.CO2Tracker[0]]/C_0))
+                Vars.CO2Tracker[1] = A*(np.log(Vars.CO2Input[1][Vars.CO2Tracker[0]]/C_0))
                 Vars.CO2Tracker[0] += 1
         F=Vars.CO2Tracker[1]
         if Runtime_Tracker % 4*data_readout == 0:
-            Vars.CO2Forcing[int(Runtime_Tracker/(4*data_readout))]=F
+            Vars.CO2Output[int(Runtime_Tracker/(4*data_readout))]=F
         return F
 
 
@@ -1960,12 +1962,12 @@ class earthsystem:
                 Vars.orbitals=Vars.orbtable.lookup_parameters(year/1000)
                 Q=lna(np.mean(daily_insolation(Vars.Lat,days,Vars.orbitals),axis=1))
             else:
-                Q=Vars.Solar
+                Q=Vars.solar
         else:
             if year % 100==0:
                 print('timeprogress: '+str(year/1000)+'ka')
             else:
-                Q=Vars.Solar
+                Q=Vars.solar
         return Q
 
     def meridionalwind_sel(a,re):
@@ -2296,7 +2298,7 @@ class earthsystem:
         A=np.pi*re**2*(sind((90-lat_southbound))**2+(1-cosd(90-lat_southbound))**2)-         np.pi*re**2*(np.sin((90-lat_northbound)*np.pi/180)**2+(1-np.cos((90-lat_northbound)*np.pi/180))**2)
         
         #define globally
-        Vars.Area=A
+        Vars.area=A
         Vars.bounds=[lat_southbound,lat_northbound]
         return A
         
