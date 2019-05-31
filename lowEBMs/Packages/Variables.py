@@ -1,48 +1,186 @@
+"""
+Package which defines a large set of variables and functions to process them.
+
+The variables defined are divided into three types:
+
+    *Running variables: they store information which is overwritten in each following iteration step
+    *Static variables: they are non-changing system properties 
+    *Storage variables: these are lists filled with system properties during a model run
+
+The centre piece of this package is the class ``Variables.Vars``:
+
+.. autosummary::
+    :toctree:
+
+    Vars
+
+All variables defined in ``Variable.Vars`` can be read and written with::
+    
+    from lowEBMs.Packages.Variable import Vars
+
+    Vars.x          #returns the current value of variable x in Vars
+    Vars.x = y      #variable x in Vars is permanently set to value y
+
+Functions to process variables before a simulation run are, for single simulations
+
+.. autosummary::
+    :toctree:
+
+    variable_importer
+    builtin_importer
+    initial_importer
+    output_importer
+    
+and for parallelized ensemble simulations
+
+.. autosummary::
+    :toctree:
+
+    variable_importer_parallelized
+    builtin_importer_parallelized
+    initial_importer_parallelized
+    output_importer_parallelized
+
+.. Important::
+    
+    ``Variables.variable_importer`` and executes the in the list following processing functions which has to be executed before a simulation can be run for more information see :doc:`How to use <howtouse>`). For parallelized simulations this can be swapped to ``Variables.variable_importer_parallelized``.
+
+Functions to process variables during or after a simulation run are:
+
+.. autosummary::
+    :toctree:
+
+    reset
+    datareset
+
+"""
 import builtins
 import numpy as np
 
 class Vars():
-    ###Data variables### -- RK4
+    """
+    ``Variables.Vars`` defines any variable desired to store and access from another module's functions.
+
+    There are three different types of variables defined.
+
+    **Running variables:**
+
+    +---------------+-----------------------------------------------------------------------+
+    | t             | The time in the simulation (in steps of the stepsize_of_integration)  |
+    +---------------+-----------------------------------------------------------------------+
+    | T             | The ZMT temperature                                                   |
+    +---------------+-----------------------------------------------------------------------+
+    | T_global      | The GMT temperature                                                   |
+    +---------------+-----------------------------------------------------------------------+
+    | Lat           | The latitudes of the gridpoints (or ZMT)                              |
+    +---------------+-----------------------------------------------------------------------+
+    | Lat2          | The latitudes of the centres between gridpoints (or centered ZMT)     |
+    +---------------+-----------------------------------------------------------------------+   
+    | orbitals      | The orbital parameters for the current simulation time t              |
+    +---------------+-----------------------------------------------------------------------+   
+    | noise         | The noise factor on the solar insolation term                         |
+    +---------------+-----------------------------------------------------------------------+   
+    | ForcingTracker| The current index and value of the external forcing's input list      |
+    +---------------+-----------------------------------------------------------------------+   
+    | CO2Tracker    | The current index and value of the CO2 forcing's input list           |
+    +---------------+-----------------------------------------------------------------------+   
+    | meridional    | The meridional wind pattern (from ``earthsystem.meridionalwind_sel``  |
+    +---------------+-----------------------------------------------------------------------+   
+    | tempdif       | The temperature difference between entries of the ZMT                 |
+    +---------------+-----------------------------------------------------------------------+         
+    
+    **Static variables:**
+
+    +-----------------------+-----------------------------------------------------------------------+
+    | solar                 | The distribution of solar insolation                                  |
+    +-----------------------+-----------------------------------------------------------------------+
+    | orbtable              | The lookup-table for orbital parameters (from ``climlab``)            |
+    +-----------------------+-----------------------------------------------------------------------+
+    | area                  | The area of a latitudinal belt                                        |
+    +-----------------------+-----------------------------------------------------------------------+
+    | bounds                | The boundary latitudes used to calculate **Area**                     |
+    +-----------------------+-----------------------------------------------------------------------+
+    | latlength             | The circumference of a latitudinal circle                             |
+    +-----------------------+-----------------------------------------------------------------------+   
+    | External_time_start   | The simulation time when the external forcing sets in                 |
+    +-----------------------+-----------------------------------------------------------------------+   
+    | CO2_time_start        | The simulation time when the CO2 forcing sets in                      |
+    +-----------------------+-----------------------------------------------------------------------+   
+    | start_time            | The real clock time when the simulation was started                   |
+    +-----------------------+-----------------------------------------------------------------------+       
+ 
+    **Storage variables:**
+
+    +---------------+-----------------------------------------------------------------------+
+    | cL            | The sellers watervapour energy transfer                               |
+    +---------------+-----------------------------------------------------------------------+
+    | C             | The sellers atmospheric sensible heat energy transfer                 |
+    +---------------+-----------------------------------------------------------------------+
+    | F             | The sellers oceanic sensible heat energy transfer                     |
+    +---------------+-----------------------------------------------------------------------+
+    | P             | The total energy transfer , P=cL+C+F (non-weighted, one direction)    |
+    +---------------+-----------------------------------------------------------------------+   
+    | Transfer      | The total sellers energy transfer for a latitudinal belt              |
+    +---------------+-----------------------------------------------------------------------+   
+    | BudTransfer   | The budyko energy transfer for a latitudinal belt                     |
+    +---------------+-----------------------------------------------------------------------+   
+    | alpha         | The alpha value distribution                                          |
+    +---------------+-----------------------------------------------------------------------+   
+    | Rdown         | The downward radiative energy flux                                    |
+    +---------------+-----------------------------------------------------------------------+   
+    | Rup           | The upward radiative energy flux                                      |
+    +---------------+-----------------------------------------------------------------------+   
+    | ExternalOutput| List of radiative forcings                                            |
+    +---------------+-----------------------------------------------------------------------+   
+    | CO2Output     | The CO2 radiative forcing                                             |
+    +---------------+-----------------------------------------------------------------------+   
+    | ExternalInput | List of the raw input to calculate the radiative forcing              |
+    +---------------+-----------------------------------------------------------------------+   
+    | CO2Input      | The raw CO2 input                                                     |
+    +---------------+-----------------------------------------------------------------------+             
+ 
+    """
+    ###Running variables -- RK4 ###
     t=float
     T=float
     T_global=float
     Lat=float
     Lat2=float
 
-    ###Dynamical variables### 
-    start_time=float
+    ###Running variables### 
     orbitals=float
-    orbtable=float
-    Noise=float
+    noise=float
     ForcingTracker=[0,0]
     CO2Tracker=[0,0]
     meridional=list
     tempdif=list
 
-    ###Fixed Variables###
-    Solar=list
-    Area=list
+    ###Static variables###
+    solar=list    
+    orbtable=float
+    area=list
     bounds=list
     latlength=list
     External_time_start=float
     CO2_time_start=float
+    start_time=float
 
-    ###Readout parameters###
+    ###Storage variables###
     cL=list
     C=list
     F=list
-    v=list
     P=list
     Transfer=list
     BudTransfer=list
     alpha=list
-    Rin=list
-    Rout=list
+    Rdown=list
+    Rup=list
     ExternalOutput=list
-    CO2Forcing=list
-    Read=[cL,C,F,v,P,Transfer,alpha,BudTransfer,Solar,Noise,Rin,Rout,ExternalOutput,CO2Forcing]
+    CO2Output=list  
     ExternalInput=list
-    CO2=list
+    CO2Input=list
+    Read=dict #{'cL':cL, 'C': C, 'F': F,'P': P,'Transfer': Transfer,'alpha': alpha,'BudTransfer': BudTransfer,'Solar':,Noise,Rdown,Rup,ExternalOutput,CO2Forcing]
+    Readnumber=13
     
 
 
@@ -57,14 +195,14 @@ class Vars():
         self.start_time=float
         self.orbitals=float
         self.orbtable=float
-        self.Noise=float
+        self.noise=float
         self.ForcingTracker=[0,0]
         self.CO2Tracker=[0,0]
         self.meridional=list
         self.tempdif=list
 
-        self.Solar=list
-        self.Area=list
+        self.solar=list
+        self.area=list
         self.bounds=list
         self.latlength=list
         self.External_time_start=float
@@ -73,7 +211,6 @@ class Vars():
         self.cL=list
         self.C=list
         self.F=list
-        self.v=list
         self.P=list
         self.Transfer=list
         self.BudTransfer=list
@@ -81,10 +218,11 @@ class Vars():
         self.Rin=list
         self.Rout=list
         self.ExternalOutput=list
-        self.CO2Forcing=list
-        self.Read=[self.cL,self.C,self.F,self.v,self.P,self.Transfer,self.alpha,self.BudTransfer,self.Solar,self.Noise,self.Rin,self.Rout,self.ExternalOutput,self.CO2Forcing]
+        self.CO2Output=list
+        self.Read=dict #[self.cL,self.C,self.F,self.P,self.Transfer,self.alpha,self.BudTransfer,self.Solar,self.Noise,self.Rin,self.Rout,self.ExternalOutput,self.CO2Forcing]
+        self.Readnumber=13
         self.ExternalInput=list
-        self.CO2=list
+        self.CO2Input=list
         
 
 def reset(x):
@@ -201,25 +339,25 @@ def initial_importer(initials):
 def output_importer():
     if (number_of_integration) % data_readout == 0:
         #Assigning dynamical variables in Variables Package with initial values from var
-        Vars.cL,Vars.C,Vars.F,Vars.v,Vars.P,Vars.Transfer,Vars.alpha,Vars.BudTransfer,Vars.Solar,Vars.Noise,Vars.Rin,Vars.Rout,Vars.ExternalOutput,Vars.CO2Forcing=np.array([[0]*int(number_of_integration/data_readout)]*len(Vars.Read),dtype=object)
+        Vars.cL,Vars.C,Vars.F,Vars.P,Vars.Transfer,Vars.alpha,Vars.BudTransfer,Vars.solar,Vars.noise,Vars.Rdown,Vars.Rup,Vars.ExternalOutput,Vars.CO2Output=np.array([[0]*int(number_of_integration/data_readout)]*Vars.Readnumber,dtype=object)
     else: 
-        Vars.cL,Vars.C,Vars.F,Vars.v,Vars.P,Vars.Transfer,Vars.alpha,Vars.BudTransfer,Vars.Solar,Vars.Noise,Vars.Rin,Vars.Rout,Vars.ExternalOutput,Vars.CO2Forcing=np.array([[0]*(int(number_of_integration/data_readout)+1)]*len(Vars.Read),dtype=object)
+        Vars.cL,Vars.C,Vars.F,Vars.P,Vars.Transfer,Vars.alpha,Vars.BudTransfer,Vars.solar,Vars.noise,Vars.Rdown,Vars.Rup,Vars.ExternalOutput,Vars.CO2Output=np.array([[0]*(int(number_of_integration/data_readout)+1)]*Vars.Readnumber,dtype=object)
     Vars.ExternalOutput=np.array([Vars.ExternalOutput for i in range(int(number_of_externals))],dtype=object)
     Vars.External_time_start=np.array([0 for i in range(int(number_of_externals))],dtype=object)
     Vars.ForcingTracker=np.array([[0,0] for i in range(int(number_of_externals))],dtype=object)
     Vars.ExternalInput=np.array([0 for i in range(int(number_of_externals))],dtype=object)
-    Vars.Read=[Vars.cL,Vars.C,Vars.F,Vars.v,Vars.P,Vars.Transfer,Vars.alpha,Vars.BudTransfer,               Vars.Solar,Vars.Noise,Vars.Rin,Vars.Rout,Vars.ExternalOutput,Vars.CO2Forcing]
+    Vars.Read={'cL': Vars.cL,'C': Vars.C,'F': Vars.F,'P': Vars.P,'Transfer': Vars.Transfer,'alpha': Vars.alpha,'BudTransfer': Vars.BudTransfer, 'solar': Vars.solar,'noise': Vars.noise,'Rdown': Vars.Rdown,'Rup': Vars.Rup, 'ExternalOutput': Vars.ExternalOutput,'CO2Output': Vars.CO2Output}
 
 
-def variable_importer_parameterfit(config,fitconfig):
+def variable_importer_parallelized(config,fitconfig):
 
     builtin_importer(config['rk4input'])
-    builtin_importer_parameterfit(fitconfig)
-    initial_importer_parameterfit(config['initials'],fitconfig)
+    builtin_importer_parallelized(fitconfig)
+    initial_importer_parallelized(config['initials'],fitconfig)
     output_importer()    
     #output_importer_parameterfit(fitconfig)
 
-def initial_importer_parameterfit(initials,fitconfig):
+def initial_importer_parallelized(initials,fitconfig):
     from lowEBMs.Packages.Functions import cosd, lna
     ###filling the running variables with values depending on the systemconfiguration in rk4input###
 
@@ -281,19 +419,20 @@ def initial_importer_parameterfit(initials,fitconfig):
     Vars.Lat=initials['latitude_c']
     Vars.Lat2=initials['latitude_b']
 
-def output_importer_parameterfit():
+def output_importer_parallelized():
     if (number_of_integration) % data_readout == 0:
         #Assigning dynamical variables in Variables Package with initial values from var
-        Vars.cL,Vars.C,Vars.F,Vars.v,Vars.P,Vars.Transfer,Vars.alpha,Vars.BudTransfer,Vars.Solar,Vars.Noise,Vars.Rin,Vars.Rout,Vars.ExternalOutput,Vars.CO2Forcing=np.array([[0]*int(number_of_integration/data_readout)]*len(Vars.Read),dtype=object)
+        Vars.cL,Vars.C,Vars.F,Vars.P,Vars.Transfer,Vars.alpha,Vars.BudTransfer,Vars.solar,Vars.noise,Vars.Rdown,Vars.Rup,Vars.ExternalOutput,Vars.CO2Output=np.array([[0]*int(number_of_integration/data_readout)]*Vars.Readnumber,dtype=object)
     else: 
-        Vars.cL,Vars.C,Vars.F,Vars.v,Vars.P,Vars.Transfer,Vars.alpha,Vars.BudTransfer,Vars.Solar,Vars.Noise,Vars.Rin,Vars.Rout,Vars.ExternalOutput,Vars.CO2Forcing=np.array([[[0]*number_of_parameters]*(int(number_of_integration/data_readout)+1)]*len(Vars.Read),dtype=object)
+        Vars.cL,Vars.C,Vars.F,Vars.P,Vars.Transfer,Vars.alpha,Vars.BudTransfer,Vars.solar,Vars.noise,Vars.Rdown,Vars.Rup,Vars.ExternalOutput,Vars.CO2Output=np.array([[0]*(int(number_of_integration/data_readout)+1)]*Vars.Readnumber,dtype=object)
     Vars.ExternalOutput=np.array([Vars.ExternalOutput for i in range(int(number_of_externals))],dtype=object)
     Vars.External_time_start=np.array([0 for i in range(int(number_of_externals))],dtype=object)
     Vars.ForcingTracker=np.array([[0,0] for i in range(int(number_of_externals))],dtype=object)
     Vars.ExternalInput=np.array([0 for i in range(int(number_of_externals))],dtype=object)
-    Vars.Read=[Vars.cL,Vars.C,Vars.F,Vars.v,Vars.P,Vars.Transfer,Vars.alpha,Vars.BudTransfer,               Vars.Solar,Vars.Noise,Vars.Rin,Vars.Rout,Vars.ExternalOutput,Vars.CO2Forcing]
+    Vars.Read={'cL': Vars.cL,'C': Vars.C,'F': Vars.F,'P': Vars.P,'Transfer': Vars.Transfer,'alpha': Vars.alpha,'BudTransfer': Vars.BudTransfer, 'solar': Vars.solar,'noise': Vars.noise,'Rdown': Vars.Rdown,'Rup': Vars.Rup, 'ExternalOutput': Vars.ExternalOutput,'CO2Output': Vars.CO2Output}
 
-def builtin_importer_parameterfit(setup):
+
+def builtin_importer_parallelized(setup):
     
     #Writing systemparameters into builtin-module to make them globally callable
     #Overview given in Readme.txt
