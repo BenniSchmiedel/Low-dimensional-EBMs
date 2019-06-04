@@ -11,6 +11,7 @@ The centre piece of this package is the class ``Variables.Vars``:
 
 .. autosummary::
     :toctree:
+    :nosignatures:
 
     Vars
 
@@ -25,6 +26,7 @@ Functions to process variables before a simulation run are, for single simulatio
 
 .. autosummary::
     :toctree:
+    :nosignatures:
 
     variable_importer
     builtin_importer
@@ -35,6 +37,7 @@ and for parallelized ensemble simulations
 
 .. autosummary::
     :toctree:
+    :nosignatures:
 
     variable_importer_parallelized
     builtin_importer_parallelized
@@ -49,6 +52,7 @@ Functions to process variables during or after a simulation run are:
 
 .. autosummary::
     :toctree:
+    :nosignatures:
 
     reset
     datareset

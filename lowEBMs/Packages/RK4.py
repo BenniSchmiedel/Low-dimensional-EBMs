@@ -31,7 +31,7 @@ As final step of one iterative step the weighted increment :math:`\phi` is calcu
 
     \phi = \\frac{1}{6}\cdot k_1+\\frac{1}{3}\cdot k_2+\\frac{1}{3}\cdot k_3+\\frac{1}{6}\cdot k_4
 
-to estimate :math:`y_1` as final step of one iteration cycle:
+to estimate :math:`y_1` as final step of one iteration step:
 
 .. math::
     
