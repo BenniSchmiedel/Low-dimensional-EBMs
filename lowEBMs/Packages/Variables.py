@@ -71,10 +71,6 @@ class Vars():
     | T             | The ZMT temperature                                                   |
     +---------------+-----------------------------------------------------------------------+
     | T_global      | The GMT temperature                                                   |
-    +---------------+-----------------------------------------------------------------------+
-    | Lat           | The latitudes of the gridpoints (or ZMT)                              |
-    +---------------+-----------------------------------------------------------------------+
-    | Lat2          | The latitudes of the centres between gridpoints (or centered ZMT)     |
     +---------------+-----------------------------------------------------------------------+   
     | orbitals      | The orbital parameters for the current simulation time t              |
     +---------------+-----------------------------------------------------------------------+   
@@ -84,13 +80,17 @@ class Vars():
     +---------------+-----------------------------------------------------------------------+   
     | CO2Tracker    | The current index and value of the CO2 forcing's input list           |
     +---------------+-----------------------------------------------------------------------+   
-    | meridional    | The meridional wind pattern (from ``earthsystem.meridionalwind_sel``  |
+    | meridional    | The meridional wind pattern (from ``earthsystem.meridionalwind_sel``) |
     +---------------+-----------------------------------------------------------------------+   
     | tempdif       | The temperature difference between entries of the ZMT                 |
     +---------------+-----------------------------------------------------------------------+         
     
     **Static variables:**
 
+    +-----------------------+-----------------------------------------------------------------------+
+    | Lat                   | The latitudes of the gridpoints (or ZMT)                              |
+    +-----------------------+-----------------------------------------------------------------------+
+    | Lat2                  | The latitudes of the centres between gridpoints (or centered ZMT)     |   
     +-----------------------+-----------------------------------------------------------------------+
     | solar                 | The distribution of solar insolation                                  |
     +-----------------------+-----------------------------------------------------------------------+
@@ -144,8 +144,7 @@ class Vars():
     t=float
     T=float
     T_global=float
-    Lat=float
-    Lat2=float
+
 
     ###Running variables### 
     orbitals=float
@@ -156,6 +155,8 @@ class Vars():
     tempdif=list
 
     ###Static variables###
+    Lat=float
+    Lat2=float
     solar=list    
     orbtable=float
     area=list
@@ -226,10 +227,37 @@ class Vars():
         
 
 def reset(x):
+    """ 
+    Resets the given variable to the initial value specified in Vars.__init__.        
+
+    **Function-call arguments** \n
+
+    :param float/list x:        The variable which shall be reset to the initial value
+
+    :returns:                   No return
+
+    """
     classreset=Vars()
     exec("Vars.%s=classreset.%s" % (x,x))
 
 def datareset():
+    """ 
+    Resets the *primary variables* to their initial values. The *primary variables* are variables defined under the``[initials]``-section in the *configuration.ini-file*. These are:
+
+        +---------------+-----------------------------------------------------------------------+
+        | t             | The time in the simulation (in steps of the stepsize_of_integration)  |
+        +---------------+-----------------------------------------------------------------------+
+        | T             | The ZMT temperature                                                   |
+        +---------------+-----------------------------------------------------------------------+
+        | T_global      | The GMT temperature                                                   |
+        +---------------+-----------------------------------------------------------------------+
+        | Lat           | The latitudes of the gridpoints (or ZMT)                              |
+        +---------------+-----------------------------------------------------------------------+
+        | Lat2          | The latitudes of the centres between gridpoints (or centered ZMT)     |   
+        +---------------+-----------------------------------------------------------------------+
+    
+    
+    """
     classreset=Vars()
     Vars.t=classreset.t
     Vars.T=classreset.T
@@ -238,13 +266,78 @@ def datareset():
     Vars.Lat2=classreset.Lat2
 
 def variable_importer(config):
+    """ 
+    Executes all relevant functions to import variables for a single simulation run. From the *configuration.ini-file* returned by ``Configuration.importer`` the relevant infomration is extracted and the specific importer functions are executed in the following order:
 
+    .. math::
+        
+        bulíltin_importer \; \\rightarrow \; initial_importer \; \\rightarrow \; output_importer
+
+    .. Note::
+
+        When doing this manually maintain the order!
+
+    **Function-call arguments** \n
+
+    :param dict config:         The configuration dictionary returned by ``Configuration.importer``  
+
+    :returns:                   No return
+
+    """
     builtin_importer(config['rk4input'])
     initial_importer(config['initials'])
     output_importer()
 
 def builtin_importer(rk4input):
+    """
+    Adds the most important variables to the python-builtin functions which are globally accessible. This enables calling and writing variables globally and across different files.
+
+    Variables added to the builtin-functions are all arguments of the ``[rk4input]``-section from the *configuration.ini-file* returned by ``Configuration.importer`` and three additional ones. 
     
+    .. Important::
+    
+        Variables from the ``[rk4input]``-section are added with their key given in the *configuration.ini-file* and can be called by the same one later.
+
+    Here all added variables (``[rk4input]``-variables + additional ones):
+
+    +---------------------------+-----------------------------------------------------------------------+
+    | number_of_integration     | Number of iterations to perfom                                        |
+    +---------------------------+-----------------------------------------------------------------------+
+    | stepsize_of_integration   | Time steps of one iteration steps                                     |   
+    +---------------------------+-----------------------------------------------------------------------+
+    | spatial_resolution        | Grid resolution (width of one latitudinal band in degree)             |
+    +---------------------------+-----------------------------------------------------------------------+
+    | both_hemispheres          | Indicates if both hemispheres or northern hemisphere is modeled       |
+    +---------------------------+-----------------------------------------------------------------------+
+    | latitudinal_circle        | Indicates that the temperature is defined on latitudinal circles      |
+    +---------------------------+-----------------------------------------------------------------------+
+    | latitudinal_belt          | Indicates that the temperature is defined on latitudinal belts        |
+    +---------------------------+-----------------------------------------------------------------------+
+    | eq_condition              | Activation/Deactivation of stop criterion (equilibrium condition)     |
+    +---------------------------+-----------------------------------------------------------------------+   
+    | eq_condition_length       | The number of last datapoints to be compared with the predefined limit|
+    +---------------------------+-----------------------------------------------------------------------+   
+    | eq_condition_amplitude    | The predefined limiting value which defines the stop criterion        |
+    +---------------------------+-----------------------------------------------------------------------+   
+    | data_readout              | The number of iterations between data-readout                         |
+    +---------------------------+-----------------------------------------------------------------------+    
+    | number_of_externals       | The number of external forcings are used                              |
+    +---------------------------+-----------------------------------------------------------------------+
+
+    +---------------------------+-----------------------------------------------------------------------+    
+    | Runtime_Tracker           | Tracks the iteration and cycle step (number_of_integration*4)         |
+    +---------------------------+-----------------------------------------------------------------------+    
+    | Noise_Tracker             | Tracks the value of solar noise                                       |
+    +---------------------------+-----------------------------------------------------------------------+    
+    | parallelization           | Indicates if parallelized simulations are enabled                     |
+    +---------------------------+-----------------------------------------------------------------------+
+
+    **Function-call arguments** \n
+
+    :param dict rk4input:       The 'rk4input' section from the configuration dictionary returned by ``Configuration.importer``  
+
+    :returns:                   No return
+    """
     #Writing systemparameters into builtin-module to make them globally callable
     #Overview given in Readme.txt
     
@@ -275,6 +368,17 @@ def builtin_importer(rk4input):
     builtins.number_of_externals=rk4input[16]"""
 
 def initial_importer(initials):
+    """
+    Calculates the initial conditions of the *primary variables* from the ``initials``-section.
+
+    The initial conditions are directly written to their entry in ``Variable.Vars``. 
+
+    **Function-call arguments** \n
+
+    :param dict rk4input:       The 'initials' section from the configuration dictionary returned by ``Configuration.importer``  
+
+    :returns:                   No return
+    """
     from lowEBMs.Packages.Functions import cosd, lna
     ###filling the running variables with values depending on the systemconfiguration in rk4input###
 
@@ -337,6 +441,17 @@ def initial_importer(initials):
     Vars.Lat2=initials['latitude_b']
 
 def output_importer():
+    """
+    Creates empty lists for the storage-variables which will be filled during the simulation.
+
+    The lists are directly written to their entry in ``Variable.Vars`` and can be returned after the simulation is finished. 
+
+    **Function-call arguments** \n
+
+    :param dict rk4input:       The 'initials' section from the configuration dictionary returned by ``Configuration.importer``  
+
+    :returns:                   No return
+    """
     if (number_of_integration) % data_readout == 0:
         #Assigning dynamical variables in Variables Package with initial values from var
         Vars.cL,Vars.C,Vars.F,Vars.P,Vars.Transfer,Vars.alpha,Vars.BudTransfer,Vars.solar,Vars.noise,Vars.Rdown,Vars.Rup,Vars.ExternalOutput,Vars.CO2Output=np.array([[0]*int(number_of_integration/data_readout)]*Vars.Readnumber,dtype=object)
