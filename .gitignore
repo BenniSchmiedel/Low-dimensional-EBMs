@@ -12,6 +12,4 @@
 .ipynb_checkpoints
 **/*.ipynb_checkpoints/
 */.ipynb_checkpoints/*
-Development_playground.ipynb
-Development_tests.ipynb
-Development_config.ini
+
