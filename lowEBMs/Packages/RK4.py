@@ -161,6 +161,7 @@ def rk4alg(func,eqparam,funccomp):
     
     #Start the runtime tracker
     Vars.start_time = time.time()
+    print('Starting simulation...')
     #locally defining rk4input parameters
     n,h=int(number_of_integration),stepsize_of_integration
     #Creating an array of the variables t,T,Lat,T_global which will be the outputarray
@@ -207,15 +208,43 @@ def rk4alg(func,eqparam,funccomp):
                 if SteadyStateConditionGlobal(data[2][j-eq_condition_length:j])==True:
                     for l in range(len(data)):
                         data[l]=data[l][:(j+1)]
-                    for m in range(len(Vars.Read)):
+                    for m in Vars.Read:
                         Vars.Read[m]=Vars.Read[m][:(j)]
                     break
     #Return the written data (Cut excessive 0s)
     dataout=[data[0][:(j+1)],data[1][:(j+1)],data[2][:(j+1)]]
-
-    print('Finished!')
+            
+    print('Simulation finished within %s seconds' %(time.time() - Vars.start_time))
 
     return dataout
 
-#def controlrun(
+def controlrun(configdic):
+    from lowEBMs.Packages.Variables import datareset 
+
+    eq=configdic['eqparam']
+    rk=configdic['rk4input']
+    fun=configdic['funccomp']
+
+    control_time=time.time()
+
+    controldata=rk4alg(model_equation,eq,fun)
+    #controltime,controlzmt,controlgmt
+    runtime=time.time()-control_time
+
+    print('Finished controlrun over %s years. Runtime: %s s' %(controldata[0][-1]/60/60/24/365,runtime))
+
+    builtins.eq_condition=rk['eq_condition']
+    builtins.eq_condition_length=rk['eq_condition_length']
+    builtins.eq_condition_amplitude=rk['eq_condition_amplitude']
+    builtins.data_readout=rk['data_readout']
+    builtins.number_of_integration=rk['number_of_integration']
+    Vars.t=0
+    builtins.Runtime_Tracker=0
+    #datareset()
+
+    return controldata
+    
+    
+    
+    
 
