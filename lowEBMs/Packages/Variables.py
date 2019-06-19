@@ -155,6 +155,7 @@ class Vars():
     noise=float
     ForcingTracker=[0,0]
     CO2Tracker=[0,0]
+    OrbitalTracker=[0,{'ecc': 0, 'long_peri': 0, 'obliquity': 0}]
     meridional=list
     tempdif=list
 
@@ -168,6 +169,7 @@ class Vars():
     latlength=list
     External_time_start=float
     CO2_time_start=float
+    ExternalOrbitals_time_start=float
     start_time=float
 
     ###Storage variables###
@@ -184,6 +186,7 @@ class Vars():
     CO2Output=list  
     ExternalInput=list
     CO2Input=list
+    ExternalOrbitals=list
     Read=dict #{'cL':cL, 'C': C, 'F': F,'P': P,'Transfer': Transfer,'alpha': alpha,'BudTransfer': BudTransfer,'Solar':,Noise,Rdown,Rup,ExternalOutput,CO2Forcing]
     Readnumber=13
     
@@ -203,6 +206,7 @@ class Vars():
         self.noise=float
         self.ForcingTracker=[0,0]
         self.CO2Tracker=[0,0]
+        self.OrbitalTracker=[0,0]
         self.meridional=list
         self.tempdif=list
 
@@ -212,6 +216,7 @@ class Vars():
         self.latlength=list
         self.External_time_start=float
         self.CO2_time_start=float
+        self.ExternalOrbitals_time_start=float
 
         self.cL=list
         self.C=list
@@ -228,6 +233,7 @@ class Vars():
         self.Readnumber=13
         self.ExternalInput=list
         self.CO2Input=list
+        self.ExternalOrbitals=list
         
 
 def reset(x):

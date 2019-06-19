@@ -38,7 +38,7 @@ import numpy as np
 from climlab import constants as const
 from climlab.solar.insolation import daily_insolation
 from climlab.solar.orbital import OrbitalTable
-from climlab.solar.orbital import LongOrbitalTable
+#from climlab.solar.orbital import LongOrbitalTable
 import scipy
 import builtins
 import time
@@ -1798,6 +1798,128 @@ class forcing:
             Vars.CO2Output[int(Runtime_Tracker/(4*data_readout))]=F
         return F
 
+    def orbital(funcparam):
+        """ 
+        Includes forcing from orbital parameter changes.
+
+        .. _Predefinedforcing:
+
+        This module imports the orbital parameters from a given datafile and updates them during a model run. 
+
+        **Function-call arguments** \n
+
+        :param dict funcparams:     * *forcingnumber* the number of the radiative forcing term (relevant if multiple forcings are used)
+
+                                        * type: int 
+                                        * unit: -
+                                        * value: 0, 1,...
+                                                                
+                                    * *datapath*: The path to the file (give full path or relative path!)
+
+                                        * type: string 
+                                        * unit: -
+                                        * value: example: '/insert/path/to/file'
+
+                                    * *name*: The name of the file which is used
+
+                                        * type: string 
+                                        * unit: -
+                                        * value: example: 'datafile.txt' 
+                              
+                                    * *delimiter*: How the data is delimited in the file
+
+                                        * type: string 
+                                        * unit: -
+                                        * value: example: ','
+                              
+                                    * *header*: The number of header rows to exclude
+
+                                        * type: int 
+                                        * unit: -
+                                        * value: any
+                              
+                                    * *col_time*: The column where the time is stored
+
+                                        * type: int 
+                                        * unit: -
+                                        * value: any
+                              
+                                    * *col_forcing*: The column where the forcing in stored
+
+                                        * type: int 
+                                        * unit: -
+                                        * value:  any 
+
+                                    * *timeunit*: The unit of time which is used in the file to convert it to seconds
+
+                                        * type: string 
+                                        * unit: -
+                                        * value: 'minute', 'hour', 'day', 'week', 'month', 'year' (if none, seconds are used)  
+                                                             
+
+                                    * *BP*: If the time is given as "Before present"
+
+                                        * type: boolean 
+                                        * unit: -
+                                        * value: True / False
+                              
+                                    * *time_start*: The time of the first entry (or the time when is should be started to apply it)
+
+                                        * type: float 
+                                        * unit: depending *timeunit*
+                                        * value: any
+                              
+                                    * *k*: Scaling factor
+
+                                        * type: float 
+                                        * unit: -
+                                        * value: any
+
+        :returns:                   The radiative forcing for a specific time imported from a data file
+
+        :rtype:                     float
+
+        """
+        list_parameters=list(funcparam.values())
+        datapath,name,delimiter,header,footer,col_time,col_ecc,col_per,col_obl,timeunit,BP,time_start,initial,perishift=list_parameters
+
+        if Runtime_Tracker==0:
+            Vars.ExternalOrbitals=np.genfromtxt(str(datapath)+str(name),delimiter=str(delimiter),skip_header=header,skip_footer=footer,usecols=(col_time,col_ecc,col_per,col_obl),unpack=True,encoding='ISO-8859-1')  
+            Vars.External_time_start=time_start   
+ 
+            if BP==True:
+                Vars.ExternalOrbitals[0]=-(lna(Vars.ExternalOrbitals[0])-Vars.External_time_start)
+            if BP==False:
+                Vars.ExternalOrbitals[0]=lna(Vars.ExternalOrbitals[0])+Vars.External_time_start
+            if timeunit=='minute':
+                Vars.ExternalOrbitals[0]=lna(Vars.ExternalOrbitals[0])*60
+            if timeunit=='hour':
+                Vars.ExternalOrbitals[0]=lna(Vars.ExternalOrbitals[0])*60*60
+            if timeunit=='day':
+                Vars.ExternalOrbitals[0]=lna(Vars.ExternalOrbitals[0])*60*60*24
+            if timeunit=='week':
+                Vars.ExternalOrbitals[0]=lna(Vars.ExternalOrbitals[0])*60*60*24*7
+            if timeunit=='month':
+                Vars.ExternalOrbitals[0]=lna(Vars.ExternalOrbitals[0])*60*60*24*365/12
+            if timeunit=='year':
+                Vars.ExternalOrbitals[0]=lna(Vars.ExternalOrbitals[0])*60*60*24*365
+            
+            if Vars.ExternalOrbitals[0][0]>Vars.ExternalOrbitals[0][1]:
+                Vars.ExternalOrbitals[0]=np.flip(Vars.ExternalOrbitals[0],axis=0)
+                Vars.ExternalOrbitals[1]=np.flip(Vars.ExternalOrbitals[1],axis=0)
+            Vars.OrbitalTracker[1]=initial
+        while Vars.t>Vars.ExternalOrbitals[0][Vars.OrbitalTracker[0]]:
+            if Vars.OrbitalTracker[0]==(len(Vars.ExternalOrbitals[0])-1):
+                Vars.OrbitalTracker[1]={'ecc':Vars.ExternalOrbitals[1][-1] ,'long_peri': Vars.ExternalOrbitals[2][-1]+perishift, 'obliquity': Vars.ExternalOrbitals[3][-1]}
+                break
+            else:
+                
+                Vars.OrbitalTracker[1] = {'ecc':Vars.ExternalOrbitals[1][Vars.OrbitalTracker[0]] ,'long_peri': Vars.ExternalOrbitals[2][Vars.OrbitalTracker[0]]+perishift, 'obliquity': Vars.ExternalOrbitals[3][Vars.OrbitalTracker[0]]}
+                Vars.OrbitalTracker[0] += 1
+
+        Vars.orbitals=Vars.OrbitalTracker[1]
+
+        return 0
 
 class earthsystem:
     """
@@ -1894,7 +2016,7 @@ class earthsystem:
         if orbitalyear==0:
             Vars.orbitals={'ecc': 0.017236, 'long_peri': 281.37, 'obliquity': 23.446}
         else:
-            Vars.orbtable=LongOrbitalTable()
+            Vars.orbtable=OrbitalTable()
             Vars.orbitals=Vars.orbtable.lookup_parameters(orbitalyear)
             
         #returning the annual mean solar insolation or solar insolations varying over time, depending on the
@@ -1952,7 +2074,7 @@ class earthsystem:
         days=np.linspace(0,365,365)
         #calculation for first step
         if Runtime_Tracker == 0:
-            Vars.orbtable=LongOrbitalTable()
+            Vars.orbtable=OrbitalTable()
             Vars.orbitals=Vars.orbtable.lookup_parameters(year/1000)
             Q=lna(np.mean(daily_insolation(Vars.Lat,days,Vars.orbitals),axis=1))
         #updating for each kiloyear
