@@ -9,6 +9,8 @@
 /*.egg-info
 
 # More
-/.ipynb_checkpoints/
+.ipynb_checkpoints
+**/*.ipynb_checkpoints/
+*/.ipynb_checkpoints/*
 Development_playground.ipynb
 Development_tests.ipynb
