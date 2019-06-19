@@ -233,7 +233,7 @@ class flux_down:
                     Vars.solar=earthsystem.solarradiation_orbital(convfactor,orbitalyear,timeunit)
                     Vars.Read['solar'][int(Runtime_Tracker/(4*data_readout))]=Vars.solar
             else:
-                if Runtime_Tracker==0:
+                if Runtime_Tracker % 4*data_readout==0:
                     Vars.solar=earthsystem.solarradiation(convfactor,timeunit,orbitalyear)
                     if parallelization==True:
                         Vars.solar=np.array([Vars.solar]*(number_of_parallels))
@@ -494,8 +494,8 @@ class albedo:
         .. math::
 
             &T_g(\phi)=T(\phi)-0.0065\cdot Z (\phi) \\\\
-            If\;T_g(\phi)<283.15:&\quad \\alpha(\phi)=b(\phi)-0.009\cdot T_g(\phi)   \\\\
-            If\;T_g(\phi)> 283.15:&\quad \\alpha(\phi)= b(\phi)-2.548
+            If \quad & T_g(\phi)<283.15: \quad \\alpha(\phi)=b(\phi)-0.009\cdot T_g(\phi)   \\\\
+            If \quad & T_g(\phi)> 283.15: \quad \\alpha(\phi)= b(\phi)-2.548
 
         with the albedo value :math:`\\alpha(\phi)` (maximum of 0.85) and temperature :math:`T(\phi)` of latitude :math:`\phi`, the altitude weighted temperature :math:`T_g` with the zonal mean altitude :math:`Z(\phi)` and empirical constants :math:`b(\phi)`.
         
@@ -2367,3 +2367,4 @@ def SteadyStateConditionGlobal(Global):
 def BPtimeplot(time,number):
     time_new = (lna(time)/stepsize_of_integration-Vars.External_time_start[number])
     return time_new
+

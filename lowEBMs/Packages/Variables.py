@@ -269,17 +269,17 @@ def datareset():
     Vars.Lat=classreset.Lat
     Vars.Lat2=classreset.Lat2
 
-def variable_importer(config):
+def variable_importer(config,control,*args,**kwargs):
     """ 
-    Executes all relevant functions to import variables for a single simulation run. From the *configuration.ini-file* returned by ``Configuration.importer`` the relevant infomration is extracted and the specific importer functions are executed in the following order:
+    Executes all relevant functions to import variables for a single simulation run. From the *configuration* dictionary, returned by ``Configuration.importer``, the relevant information is extracted and the specific importer functions are executed in the following order:
 
     .. math::
         
-        bulíltin_importer \; \\rightarrow \; initial_importer \; \\rightarrow \; output_importer
+        buliltin \_ importer \quad \\rightarrow \quad initial \_ importer \quad \\rightarrow \quad output \_ importer
 
     .. Note::
 
-        When doing this manually maintain the order!
+        When doing this manually, maintain the order!
 
     **Function-call arguments** \n
 
@@ -288,15 +288,16 @@ def variable_importer(config):
     :returns:                   No return
 
     """
-    builtin_importer(config['rk4input'])
+    accuracy,accuracy_number=kwargs.get('accuracy',1e-3),kwargs.get('accuracy_number',1000)
+    builtin_importer(config['rk4input'],control,accuracy=accuracy,accuracy_number=accuracy_number)
     initial_importer(config['initials'])
     output_importer()
 
-def builtin_importer(rk4input):
+def builtin_importer(rk4input,control,*args,**kwargs):
     """
     Adds the most important variables to the python-builtin functions which are globally accessible. This enables calling and writing variables globally and across different files.
 
-    Variables added to the builtin-functions are all arguments of the ``[rk4input]``-section from the *configuration.ini-file* returned by ``Configuration.importer`` and three additional ones. 
+    Variables added to the builtin-functions are all arguments of the ``[rk4input]``-section from the *configuration* dictionary, returned by ``Configuration.importer``, and three additional ones. 
     
     .. Important::
     
@@ -338,13 +339,13 @@ def builtin_importer(rk4input):
 
     **Function-call arguments** \n
 
-    :param dict rk4input:       The 'rk4input' section from the configuration dictionary returned by ``Configuration.importer``  
+    :param dict rk4input:       The ``[rk4input]``-section from the configuration dictionary returned by ``Configuration.importer``  
 
     :returns:                   No return
     """
     #Writing systemparameters into builtin-module to make them globally callable
     #Overview given in Readme.txt
-    
+    accuracy,accuracy_number=kwargs.get('accuracy',1e-3),kwargs.get('accuracy_number',1000)
     keys=list(rk4input.keys())
     values=list(rk4input.values())
     for i in range(len(keys)):
@@ -352,6 +353,13 @@ def builtin_importer(rk4input):
     builtins.Runtime_Tracker=0
     builtins.Noise_Tracker=0
     builtins.parallelization=False
+    if control==True:
+        builtins.eq_condition=True
+        builtins.number_of_integration=10000
+        builtins.data_readout=1    
+        builtins.eq_condition_length=accuracy_number
+        builtins.eq_condition_amplitude=accuracy
+        print('Starting controlrun with a temperature accuracy of %s K on the GMT over %s datapoints.' %(accuracy,accuracy_number))
 
     """builtins.number_of_integration=rk4input['number_of_integration']     
     builtins.stepsize_of_integration=rk4input[1] 
@@ -379,7 +387,7 @@ def initial_importer(initials):
 
     **Function-call arguments** \n
 
-    :param dict rk4input:       The 'initials' section from the configuration dictionary returned by ``Configuration.importer``  
+    :param dict initials:       The ``[initials]``-section from the configuration dictionary returned by ``Configuration.importer``  
 
     :returns:                   No return
     """
@@ -450,11 +458,6 @@ def output_importer():
 
     The lists are directly written to their entry in ``Variable.Vars`` and can be returned after the simulation is finished. 
 
-    **Function-call arguments** \n
-
-    :param dict rk4input:       The 'initials' section from the configuration dictionary returned by ``Configuration.importer``  
-
-    :returns:                   No return
     """
     if (number_of_integration) % data_readout == 0:
         #Assigning dynamical variables in Variables Package with initial values from var
@@ -468,15 +471,47 @@ def output_importer():
     Vars.Read={'cL': Vars.cL,'C': Vars.C,'F': Vars.F,'P': Vars.P,'Transfer': Vars.Transfer,'alpha': Vars.alpha,'BudTransfer': Vars.BudTransfer, 'solar': Vars.solar,'noise': Vars.noise,'Rdown': Vars.Rdown,'Rup': Vars.Rup, 'ExternalOutput': Vars.ExternalOutput,'CO2Output': Vars.CO2Output}
 
 
-def variable_importer_parallelized(config,fitconfig):
+def variable_importer_parallelized(config,paral_config):
+    """ 
+    Executes all relevant functions to import variables for an ensemble simulation run. From the *configuration* dictionary, returned by ``Configuration.importer``, and the *parallelization_config*, returned by ``Configuration.allocate_parallelparameter``, the relevant infomration is extracted and the specific importer functions are executed in the following order:
 
+    .. math::
+        
+        buliltin \_ importer \quad \\rightarrow  \quad buliltin \_ importer \_ parallelized \quad \\rightarrow  \quad initial \_ importer \_ parallelized \quad \\rightarrow \quad output \_ importer
+
+    .. Note::
+
+        When doing this manually, maintain the order!
+
+    **Function-call arguments** \n
+
+    :param dict config:         The configuration dictionary returned by ``Configuration.importer``
+
+    :param dict paral_config:   The parallelization setup configuration returned by ``Configuration.allocate_parallelparameter`` (second entry of return)  
+
+    :returns:                   No return
+
+    """
     builtin_importer(config['rk4input'])
-    builtin_importer_parallelized(fitconfig)
-    initial_importer_parallelized(config['initials'],fitconfig)
+    builtin_importer_parallelized(paral_config)
+    initial_importer_parallelized(config['initials'],paral_config)
     output_importer()    
     #output_importer_parameterfit(fitconfig)
 
-def initial_importer_parallelized(initials,fitconfig):
+def initial_importer_parallelized(initials,paral_config):
+    """
+    Calculates the initial conditions of the *primary variables* from the ``initials``-section for parallelized simulations.
+
+    The initial conditions are directly written to their entry in ``Variable.Vars``. 
+
+    **Function-call arguments** \n
+
+    :param dict initials:       The ``[initials]``-section from the configuration dictionary returned by ``Configuration.importer``  
+
+    :param dict paral_config:   The parallelization setup configuration returned by ``Configuration.allocate_parallelparameter`` (second entry of return)  
+
+    :returns:                   No return
+    """ 
     from lowEBMs.Packages.Functions import cosd, lna
     ###filling the running variables with values depending on the systemconfiguration in rk4input###
 
@@ -539,6 +574,12 @@ def initial_importer_parallelized(initials,fitconfig):
     Vars.Lat2=initials['latitude_b']
 
 def output_importer_parallelized():
+    """
+    Creates empty lists for the storage-variables which will be filled during the ensemble simulation.
+
+    The lists are directly written to their entry in ``Variable.Vars`` and can be returned after the simulation is finished. 
+
+    """
     if (number_of_integration) % data_readout == 0:
         #Assigning dynamical variables in Variables Package with initial values from var
         Vars.cL,Vars.C,Vars.F,Vars.P,Vars.Transfer,Vars.alpha,Vars.BudTransfer,Vars.solar,Vars.noise,Vars.Rdown,Vars.Rup,Vars.ExternalOutput,Vars.CO2Output=np.array([[0]*int(number_of_integration/data_readout)]*Vars.Readnumber,dtype=object)
@@ -551,13 +592,25 @@ def output_importer_parallelized():
     Vars.Read={'cL': Vars.cL,'C': Vars.C,'F': Vars.F,'P': Vars.P,'Transfer': Vars.Transfer,'alpha': Vars.alpha,'BudTransfer': Vars.BudTransfer, 'solar': Vars.solar,'noise': Vars.noise,'Rdown': Vars.Rdown,'Rup': Vars.Rup, 'ExternalOutput': Vars.ExternalOutput,'CO2Output': Vars.CO2Output}
 
 
-def builtin_importer_parallelized(setup):
-    
+def builtin_importer_parallelized(paral_config):
+    """
+    Adds additional variables from the parallelization setup to the python-builtin functions which are globally accessible.    
+
+    The initial conditions are directly written to their entry in ``Variable.Vars``. 
+
+    **Function-call arguments** \n
+
+    :param dict initials:       The ``[initials]``-section from the configuration dictionary returned by ``Configuration.importer``  
+
+    :param dict paral_config:   The parallelization setup configuration returned by ``Configuration.allocate_parallelparameter`` (second entry of return)  
+
+    :returns:                   No return
+    """ 
     #Writing systemparameters into builtin-module to make them globally callable
     #Overview given in Readme.txt
     
-    keys=list(setup.keys())
-    values=list(setup.values())
+    keys=list(paral_config.keys())
+    values=list(paral_config.values())
     for i in range(len(keys)):
         exec("builtins.%s=%i" % (keys[i],values[i]))
     builtins.parallelization=True
