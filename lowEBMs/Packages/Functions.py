@@ -224,22 +224,32 @@ class flux_down:
         
         #Calculating solar insolation distribution from functions using climlab
         
-        if spatial_resolution==0:
-            Vars.solar=Q
+
         if solarinput==True:
+
             #with orbital variations (if False by default present day)
-            if orbital==True:
-                if Runtime_Tracker % 4*data_readout == 0:
-                    Vars.solar=earthsystem.solarradiation_orbital(convfactor,orbitalyear,timeunit)
-                    Vars.Read['solar'][int(Runtime_Tracker/(4*data_readout))]=Vars.solar
+            if orbital==True: 
+                if spatial_resolution==0:
+                    Vars.Lat=np.linspace(-90,90,18)
+                    Vars.solar=earthsystem.solarradiation_orbital(convfactor,orbitalyear,'annualmean')
+                else:
+                  	Vars.solar=earthsystem.solarradiation_orbital(convfactor,orbitalyear,timeunit)
+               
             else:
-                if Runtime_Tracker % 4*data_readout==0:
+                if spatial_resolution==0:
+                    Vars.solar=earthsystem.solarradiation(convfactor,timeunit,'annualmean')
+                else:
                     Vars.solar=earthsystem.solarradiation(convfactor,timeunit,orbitalyear)
-                    if parallelization==True:
-                        Vars.solar=np.array([Vars.solar]*(number_of_parallels))
+
+            if parallelization==True:
+                Vars.solar=np.array([Vars.solar]*(number_of_parallels))
         #total solar insolation with possible offset
+        else:
+            Vars.solar=Q
         Q_total=Vars.solar+dQ
-            
+
+        if Runtime_Tracker % 4*data_readout == 0:
+            Vars.Read['solar'][int(Runtime_Tracker/(4*data_readout))]=Q_total            
         
         #Equation of incoming radiation
         #print(Q_total.shape,alpha.shape,type(Q_total),type(alpha),factor_solar.shape)
@@ -2015,8 +2025,10 @@ class earthsystem:
         #Adjustment of orbital parameters to specfific year (from climlab), else present day
         if orbitalyear==0:
             Vars.orbitals={'ecc': 0.017236, 'long_peri': 281.37, 'obliquity': 23.446}
+        elif orbitalyear=='external':
+            pass
         else:
-            Vars.orbtable=OrbitalTable()
+            #Vars.orbtable=OrbitalTable()
             Vars.orbitals=Vars.orbtable.lookup_parameters(orbitalyear)
             
         #returning the annual mean solar insolation or solar insolations varying over time, depending on the
