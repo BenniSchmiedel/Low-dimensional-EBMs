@@ -37,8 +37,8 @@ Additionally defined are tools for evaluation or simplification in the class:
 import numpy as np
 from climlab import constants as const
 from climlab.solar.insolation import daily_insolation
-from climlab.solar.orbital import OrbitalTable
-from climlab.solar.orbital import LongOrbitalTable
+#from climlab.solar.orbital import OrbitalTable
+#from climlab.solar.orbital import LongOrbitalTable
 import scipy
 import builtins
 import time
@@ -197,55 +197,71 @@ class flux_down:
         key=list(funcparam.keys())
         list_parameters=list(funcparam.values())
         #Loading inputparameters
-        Q,factor_solar,dQ,albedofunc,albedoread,albedofuncparam,noise,noiseamp,noisedelay,    seed,seedmanipulation,solarinput,convfactor,timeunit,orbital,orbitalyear=list_parameters#R_ininsolalbedoparam
+        Q,factor_solar,dQ,albedofunc,albedoread,albedofuncparam,noise,noiseamp,noisedelay,    seed,seedmanipulation,solarinput,convfactor,timeunit,orbital,orbitalyear,updatefrequency=list_parameters#R_ininsolalbedoparam
         
         #Calculating albedo from given albedofunction
         alpha=albedofunc(*albedofuncparam) 
         #Readout to give albedo as output
         if albedoread==True: 
-            if Runtime_Tracker % 4*data_readout == 0:    #Only on 4th step (due to rk4)
+            if Runtime_Tracker % (4*data_readout) == 0:    #Only on 4th step (due to rk4)
                 Vars.alpha=alpha
                 Vars.Read['alpha'][int(Runtime_Tracker/(4*data_readout))]=alpha
 
         #Noise factor z on the solar insolation        
         z=0
-        if noise==True:
-            #possible noisedelay which indicates a gap between updating the noise factor
-            if (int(Vars.t/stepsize_of_integration) % noisedelay)==0: 
-                if (Runtime_Tracker % 4*data_readout)==0:
+        if Runtime_Tracker % 4 == 0:
+            if noise==True:
+                #possible noisedelay which indicates a gap between updating the noise factor
+                if (int(Vars.t/stepsize_of_integration) % noisedelay)==0:
                     #seed if same noise is desired
                     if seed==True:
                         np.random.seed(int(Vars.t)+seedmanipulation)
                     z=np.random.normal(0,noiseamp)
                     #write to builtins and output
-                    builtins.Noise_Tracker=z
-                    Vars.Read['noise'][int(Runtime_Tracker/(4*data_readout))]=z
+                builtins.Noise_Tracker=z 
+
         z=builtins.Noise_Tracker
-        
+        if Runtime_Tracker % (4*data_readout)==0:
+            Vars.Read['noise'][int(Runtime_Tracker/(4*data_readout))]=z
         #Calculating solar insolation distribution from functions using climlab
         
-        if spatial_resolution==0:
-            Vars.solar=Q
-        if solarinput==True:
-            #with orbital variations (if False by default present day)
-            if orbital==True:
-                if Runtime_Tracker % 4*data_readout == 0:
-                    Vars.solar=earthsystem.solarradiation_orbital(convfactor,orbitalyear,timeunit)
-                    Vars.Read['solar'][int(Runtime_Tracker/(4*data_readout))]=Vars.solar
+        if updatefrequency=='number_of_integration':
+            updatefrequency=number_of_integration
+        if Runtime_Tracker % (4*updatefrequency) == 0:
+            if solarinput==True:
+
+                #with orbital variations (if False by default present day)
+                if orbital==True: 
+                    if spatial_resolution==0:
+                        Vars.Lat=np.linspace(-90,90,18)
+                        Q=earthsystem.solarradiation_orbital(convfactor,orbitalyear,'annualmean')
+                        Vars.solar=np.average(Q, weights=cosd(Vars.Lat))
+                    else:
+                        Vars.solar=earthsystem.solarradiation_orbital(convfactor,orbitalyear,timeunit)
+                    
+                else:
+                    if spatial_resolution==0:
+                        Vars.Lat=np.linspace(-90,90,18)
+                        Q=earthsystem.solarradiation(convfactor,'annualmean',orbitalyear)
+                        Vars.solar=np.average(Q, weights=cosd(Vars.Lat))
+                    else:
+                        Vars.solar=earthsystem.solarradiation(convfactor,timeunit,orbitalyear)
+
+                if parallelization==True:
+                    Vars.solar=np.array([Vars.solar]*(number_of_parallels))
+            #total solar insolation with possible offset
             else:
-                if Runtime_Tracker % 4*data_readout==0:
-                    Vars.solar=earthsystem.solarradiation(convfactor,timeunit,orbitalyear)
-                    if parallelization==True:
-                        Vars.solar=np.array([Vars.solar]*(number_of_parallels))
-        #total solar insolation with possible offset
+                Vars.solar=Q
         Q_total=Vars.solar+dQ
-            
+
+        if Runtime_Tracker % (4*data_readout) == 0:
+            Vars.Read['solar'][int(Runtime_Tracker/(4*data_readout))]=Q_total            
         
         #Equation of incoming radiation
         #print(Q_total.shape,alpha.shape,type(Q_total),type(alpha),factor_solar.shape)
         
         R_in=np.transpose((np.transpose(Q_total)+z)*factor_solar*(1-np.transpose(alpha)))
-        if Runtime_Tracker % 4*data_readout == 0:    #Only on 4th step (due to rk4)
+        if Runtime_Tracker % (4*data_readout) == 0:    #Only on 4th step (due to rk4)
             Vars.Read['Rdown'][int(Runtime_Tracker/(4*data_readout))]=R_in
         return R_in
 
@@ -617,7 +633,7 @@ class flux_up:
         list_parameters=list(funcparam.values())
         A,B=list_parameters
         R_out=np.transpose(-(A+B*(np.transpose(Vars.T)-273.15)))
-        if Runtime_Tracker % 4*data_readout == 0:    #Only on 4th step (due to rk4)
+        if Runtime_Tracker % (4*data_readout) == 0:    #Only on 4th step (due to rk4)
             Vars.Read['Rup'][int(Runtime_Tracker/(4*data_readout))]=R_out
         return R_out
 
@@ -678,7 +694,7 @@ class flux_up:
         list_parameters=list(funcparam.values())
         A,B,A1,B1,f_c=list_parameters
         R_out=np.transpose(-(A+B*(np.transpose(Vars.T)-273.15)-(A1+B1*(np.transpose(Vars.T)-273.15))*f_c))
-        if Runtime_Tracker % 4*data_readout == 0:    #Only on 4th step (due to rk4)
+        if Runtime_Tracker % (4*data_readout) == 0:    #Only on 4th step (due to rk4)
             Vars.Read['Rup'][int(Runtime_Tracker/(4*data_readout))]=R_out
         return R_out
 
@@ -722,7 +738,7 @@ class flux_up:
         list_parameters=list(funcparam.values())
         grey,sig=list_parameters
         R_out=np.transpose(-(grey*sig*np.transpose(Vars.T**4)))
-        if Runtime_Tracker % 4*data_readout == 0:    #Only on 4th step (due to rk4)
+        if Runtime_Tracker % (4*data_readout) == 0:    #Only on 4th step (due to rk4)
             Vars.Read['Rup'][int(Runtime_Tracker/(4*data_readout))]=R_out
         return R_out
 
@@ -780,13 +796,9 @@ class flux_up:
         list_parameters=list(funcparam.values())
         m,sigma,gamma,grey=list_parameters
         R_out=np.transpose(-grey*sigma*np.transpose(Vars.T)**4*(1-m*np.tanh(gamma*np.transpose(Vars.T)**6)))
-        if Runtime_Tracker % 4*data_readout == 0:    #Only on 4th step (due to rk4)
+        if Runtime_Tracker % (4*data_readout) == 0:    #Only on 4th step (due to rk4)
             Vars.Read['Rup'][int(Runtime_Tracker/(4*data_readout))]=R_out
         return R_out
-
-
-
-
 
 class transfer:
     """ 
@@ -862,7 +874,7 @@ class transfer:
             F=0
         #Reading the distribution to give an output
         if Read==True:
-            if Runtime_Tracker % 4*data_readout == 0:
+            if Runtime_Tracker % (4*data_readout) == 0:
                 Vars.Read['BudTransfer'][int(Runtime_Tracker/(4*data_readout))]=F
         return F
 
@@ -1102,7 +1114,7 @@ class transfer:
 
             #reading for output
             if Readout==True:
-                if Runtime_Tracker % 4*data_readout == 0:
+                if Runtime_Tracker % (4*data_readout) == 0:
                     for l in range(len(Readdata)):
                         Vars.Read[Readdatakeys[l]][int(Runtime_Tracker/(4*data_readout))]=Readdata[l]
         else:
@@ -1362,7 +1374,6 @@ class transfer:
             F=-K_o*dz*l_cover*Vars.tempdif/(dy)*cp_w*dens_w*factor_oc
         return F
 
-
 class forcing:
     """
     Class defining radiative forcing terms 
@@ -1536,7 +1547,7 @@ class forcing:
                 Vars.ForcingTracker[forcingnumber][1] = Vars.ExternalInput[forcingnumber][1][Vars.ForcingTracker[forcingnumber][0]]
                 Vars.ForcingTracker[forcingnumber][0] += 1
         F=Vars.ForcingTracker[forcingnumber][1]
-        if Runtime_Tracker % 4*data_readout == 0:
+        if Runtime_Tracker % (4*data_readout) == 0:
             Vars.ExternalOutput[forcingnumber][int(Runtime_Tracker/(4*data_readout))]=F
         return F
 
@@ -1624,10 +1635,11 @@ class forcing:
 
         """
         list_parameters=list(funcparam.values())
-        forcingnumber,datapath,name,delimiter,header,col_time,col_forcing,timeunit,BP,time_start,k=list_parameters
+        forcingnumber,datapath,name,delimiter,header,col_time,col_forcing,timeunit,BP,time_start,k_output, m_output, k_input, m_input=list_parameters
         if Runtime_Tracker==0:
             Vars.ExternalInput[forcingnumber]=np.genfromtxt(str(datapath)+str(name),delimiter=str(delimiter),skip_header=header,usecols=(col_time,col_forcing),unpack=True,encoding='ISO-8859-1')  
-            Vars.External_time_start[forcingnumber]=time_start    
+            Vars.External_time_start[forcingnumber]=time_start   
+            Vars.ExternalInput[forcingnumber][1]=lna(Vars.ExternalInput[forcingnumber][1])*k_input+m_input
             if BP==True:
                 Vars.ExternalInput[forcingnumber][0]=-(lna(Vars.ExternalInput[forcingnumber][0])-Vars.External_time_start[forcingnumber])
             if BP==False:
@@ -1652,8 +1664,8 @@ class forcing:
             else:
                 Vars.ForcingTracker[forcingnumber][1] = Vars.ExternalInput[forcingnumber][1][Vars.ForcingTracker[forcingnumber][0]]
                 Vars.ForcingTracker[forcingnumber][0] += 1
-        F=Vars.ForcingTracker[forcingnumber][1]*k
-        if Runtime_Tracker % 4*data_readout == 0:
+        F=Vars.ForcingTracker[forcingnumber][1]*k_output+m_output
+        if Runtime_Tracker % (4*data_readout) == 0:
             Vars.ExternalOutput[forcingnumber][int(Runtime_Tracker/(4*data_readout))]=F
         return F
 
@@ -1794,10 +1806,133 @@ class forcing:
                 Vars.CO2Tracker[1] = A*(np.log(Vars.CO2Input[1][Vars.CO2Tracker[0]]/C_0))
                 Vars.CO2Tracker[0] += 1
         F=Vars.CO2Tracker[1]
-        if Runtime_Tracker % 4*data_readout == 0:
+        if Runtime_Tracker % (4*data_readout) == 0:
             Vars.CO2Output[int(Runtime_Tracker/(4*data_readout))]=F
         return F
 
+
+    def orbital(funcparam):
+        """ 
+        Includes forcing from orbital parameter changes.
+
+        .. _Predefinedforcing:
+
+        This module imports the orbital parameters from a given datafile and updates them during a model run. 
+
+        **Function-call arguments** \n
+
+        :param dict funcparams:     * *forcingnumber* the number of the radiative forcing term (relevant if multiple forcings are used)
+
+                                        * type: int 
+                                        * unit: -
+                                        * value: 0, 1,...
+                                                                
+                                    * *datapath*: The path to the file (give full path or relative path!)
+
+                                        * type: string 
+                                        * unit: -
+                                        * value: example: '/insert/path/to/file'
+
+                                    * *name*: The name of the file which is used
+
+                                        * type: string 
+                                        * unit: -
+                                        * value: example: 'datafile.txt' 
+                              
+                                    * *delimiter*: How the data is delimited in the file
+
+                                        * type: string 
+                                        * unit: -
+                                        * value: example: ','
+                              
+                                    * *header*: The number of header rows to exclude
+
+                                        * type: int 
+                                        * unit: -
+                                        * value: any
+                              
+                                    * *col_time*: The column where the time is stored
+
+                                        * type: int 
+                                        * unit: -
+                                        * value: any
+                              
+                                    * *col_forcing*: The column where the forcing in stored
+
+                                        * type: int 
+                                        * unit: -
+                                        * value:  any 
+
+                                    * *timeunit*: The unit of time which is used in the file to convert it to seconds
+
+                                        * type: string 
+                                        * unit: -
+                                        * value: 'minute', 'hour', 'day', 'week', 'month', 'year' (if none, seconds are used)  
+                                                             
+
+                                    * *BP*: If the time is given as "Before present"
+
+                                        * type: boolean 
+                                        * unit: -
+                                        * value: True / False
+                              
+                                    * *time_start*: The time of the first entry (or the time when is should be started to apply it)
+
+                                        * type: float 
+                                        * unit: depending *timeunit*
+                                        * value: any
+                              
+                                    * *k*: Scaling factor
+
+                                        * type: float 
+                                        * unit: -
+                                        * value: any
+
+        :returns:                   The radiative forcing for a specific time imported from a data file
+
+        :rtype:                     float
+
+        """
+        list_parameters=list(funcparam.values())
+        datapath,name,delimiter,header,footer,col_time,col_ecc,col_per,col_obl,timeunit,BP,time_start,initial,perishift=list_parameters
+
+        if Runtime_Tracker==0:
+            Vars.ExternalOrbitals=np.genfromtxt(str(datapath)+str(name),delimiter=str(delimiter),skip_header=header,skip_footer=footer,usecols=(col_time,col_ecc,col_per,col_obl),unpack=True,encoding='ISO-8859-1')  
+            Vars.External_time_start=time_start   
+ 
+            if BP==True:
+                Vars.ExternalOrbitals[0]=-(lna(Vars.ExternalOrbitals[0])-Vars.External_time_start)
+            if BP==False:
+                Vars.ExternalOrbitals[0]=lna(Vars.ExternalOrbitals[0])+Vars.External_time_start
+            if timeunit=='minute':
+                Vars.ExternalOrbitals[0]=lna(Vars.ExternalOrbitals[0])*60
+            if timeunit=='hour':
+                Vars.ExternalOrbitals[0]=lna(Vars.ExternalOrbitals[0])*60*60
+            if timeunit=='day':
+                Vars.ExternalOrbitals[0]=lna(Vars.ExternalOrbitals[0])*60*60*24
+            if timeunit=='week':
+                Vars.ExternalOrbitals[0]=lna(Vars.ExternalOrbitals[0])*60*60*24*7
+            if timeunit=='month':
+                Vars.ExternalOrbitals[0]=lna(Vars.ExternalOrbitals[0])*60*60*24*365/12
+            if timeunit=='year':
+                Vars.ExternalOrbitals[0]=lna(Vars.ExternalOrbitals[0])*60*60*24*365
+            
+            if Vars.ExternalOrbitals[0][0]>Vars.ExternalOrbitals[0][1]:
+                Vars.ExternalOrbitals[0]=np.flip(Vars.ExternalOrbitals[0],axis=0)
+                Vars.ExternalOrbitals[1]=np.flip(Vars.ExternalOrbitals[1],axis=0)
+            Vars.OrbitalTracker[1]=initial
+        while Vars.t>Vars.ExternalOrbitals[0][Vars.OrbitalTracker[0]]:
+            if Vars.OrbitalTracker[0]==(len(Vars.ExternalOrbitals[0])-1):
+                Vars.OrbitalTracker[1]={'ecc':Vars.ExternalOrbitals[1][-1] ,'long_peri': Vars.ExternalOrbitals[2][-1]+perishift, 'obliquity': Vars.ExternalOrbitals[3][-1]}
+                break
+            else:
+                
+                Vars.OrbitalTracker[1] = {'ecc':Vars.ExternalOrbitals[1][Vars.OrbitalTracker[0]] ,'long_peri': Vars.ExternalOrbitals[2][Vars.OrbitalTracker[0]]+perishift, 'obliquity': Vars.ExternalOrbitals[3][Vars.OrbitalTracker[0]]}
+                Vars.OrbitalTracker[0] += 1
+
+        Vars.orbitals=Vars.OrbitalTracker[1]
+
+        return 0
 
 class earthsystem:
     """
@@ -1893,9 +2028,12 @@ class earthsystem:
         #Adjustment of orbital parameters to specfific year (from climlab), else present day
         if orbitalyear==0:
             Vars.orbitals={'ecc': 0.017236, 'long_peri': 281.37, 'obliquity': 23.446}
-        else:
-            Vars.orbtable=LongOrbitalTable()
-            Vars.orbitals=Vars.orbtable.lookup_parameters(orbitalyear)
+        elif orbitalyear=='external':
+            pass
+        elif orbitalyear!=0:
+            pass
+            #Vars.orbtable=OrbitalTable()
+            #Vars.orbitals=Vars.orbtable.lookup_parameters(orbitalyear)
             
         #returning the annual mean solar insolation or solar insolations varying over time, depending on the
         #time specified
@@ -1952,7 +2090,7 @@ class earthsystem:
         days=np.linspace(0,365,365)
         #calculation for first step
         if Runtime_Tracker == 0:
-            Vars.orbtable=LongOrbitalTable()
+            #Vars.orbtable=OrbitalTable()
             Vars.orbitals=Vars.orbtable.lookup_parameters(year/1000)
             Q=lna(np.mean(daily_insolation(Vars.Lat,days,Vars.orbitals),axis=1))
         #updating for each kiloyear
@@ -2306,6 +2444,7 @@ class earthsystem:
     """
     Class with useful functions and evaluation tools 
     """
+
 def lna(a):
     return np.array(a)      #conversion of list to numpy array
 
