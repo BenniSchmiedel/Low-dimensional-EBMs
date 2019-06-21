@@ -211,7 +211,8 @@ class Vars():
         self.noise=float
         self.ForcingTracker=[0,0]
         self.CO2Tracker=[0,0]
-        self.OrbitalTracker=[0,0]
+        self.SolarTracker=[0,0]
+        self.OrbitalTracker=[0,{'ecc': 0, 'long_peri': 0, 'obliquity': 0}]
         self.meridional=list
         self.tempdif=list
 
@@ -241,7 +242,12 @@ class Vars():
         self.ExternalOrbitals=list
         self.SolarInput=list
         
-
+def trackerreset():
+    reset('ForcingTracker')
+    reset('CO2Tracker')
+    reset('SolarTracker')
+    reset('OrbitalTracker')
+    
 def reset(x):
     """ 
     Resets the given variable to the initial value specified in Vars.__init__.        
@@ -301,6 +307,7 @@ def variable_importer(config,control,*args,**kwargs):
 
     """
     accuracy,accuracy_number=kwargs.get('accuracy',1e-3),kwargs.get('accuracy_number',1000)
+    trackerreset()
     builtin_importer(config['rk4input'],control,accuracy=accuracy,accuracy_number=accuracy_number)
     initial_importer(config['initials'])
     output_importer()
@@ -504,6 +511,7 @@ def variable_importer_parallelized(config,paral_config):
     :returns:                   No return
 
     """
+    trackerreset()
     builtin_importer(config['rk4input'])
     builtin_importer_parallelized(paral_config)
     initial_importer_parallelized(config['initials'],paral_config)
