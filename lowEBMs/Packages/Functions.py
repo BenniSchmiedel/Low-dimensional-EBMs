@@ -252,8 +252,8 @@ class flux_down:
             #total solar insolation with possible offset
             else:
                 Vars.solar=Q
-        #if Runtime_Tracker==0 and Vars.TSI==float:
-         #   Vars.TSI=0
+        if Runtime_Tracker==0 and Vars.TSI==float:
+            Vars.TSI=0
         Q_total=Vars.solar+dQ+Vars.TSI
 
         if Runtime_Tracker % (4*data_readout) == 0:
