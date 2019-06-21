@@ -252,7 +252,9 @@ class flux_down:
             #total solar insolation with possible offset
             else:
                 Vars.solar=Q
-        Q_total=Vars.solar+dQ
+        #if Runtime_Tracker==0 and Vars.TSI==float:
+         #   Vars.TSI=0
+        Q_total=Vars.solar+dQ+Vars.TSI
 
         if Runtime_Tracker % (4*data_readout) == 0:
             Vars.Read['solar'][int(Runtime_Tracker/(4*data_readout))]=Q_total            
@@ -1933,6 +1935,127 @@ class forcing:
         Vars.orbitals=Vars.OrbitalTracker[1]
 
         return 0
+
+
+    def solar(funcparam):
+        """ 
+        The solar forcing imports changes in the total solar irradiance.
+
+        .. _Solarforcing:
+
+        This module imports changes in the TSI given as change in energy (:math:`Watt \cdot meter^{-2}`) and applies it to the solar constant used in ``flux_down.insolation``.
+
+        **Function-call arguments** \n
+
+        :param dict funcparams:     * *forcingnumber* the number of the radiative forcing term (relevant if multiple forcings are used)
+
+                                        * type: int 
+                                        * unit: -
+                                        * value: 0, 1,...
+                                                                
+                                    * *datapath*: The path to the file (give full path or relative path!)
+
+                                        * type: string 
+                                        * unit: -
+                                        * value: example: '/insert/path/to/file'
+
+                                    * *name*: The name of the file which is used
+
+                                        * type: string 
+                                        * unit: -
+                                        * value: example: 'datafile.txt' 
+                              
+                                    * *delimiter*: How the data is delimited in the file
+
+                                        * type: string 
+                                        * unit: -
+                                        * value: example: ','
+                              
+                                    * *header*: The number of header rows to exclude
+
+                                        * type: int 
+                                        * unit: -
+                                        * value: any
+                              
+                                    * *col_time*: The column where the time is stored
+
+                                        * type: int 
+                                        * unit: -
+                                        * value: any
+                              
+                                    * *col_forcing*: The column where the forcing in stored
+
+                                        * type: int 
+                                        * unit: -
+                                        * value:  any 
+
+                                    * *timeunit*: The unit of time which is used in the file to convert it to seconds
+
+                                        * type: string 
+                                        * unit: -
+                                        * value: 'minute', 'hour', 'day', 'week', 'month', 'year' (if none, seconds are used)  
+                                                             
+
+                                    * *BP*: If the time is given as "Before present"
+
+                                        * type: boolean 
+                                        * unit: -
+                                        * value: True / False
+                              
+                                    * *time_start*: The time of the first entry (or the time when is should be started to apply it)
+
+                                        * type: float 
+                                        * unit: depending *timeunit*
+                                        * value: any
+                              
+                                    * *k*: Scaling factor
+
+                                        * type: float 
+                                        * unit: -
+                                        * value: any
+
+        :returns:                   The radiative forcing for a specific time imported from a data file
+
+        :rtype:                     float
+
+        """
+        list_parameters=list(funcparam.values())
+        forcingnumber,datapath,name,delimiter,header,col_time,col_forcing,timeunit,BP,time_start,k_output, m_output, k_input, m_input=list_parameters
+        if Runtime_Tracker==0:
+            Vars.SolarInput=np.genfromtxt(str(datapath)+str(name),delimiter=str(delimiter),skip_header=header,usecols=(col_time,col_forcing),unpack=True,encoding='ISO-8859-1')  
+            Vars.Solar_time_start=time_start   
+            Vars.SolarInput[1]=lna(Vars.SolarInput[1])*k_input+m_input
+            if BP==True:
+                Vars.SolarInput[0]=-(lna(Vars.SolarInput[0])-Vars.Solar_time_start)
+            if BP==False:
+                Vars.SolarInput[0]=lna(Vars.SolarInput[0])+Vars.Solar_time_start
+            if timeunit=='minute':
+                Vars.SolarInput[0]=lna(Vars.SolarInput[0])*60
+            if timeunit=='hour':
+                Vars.SolarInput[0]=lna(Vars.SolarInput[0])*60*60
+            if timeunit=='day':
+                Vars.SolarInput[0]=lna(Vars.SolarInput[0])*60*60*24
+            if timeunit=='week':
+                Vars.SolarInput[0]=lna(Vars.SolarInput[0])*60*60*24*7
+            if timeunit=='month':
+                Vars.SolarInput[0]=lna(Vars.SolarInput[0])*60*60*24*365/12
+            if timeunit=='year':
+                Vars.SolarInput[0]=lna(Vars.SolarInput[0])*60*60*24*365
+                
+        if Runtime_Tracker==0:
+            Vars.TSI=Vars.SolarInput[1][0]
+        while Vars.t>Vars.SolarInput[0][Vars.SolarTracker[0]]:
+            if Vars.SolarTracker[0]==(len(Vars.SolarInput[0])-1):
+                Vars.SolarTracker[1]=0
+                break
+            else:
+                Vars.SolarTracker[1] = Vars.SolarInput[1][Vars.SolarTracker[0]]
+                Vars.SolarTracker[0] += 1
+        Vars.TSI=Vars.SolarTracker[1]*k_output+m_output
+        if Runtime_Tracker % (4*data_readout) == 0:
+            Vars.SolarOutput[int(Runtime_Tracker/(4*data_readout))]=Vars.TSI
+        return 0
+
 
 class earthsystem:
     """
