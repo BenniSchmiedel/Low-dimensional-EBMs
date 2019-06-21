@@ -18,7 +18,6 @@ def datacut(Datatime,Data,Start,Stop):
     
     Data_cut=[0]*len(Data)
     for i in range(len(Data)):  
-        print(i)
         Data_cut[i]=Data[i][k_start:k_end]
     return Data_cut
 
@@ -123,10 +122,12 @@ def Generator(File,delimiter,header,col_time,col_loc,col_NH,col_SH,Start,Stop,St
         
         if Event_tracker==len(time):
             break
-    
-    return Series_time, Series_RF, Series_AOD
 
-def Synthetic(File,delimiter,header,col_time,col_loc,col_NH,col_SH,Start,Stop,Step,Length_of_evolution):
+    Location=Locationextractor(Series_time,Series_RF,Series_AOD,File,delimiter,header,col_time,col_loc,col_NH,col_SH,Step)
+
+    return Series_time, Series_RF, Series_AOD, Location
+
+def Synthetic(File,delimiter,header,col_time,col_loc,col_NH,col_SH,Start,Stop,Step,Length_of_evolution,Seed):
 
     Raw=ImportData(File,delimiter,header,col_time,col_loc,col_NH,col_SH)
 
@@ -137,13 +138,16 @@ def Synthetic(File,delimiter,header,col_time,col_loc,col_NH,col_SH,Start,Stop,St
         Time_shift=Datatime+Datatime[0]+Start
     elif np.min(Datatime)>0:
         Time_shift=Datatime-Datatime[0]+Start
-    np.random.shuffle(DataRF)
-    DataRF_randomized=DataRF
     
+    np.random.seed(Seed)
+    np.random.shuffle(DataRF)
+    np.random.shuffle(DataAOD)
+    DataRF_randomized=DataRF
+    DataAOD_randomized=DataAOD
 
-    Data_rand=[Time_shift,DataRF_randomized]#,DataAOD[1]]
+    Data_rand=[Time_shift,DataRF_randomized,DataAOD_randomized]
 
-    time,RF=datacut(Time_shift,Data_rand,Start,Stop)
+    time,RF,AOD=datacut(Time_shift,Data_rand,Start,Stop)
     
     tprod=180
     tloss=330
@@ -163,14 +167,67 @@ def Synthetic(File,delimiter,header,col_time,col_loc,col_NH,col_SH,Start,Stop,St
         if looptime>=time[Event_tracker]:
             
             eventRF=timeevolution(time_event,RF[Event_tracker],tprod,tloss)
-            #eventAOD=timeevolution(time_event,AOD[Event_tracker],tprod,tloss)
+            eventAOD=timeevolution(time_event,AOD[Event_tracker],tprod,tloss)
             for k in range(len(eventRF)):
                 Series_RF[i+k]=Series_RF[i+k]+eventRF[k]
-                #Series_AOD[i+k]=Series_AOD[i+k]+eventAOD[k]
+                Series_AOD[i+k]=Series_AOD[i+k]+eventAOD[k]
             Event_tracker+=1
         i+=1
         
         if Event_tracker==len(time):
             break
     
-    return Series_time, Series_RF
+    Location=Locationextractor(Series_time,Series_RF,Series_AOD,File,delimiter,header,col_time,col_loc,col_NH,col_SH,Step)
+
+    return Series_time, Series_RF, Series_AOD, Location
+
+def Locationextractor(Time,RF,AOD,File,delimiter,header,col_time,col_loc,col_NH,col_SH,step):
+
+    Data=ImportData(File,delimiter,header,col_time,col_loc,col_NH,col_SH)
+    Trop=np.where(Data[1]==1)[0]
+    NH=np.where(Data[1]==2)[0]
+    SH=np.where(Data[1]==3)[0]
+    #print(Trop)
+    Time_int=np.array([0]*len(Time))
+    for i in range(len(Time)):
+        Time_int[i]=int(Time[i])
+
+    Tropindex=[]
+    NHindex=[]
+    SHindex=[]
+    for j in Trop:
+        i=Data[0][j]
+        x=np.where(Time_int==i)[0]
+        if len(x) > 0:
+            Tropindex.append(x[0])
+    Troptime=Time[Tropindex]
+    for j in NH:
+        i=Data[0][j]
+        x=np.where(Time_int==i)[0]
+        if len(x) > 0:
+            NHindex.append(x[0])
+    NHtime=Time[NHindex]
+    for j in SH:
+        i=Data[0][j]
+        x=np.where(Time_int==i)[0]
+        if len(x) > 0:
+            SHindex.append(x[0])
+    SHtime=Time[SHindex]
+
+    Trop_RF=[]
+    NH_RF=[]
+    SH_RF=[]
+    step=10/365
+    for i in Tropindex:
+        Trop_RF.append(RF[i+int(187/365/step)])
+    for i in NHindex:
+        NH_RF.append(RF[i+int(187/365/step)])
+    for i in SHindex:
+        SH_RF.append(RF[i+int(187/365/step)])
+
+    Troptime=np.array(Troptime)+187/365
+    NHtime=np.array(NHtime)+187/365
+    SHtime=np.array(SHtime)+187/365
+    RFloc=[[Troptime,Trop_RF],[NHtime,NH_RF],[SHtime,SH_RF]]
+    return RFloc
+
