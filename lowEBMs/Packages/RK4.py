@@ -215,7 +215,7 @@ def rk4alg(func,eqparam,funccomp):
                         Vars.Read[m]=Vars.Read[m][:(j)]
                     break
     #Return the written data (Cut excessive 0s)
-    dataout=np.array([np.array(data[0][:(j+1)]),np.array(data[1][:(j+1)]),np.array(data[2][:(j+1)])])
+    dataout=[np.array(data[0][:(j+1)]),np.array(data[1][:(j+1)]),np.array(data[2][:(j+1)])]
             
     print('Simulation finished within %s seconds' %(time.time() - Vars.start_time))
 

@@ -20,6 +20,7 @@ setuptools.setup(name='lowEBMs',
           'climlab',
           'xarray',
           'attrdict',
+          'tqdm',
       ],
       classifiers=[
     'Development Status :: 3 - Alpha'],
