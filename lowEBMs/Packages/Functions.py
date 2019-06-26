@@ -233,7 +233,7 @@ class flux_down:
             
         Q_total=Vars.solar+dQ+Vars.TSI
         
-        Q_aod=Q_total*np.exp(-Vars.AOD/np.cos(Vars.Lat*2*np.pi/360))
+        Q_aod=Q_total*np.exp(-Vars.AOD)
         
         if Runtime_Tracker % (4*data_readout) == 0:
             Vars.Read['solar'][int(Runtime_Tracker/(4*data_readout))]=Q_total            
@@ -2063,6 +2063,124 @@ class forcing:
             Vars.SolarOutput[int(Runtime_Tracker/(4*data_readout))]=Vars.TSI
         return 0
 
+    def aod(funcparam):
+        """ 
+        The aod forcing imports changes in the atmospheric aod.
+
+        .. _Solarforcing:
+
+        This module imports changes in the TSI given as change in energy (:math:`Watt \cdot meter^{-2}`) and applies it to the solar constant used in ``flux_down.insolation``.
+
+        **Function-call arguments** \n
+
+        :param dict funcparams:     * *forcingnumber* the number of the radiative forcing term (relevant if multiple forcings are used)
+
+                                        * type: int 
+                                        * unit: -
+                                        * value: 0, 1,...
+                                                                
+                                    * *datapath*: The path to the file (give full path or relative path!)
+
+                                        * type: string 
+                                        * unit: -
+                                        * value: example: '/insert/path/to/file'
+
+                                    * *name*: The name of the file which is used
+
+                                        * type: string 
+                                        * unit: -
+                                        * value: example: 'datafile.txt' 
+                              
+                                    * *delimiter*: How the data is delimited in the file
+
+                                        * type: string 
+                                        * unit: -
+                                        * value: example: ','
+                              
+                                    * *header*: The number of header rows to exclude
+
+                                        * type: int 
+                                        * unit: -
+                                        * value: any
+                              
+                                    * *col_time*: The column where the time is stored
+
+                                        * type: int 
+                                        * unit: -
+                                        * value: any
+                              
+                                    * *col_forcing*: The column where the forcing in stored
+
+                                        * type: int 
+                                        * unit: -
+                                        * value:  any 
+
+                                    * *timeunit*: The unit of time which is used in the file to convert it to seconds
+
+                                        * type: string 
+                                        * unit: -
+                                        * value: 'minute', 'hour', 'day', 'week', 'month', 'year' (if none, seconds are used)  
+                                                             
+
+                                    * *BP*: If the time is given as "Before present"
+
+                                        * type: boolean 
+                                        * unit: -
+                                        * value: True / False
+                              
+                                    * *time_start*: The time of the first entry (or the time when is should be started to apply it)
+
+                                        * type: float 
+                                        * unit: depending *timeunit*
+                                        * value: any
+                              
+                                    * *k*: Scaling factor
+
+                                        * type: float 
+                                        * unit: -
+                                        * value: any
+
+        :returns:                   The radiative forcing for a specific time imported from a data file
+
+        :rtype:                     float
+
+        """
+        list_parameters=list(funcparam.values())
+        forcingnumber,datapath,name,delimiter,header,col_time,col_forcing,timeunit,BP,time_start,k_output, m_output, k_input, m_input=list_parameters
+        if Runtime_Tracker==0:
+            Vars.AODInput=np.genfromtxt(str(datapath)+str(name),delimiter=str(delimiter),skip_header=header,usecols=(col_time,col_forcing),unpack=True,encoding='ISO-8859-1')  
+            Vars.AOD_time_start=time_start   
+            Vars.AODInput[1]=lna(Vars.AODInput[1])*k_input+m_input
+            if BP==True:
+                Vars.AODInput[0]=-(lna(Vars.AODInput[0])-Vars.AOD_time_start)
+            if BP==False:
+                Vars.AODInput[0]=lna(Vars.AODInput[0])+Vars.AOD_time_start
+            if timeunit=='minute':
+                Vars.AODInput[0]=lna(Vars.AODInput[0])*60
+            if timeunit=='hour':
+                Vars.AODInput[0]=lna(Vars.AODInput[0])*60*60
+            if timeunit=='day':
+                Vars.AODInput[0]=lna(Vars.AODInput[0])*60*60*24
+            if timeunit=='week':
+                Vars.AODInput[0]=lna(Vars.AODInput[0])*60*60*24*7
+            if timeunit=='month':
+                Vars.AODInput[0]=lna(Vars.AODInput[0])*60*60*24*365/12
+            if timeunit=='year':
+                Vars.AODInput[0]=lna(Vars.AODInput[0])*60*60*24*365
+                
+        if Runtime_Tracker==0:
+            Vars.AOD=Vars.AODInput[1][0]
+        while Vars.t>Vars.AODInput[0][Vars.AODTracker[0]]:
+            if Vars.AODTracker[0]==(len(Vars.AODInput[0])-1):
+                Vars.AODTracker[1]=0
+                break
+            else:
+                Vars.AODTracker[1] = Vars.AODInput[1][Vars.AODTracker[0]]
+                Vars.AODTracker[0] += 1
+        Vars.AOD=Vars.AODTracker[1]*k_output+m_output
+        if Runtime_Tracker % (4*data_readout) == 0:
+            Vars.AODOutput[int(Runtime_Tracker/(4*data_readout))]=Vars.AOD
+        return 0
 
 class earthsystem:
     """
