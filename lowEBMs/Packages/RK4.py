@@ -48,7 +48,9 @@ import numpy as np
 import builtins
 import time
 
+
 def rk4alg(func,eqparam,funccomp):
+    from tqdm import tqdm, tnrange
     """This functions main task is performing the numerical integration explained above by using the solution of the model equation from ``lowEBMs.Packages.ModelEquations``. 
 
     In some cases the scheme only needs to run until an equilibrium state (a sufficient amount of data points without any change) is reached.
@@ -173,7 +175,8 @@ def rk4alg(func,eqparam,funccomp):
     data[2][0]=Vars.T_global #Global mean temperature T_global
     ###Running runge Kutta 4th order n times###
     j=0
-    for i in range(1, n + 1):  
+
+    for i in tnrange(1, n + 1):  
         #Calculating increments at 4 positions from the model equation (func)
         T0=Vars.T
         k1 = h * func(eqparam,funccomp)
@@ -212,7 +215,7 @@ def rk4alg(func,eqparam,funccomp):
                         Vars.Read[m]=Vars.Read[m][:(j)]
                     break
     #Return the written data (Cut excessive 0s)
-    dataout=[data[0][:(j+1)],data[1][:(j+1)],data[2][:(j+1)]]
+    dataout=np.array([np.array(data[0][:(j+1)]),np.array(data[1][:(j+1)]),np.array(data[2][:(j+1)])])
             
     print('Simulation finished within %s seconds' %(time.time() - Vars.start_time))
 
