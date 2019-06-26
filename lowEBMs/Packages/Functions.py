@@ -198,33 +198,7 @@ class flux_down:
         list_parameters=list(funcparam.values())
         #Loading inputparameters
         Q,factor_solar,dQ,albedofunc,albedoread,albedofuncparam,noise,noiseamp,noisedelay,    seed,seedmanipulation,solarinput,convfactor,timeunit,orbital,orbitalyear,updatefrequency=list_parameters#R_ininsolalbedoparam
-        
-        #Calculating albedo from given albedofunction
-        alpha=albedofunc(*albedofuncparam) 
-        #Readout to give albedo as output
-        if albedoread==True: 
-            if Runtime_Tracker % (4*data_readout) == 0:    #Only on 4th step (due to rk4)
-                Vars.alpha=alpha
-                Vars.Read['alpha'][int(Runtime_Tracker/(4*data_readout))]=alpha
 
-        #Noise factor z on the solar insolation        
-        z=0
-        if Runtime_Tracker % 4 == 0:
-            if noise==True:
-                #possible noisedelay which indicates a gap between updating the noise factor
-                if (int(Vars.t/stepsize_of_integration) % noisedelay)==0:
-                    #seed if same noise is desired
-                    if seed==True:
-                        np.random.seed(int(Vars.t)+seedmanipulation)
-                    z=np.random.normal(0,noiseamp)
-                    #write to builtins and output
-                builtins.Noise_Tracker=z 
-
-        z=builtins.Noise_Tracker
-        if Runtime_Tracker % (4*data_readout)==0:
-            Vars.Read['noise'][int(Runtime_Tracker/(4*data_readout))]=z
-        #Calculating solar insolation distribution from functions using climlab
-        
         if updatefrequency=='number_of_integration':
             updatefrequency=number_of_integration
         if Runtime_Tracker % (4*updatefrequency) == 0:
@@ -254,15 +228,48 @@ class flux_down:
                 Vars.solar=Q
         if Runtime_Tracker==0 and Vars.TSI==float:
             Vars.TSI=0
+        if Runtime_Tracker==0 and Vars.AOD==float:
+            Vars.AOD=0    
+            
         Q_total=Vars.solar+dQ+Vars.TSI
-
+        
+        Q_aod=Q_total*np.exp(-Vars.AOD/np.cos(Vars.Lat*2*np.pi/360))
+        
         if Runtime_Tracker % (4*data_readout) == 0:
             Vars.Read['solar'][int(Runtime_Tracker/(4*data_readout))]=Q_total            
         
+        #Calculating albedo from given albedofunction
+        alpha=albedofunc(*albedofuncparam) 
+        #Readout to give albedo as output
+        if albedoread==True: 
+            if Runtime_Tracker % (4*data_readout) == 0:    #Only on 4th step (due to rk4)
+                Vars.alpha=alpha
+                Vars.Read['alpha'][int(Runtime_Tracker/(4*data_readout))]=alpha
+
+        #Noise factor z on the solar insolation        
+        z=0
+        if Runtime_Tracker % 4 == 0:
+            if noise==True:
+                #possible noisedelay which indicates a gap between updating the noise factor
+                if (int(Vars.t/stepsize_of_integration) % noisedelay)==0:
+                    #seed if same noise is desired
+                    if seed==True:
+                        np.random.seed(int(Vars.t)+seedmanipulation)
+                    z=np.random.normal(0,noiseamp)
+                    #write to builtins and output
+                builtins.Noise_Tracker=z 
+
+        z=builtins.Noise_Tracker
+        if Runtime_Tracker % (4*data_readout)==0:
+            Vars.Read['noise'][int(Runtime_Tracker/(4*data_readout))]=z
+        #Calculating solar insolation distribution from functions using climlab
+        
         #Equation of incoming radiation
         #print(Q_total.shape,alpha.shape,type(Q_total),type(alpha),factor_solar.shape)
-        
-        R_in=np.transpose((np.transpose(Q_total)+z)*factor_solar*(1-np.transpose(alpha)))
+        if Vars.AOD != 0:
+            R_in=np.transpose((np.transpose(Q_aod)+z)*(1-np.transpose(alpha))*factor_solar)
+        else:
+            R_in=np.transpose((np.transpose(Q_total)+z)*(1-np.transpose(alpha))*factor_solar)
         if Runtime_Tracker % (4*data_readout) == 0:    #Only on 4th step (due to rk4)
             Vars.Read['Rdown'][int(Runtime_Tracker/(4*data_readout))]=R_in
         return R_in
