@@ -159,7 +159,9 @@ class Vars():
     OrbitalTracker=[0,{'ecc': 0, 'long_peri': 0, 'obliquity': 0}]
     meridional=list
     tempdif=list
-
+    TSI=float
+    AOD=float
+    
     ###Static variables###
     Lat=float
     Lat2=float
@@ -173,7 +175,6 @@ class Vars():
     ExternalOrbitals_time_start=float
     Solar_time_start=float
     start_time=float
-    TSI=float
 
     ###Storage variables###
     cL=list
@@ -192,6 +193,7 @@ class Vars():
     ExternalOrbitals=list
     SolarInput=list
     SolarOutput=list
+    
     Read=dict #{'cL':cL, 'C': C, 'F': F,'P': P,'Transfer': Transfer,'alpha': alpha,'BudTransfer': BudTransfer,'Solar':,Noise,Rdown,Rup,ExternalOutput,CO2Forcing]
     Readnumber=14
     
@@ -215,7 +217,9 @@ class Vars():
         self.OrbitalTracker=[0,{'ecc': 0, 'long_peri': 0, 'obliquity': 0}]
         self.meridional=list
         self.tempdif=list
-
+        self.TSI=float
+        self.AOD=float
+        
         self.solar=list
         self.area=list
         self.bounds=list
@@ -223,7 +227,9 @@ class Vars():
         self.External_time_start=float
         self.CO2_time_start=float
         self.ExternalOrbitals_time_start=float
-
+        self.Solar_time_start=float
+        self.start_time=float
+    
         self.cL=list
         self.C=list
         self.F=list
@@ -233,15 +239,17 @@ class Vars():
         self.alpha=list
         self.Rin=list
         self.Rout=list
-        self.ExternalOutput=list
-        self.CO2Output=list
-        self.Read=dict #[self.cL,self.C,self.F,self.P,self.Transfer,self.alpha,self.BudTransfer,self.Solar,self.Noise,self.Rin,self.Rout,self.ExternalOutput,self.CO2Forcing]
-        self.Readnumber=14
+        self.ExternalOutput=list 
         self.ExternalInput=list
+        self.CO2Output=list
         self.CO2Input=list
         self.ExternalOrbitals=list
         self.SolarInput=list
+        self.SolarOutput=list
         
+        self.Read=dict #[self.cL,self.C,self.F,self.P,self.Transfer,self.alpha,self.BudTransfer,self.Solar,self.Noise,self.Rin,self.Rout,self.ExternalOutput,self.CO2Forcing]
+        self.Readnumber=14
+
 def trackerreset():
     reset('ForcingTracker')
     reset('CO2Tracker')
