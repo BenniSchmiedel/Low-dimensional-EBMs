@@ -198,7 +198,12 @@ class flux_down:
         list_parameters=list(funcparam.values())
         #Loading inputparameters
         Q,factor_solar,dQ,albedofunc,albedoread,albedofuncparam,noise,noiseamp,noisedelay,    seed,seedmanipulation,solarinput,convfactor,timeunit,orbital,orbitalyear,updatefrequency=list_parameters#R_ininsolalbedoparam
-
+       
+        if Runtime_Tracker==0 and Vars.TSI==float:
+            Vars.TSI=0
+        if Runtime_Tracker==0 and Vars.AOD==float:
+            Vars.AOD=0    
+            
         if updatefrequency=='number_of_integration':
             updatefrequency=number_of_integration
         if Runtime_Tracker % (4*updatefrequency) == 0:
@@ -208,30 +213,26 @@ class flux_down:
                 if orbital==True: 
                     if spatial_resolution==0:
                         Vars.Lat=np.linspace(-90,90,18)
-                        Q=earthsystem.solarradiation_orbital(convfactor,orbitalyear,'annualmean')
+                        Q=earthsystem.solarradiation_orbital(convfactor,orbitalyear,'annualmean',Q)
                         Vars.solar=np.average(Q, weights=cosd(Vars.Lat))
                     else:
-                        Vars.solar=earthsystem.solarradiation_orbital(convfactor,orbitalyear,timeunit)
+                        Vars.solar=earthsystem.solarradiation_orbital(convfactor,orbitalyear,timeunit,Q)
                     
                 else:
                     if spatial_resolution==0:
                         Vars.Lat=np.linspace(-90,90,18)
-                        Q=earthsystem.solarradiation(convfactor,'annualmean',orbitalyear)
+                        Q=earthsystem.solarradiation(convfactor,'annualmean',orbitalyear,Q)
                         Vars.solar=np.average(Q, weights=cosd(Vars.Lat))
                     else:
-                        Vars.solar=earthsystem.solarradiation(convfactor,timeunit,orbitalyear)
+                        Vars.solar=earthsystem.solarradiation(convfactor,timeunit,orbitalyear,Q)
 
                 if parallelization==True:
                     Vars.solar=np.array([Vars.solar]*(number_of_parallels))
             #total solar insolation with possible offset
             else:
                 Vars.solar=Q
-        if Runtime_Tracker==0 and Vars.TSI==float:
-            Vars.TSI=0
-        if Runtime_Tracker==0 and Vars.AOD==float:
-            Vars.AOD=0    
-            
-        Q_total=Vars.solar+dQ+Vars.TSI
+
+        Q_total=Vars.solar+dQ
         
         Q_aod=Q_total*np.exp(-Vars.AOD)
         
@@ -2236,7 +2237,7 @@ class earthsystem:
         Q=lna(np.mean(daily_insolation(Vars.Lat,days),axis=1))
         return Q
 
-    def solarradiation(convfactor,timeunit,orbitalyear):
+    def solarradiation(convfactor,timeunit,orbitalyear,Q):
         """ 
         The solar insolation over the latitudes :math:`Q`.
       
@@ -2287,16 +2288,16 @@ class earthsystem:
         #time specified
         if timeunit=='annualmean':
             days=np.linspace(0,365,365)
-            Q=lna(np.mean(daily_insolation(Vars.Lat,days,Vars.orbitals),axis=1))
+            Q=lna(np.mean(daily_insolation(Vars.Lat,days,Vars.orbitals,S0=Q+Vars.TSI),axis=1))
         if timeunit=='year':
-            Q=lna(np.mean(daily_insolation(Vars.Lat,np.linspace(            0,((365*int(Vars.t)-1) % 365)*stepsize_of_integration % 365,36),Vars.orbitals),axis=1))*convfactor
+            Q=lna(np.mean(daily_insolation(Vars.Lat,np.linspace(            0,((365*int(Vars.t)-1) % 365)*stepsize_of_integration % 365,36),Vars.orbitals,S0=Q+Vars.TSI),axis=1))*convfactor
         if timeunit=='month':
-            Q=lna(np.mean(daily_insolation(Vars.Lat,np.linspace(            (int(Vars.t)*365/12) % 365,(int(Vars.t)*365/12-1) % 365,30),Vars.orbitals),axis=1))*convfactor
+            Q=lna(np.mean(daily_insolation(Vars.Lat,np.linspace(            (int(Vars.t)*365/12) % 365,(int(Vars.t)*365/12-1) % 365,30),Vars.orbitals,S0=Q+Vars.TSI),axis=1))*convfactor
         if timeunit=='day':
-            Q=lna(daily_insolation(Vars.Lat,int(Vars.t)%365,Vars.orbitals))*convfactor
+            Q=lna(daily_insolation(Vars.Lat,int(Vars.t)%365,Vars.orbitals,S0=Q+Vars.TSI))*convfactor
         if timeunit=='second':
             tconv=60*60*24
-            Q=lna(daily_insolation(Vars.Lat,int(Vars.t/tconv)%365,Vars.orbitals))*convfactor
+            Q=lna(daily_insolation(Vars.Lat,int(Vars.t/tconv)%365,Vars.orbitals,S0=Q+Vars.TSI))*convfactor
         return Q
 
     def solarradiation_orbital(convfactor,orbitalyear,unit):
@@ -2340,13 +2341,13 @@ class earthsystem:
         if Runtime_Tracker == 0:
             #Vars.orbtable=OrbitalTable()
             Vars.orbitals=Vars.orbtable.lookup_parameters(year/1000)
-            Q=lna(np.mean(daily_insolation(Vars.Lat,days,Vars.orbitals),axis=1))
+            Q=lna(np.mean(daily_insolation(Vars.Lat,days,Vars.orbitals,S0=Q+Vars.TSI),axis=1))
         #updating for each kiloyear
         if unit=='year':            
             if year % 1000==0:
                 print('timeprogress: '+str(year/1000)+'ka')
                 Vars.orbitals=Vars.orbtable.lookup_parameters(year/1000)
-                Q=lna(np.mean(daily_insolation(Vars.Lat,days,Vars.orbitals),axis=1))
+                Q=lna(np.mean(daily_insolation(Vars.Lat,days,Vars.orbitals,S0=Q+Vars.TSI),axis=1))
             else:
                 Q=Vars.solar
         else:
