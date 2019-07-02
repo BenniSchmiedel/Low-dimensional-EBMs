@@ -7,7 +7,7 @@ import setuptools
 
 
 setuptools.setup(name='lowEBMs',
-      version='0.1.9.7',
+      version='0.1.9.8',
       description='A python implementation of low-dimensional EBMs',
       url='https://github.com/paleovar/lowEBMs',
       author='Benjamin Schmiedel',
