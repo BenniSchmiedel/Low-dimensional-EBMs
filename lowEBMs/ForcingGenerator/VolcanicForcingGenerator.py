@@ -231,3 +231,95 @@ def Locationextractor(Time,RF,AOD,File,delimiter,header,col_time,col_loc,col_NH,
     RFloc=[[Troptime,Trop_RF],[NHtime,NH_RF],[SHtime,SH_RF]]
     return RFloc
 
+def Generator1D(File,delimiter,header,col_time,col_loc,col_NH,col_SH,Start,Stop,Step,Length_of_evolution):
+
+    Raw=ImportData(File,delimiter,header,col_time,col_loc,col_NH,col_SH)
+ 
+    Datatime=Raw[0]
+    DataRF=Raw_to_timeRF(Raw)[1]
+    DataAOD=Raw_to_timeAOD(Raw)[1]
+    Data=[Datatime,DataRF,DataAOD]
+
+    time,RF,AOD=datacut(Datatime,Data,Start,Stop)
+    
+    tprod=180
+    tloss=330
+    
+    Series_time=np.arange(Start,Stop,Step)
+    #print(len(Series_time))
+    Series_RF=np.zeros(int((Stop-Start)/Step))
+    Series_AOD=np.zeros(int((Stop-Start)/Step))
+    
+    Event_tracker=0
+    
+    time_event=np.arange(0,365*Length_of_evolution,Step*365)
+    
+    i=0
+    while i<len(Series_time):
+        looptime=Start+i*Step
+        if looptime>=time[Event_tracker]:
+            
+            eventRF=timeevolution(time_event,RF[Event_tracker],tprod,tloss)
+            eventAOD=timeevolution(time_event,AOD[Event_tracker],tprod,tloss)
+            for k in range(len(eventRF)):
+                Series_RF[i+k]=Series_RF[i+k]+eventRF[k]
+                Series_AOD[i+k]=Series_AOD[i+k]+eventAOD[k]
+            Event_tracker+=1
+        i+=1
+        
+        if Event_tracker==len(time):
+            break
+
+    Location=Locationextractor(Series_time,Series_RF,Series_AOD,File,delimiter,header,col_time,col_loc,col_NH,col_SH,Step)
+
+    return Series_time, Series_RF, Series_AOD, Location
+
+def spatial_evolution:
+    
+    Raw=ImportData(File,delimiter,header,col_time,col_lat,col_NH,col_SH)
+    
+    time=Raw[0]
+    NH=Raw[2]
+    SH=Raw[3]
+    
+    if np.isnan(SH)==True:
+        SH=np.nan_to_num(SH)
+    if np.isnan(NH)==True:
+        NH=np.nan_to_num(NH)
+        
+    S_H2SO4=32/98
+    if SH==0:
+        NH=NH*0.57*S_H2SO4
+        EQ=0
+    if NH==0:
+        SH=SH*S_H2SO4
+        EQ=0
+    else:
+        EQ=(NH+SH)*S_H2SO4
+        SH=0
+        NH=0
+    
+    tprod=180
+    tloss=330
+    tmix_av=15*365/12
+    tres=17*365/12
+    
+
+    M4NH=np.zeros(len(time))
+    M4SH=np.zeros(len(time))
+    M4EQ=np.zeros(len(time))
+    #M4NH[0]=
+    #M4SH[0]=
+    #M4EQ[0]=
+    
+    for i in range(len(time)):
+        tmix=tmix_av(1+0.75*np.cos((m-1)*np.pi/6)
+        M4NH[i+1]=NH/tprod-M4NH[i]/tloss+(M4EQ[i]-M4NH[i])/tmix+M4EQ[i]/tres
+        M4SH[i+1]=SH/tprod-M4SH[i]/tloss+(M4EQ[i]-M4SH[i])/tmix+M4EQ[i]/tres
+        M4EQ[i+1]=EQ/tprod-M4EQ[i]/tloss+M4EQ[i]/tres
+        
+    
+
+        
+
+
