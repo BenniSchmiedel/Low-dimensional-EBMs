@@ -198,7 +198,12 @@ class flux_down:
         list_parameters=list(funcparam.values())
         #Loading inputparameters
         Q,factor_solar,dQ,albedofunc,albedoread,albedofuncparam,noise,noiseamp,noisedelay,    seed,seedmanipulation,solarinput,convfactor,timeunit,orbital,orbitalyear,updatefrequency=list_parameters#R_ininsolalbedoparam
-
+       
+        if Runtime_Tracker==0 and Vars.TSI==float:
+            Vars.TSI=0
+        if Runtime_Tracker==0 and Vars.AOD==float:
+            Vars.AOD=0    
+            
         if updatefrequency=='number_of_integration':
             updatefrequency=number_of_integration
         if Runtime_Tracker % (4*updatefrequency) == 0:
@@ -208,32 +213,28 @@ class flux_down:
                 if orbital==True: 
                     if spatial_resolution==0:
                         Vars.Lat=np.linspace(-90,90,18)
-                        Q=earthsystem.solarradiation_orbital(convfactor,orbitalyear,'annualmean')
+                        Q=earthsystem.solarradiation_orbital(convfactor,orbitalyear,'annualmean',Q)
                         Vars.solar=np.average(Q, weights=cosd(Vars.Lat))
                     else:
-                        Vars.solar=earthsystem.solarradiation_orbital(convfactor,orbitalyear,timeunit)
+                        Vars.solar=earthsystem.solarradiation_orbital(convfactor,orbitalyear,timeunit,Q)
                     
                 else:
                     if spatial_resolution==0:
                         Vars.Lat=np.linspace(-90,90,18)
-                        Q=earthsystem.solarradiation(convfactor,'annualmean',orbitalyear)
+                        Q=earthsystem.solarradiation(convfactor,'annualmean',orbitalyear,Q)
                         Vars.solar=np.average(Q, weights=cosd(Vars.Lat))
                     else:
-                        Vars.solar=earthsystem.solarradiation(convfactor,timeunit,orbitalyear)
+                        Vars.solar=earthsystem.solarradiation(convfactor,timeunit,orbitalyear,Q)
 
                 if parallelization==True:
                     Vars.solar=np.array([Vars.solar]*(number_of_parallels))
             #total solar insolation with possible offset
             else:
                 Vars.solar=Q
-        if Runtime_Tracker==0 and Vars.TSI==float:
-            Vars.TSI=0
-        if Runtime_Tracker==0 and Vars.AOD==float:
-            Vars.AOD=0    
-            
-        Q_total=Vars.solar+dQ+Vars.TSI
+
+        Q_total=Vars.solar+dQ
         
-        Q_aod=Q_total*np.exp(-Vars.AOD/np.cos(Vars.Lat*2*np.pi/360))
+        Q_aod=Q_total*np.exp(-Vars.AOD)
         
         if Runtime_Tracker % (4*data_readout) == 0:
             Vars.Read['solar'][int(Runtime_Tracker/(4*data_readout))]=Q_total            
@@ -2063,6 +2064,124 @@ class forcing:
             Vars.SolarOutput[int(Runtime_Tracker/(4*data_readout))]=Vars.TSI
         return 0
 
+    def aod(funcparam):
+        """ 
+        The aod forcing imports changes in the atmospheric aod.
+
+        .. _Solarforcing:
+
+        This module imports changes in the TSI given as change in energy (:math:`Watt \cdot meter^{-2}`) and applies it to the solar constant used in ``flux_down.insolation``.
+
+        **Function-call arguments** \n
+
+        :param dict funcparams:     * *forcingnumber* the number of the radiative forcing term (relevant if multiple forcings are used)
+
+                                        * type: int 
+                                        * unit: -
+                                        * value: 0, 1,...
+                                                                
+                                    * *datapath*: The path to the file (give full path or relative path!)
+
+                                        * type: string 
+                                        * unit: -
+                                        * value: example: '/insert/path/to/file'
+
+                                    * *name*: The name of the file which is used
+
+                                        * type: string 
+                                        * unit: -
+                                        * value: example: 'datafile.txt' 
+                              
+                                    * *delimiter*: How the data is delimited in the file
+
+                                        * type: string 
+                                        * unit: -
+                                        * value: example: ','
+                              
+                                    * *header*: The number of header rows to exclude
+
+                                        * type: int 
+                                        * unit: -
+                                        * value: any
+                              
+                                    * *col_time*: The column where the time is stored
+
+                                        * type: int 
+                                        * unit: -
+                                        * value: any
+                              
+                                    * *col_forcing*: The column where the forcing in stored
+
+                                        * type: int 
+                                        * unit: -
+                                        * value:  any 
+
+                                    * *timeunit*: The unit of time which is used in the file to convert it to seconds
+
+                                        * type: string 
+                                        * unit: -
+                                        * value: 'minute', 'hour', 'day', 'week', 'month', 'year' (if none, seconds are used)  
+                                                             
+
+                                    * *BP*: If the time is given as "Before present"
+
+                                        * type: boolean 
+                                        * unit: -
+                                        * value: True / False
+                              
+                                    * *time_start*: The time of the first entry (or the time when is should be started to apply it)
+
+                                        * type: float 
+                                        * unit: depending *timeunit*
+                                        * value: any
+                              
+                                    * *k*: Scaling factor
+
+                                        * type: float 
+                                        * unit: -
+                                        * value: any
+
+        :returns:                   The radiative forcing for a specific time imported from a data file
+
+        :rtype:                     float
+
+        """
+        list_parameters=list(funcparam.values())
+        forcingnumber,datapath,name,delimiter,header,col_time,col_forcing,timeunit,BP,time_start,k_output, m_output, k_input, m_input=list_parameters
+        if Runtime_Tracker==0:
+            Vars.AODInput=np.genfromtxt(str(datapath)+str(name),delimiter=str(delimiter),skip_header=header,usecols=(col_time,col_forcing),unpack=True,encoding='ISO-8859-1')  
+            Vars.AOD_time_start=time_start   
+            Vars.AODInput[1]=lna(Vars.AODInput[1])*k_input+m_input
+            if BP==True:
+                Vars.AODInput[0]=-(lna(Vars.AODInput[0])-Vars.AOD_time_start)
+            if BP==False:
+                Vars.AODInput[0]=lna(Vars.AODInput[0])+Vars.AOD_time_start
+            if timeunit=='minute':
+                Vars.AODInput[0]=lna(Vars.AODInput[0])*60
+            if timeunit=='hour':
+                Vars.AODInput[0]=lna(Vars.AODInput[0])*60*60
+            if timeunit=='day':
+                Vars.AODInput[0]=lna(Vars.AODInput[0])*60*60*24
+            if timeunit=='week':
+                Vars.AODInput[0]=lna(Vars.AODInput[0])*60*60*24*7
+            if timeunit=='month':
+                Vars.AODInput[0]=lna(Vars.AODInput[0])*60*60*24*365/12
+            if timeunit=='year':
+                Vars.AODInput[0]=lna(Vars.AODInput[0])*60*60*24*365
+                
+        if Runtime_Tracker==0:
+            Vars.AOD=Vars.AODInput[1][0]
+        while Vars.t>Vars.AODInput[0][Vars.AODTracker[0]]:
+            if Vars.AODTracker[0]==(len(Vars.AODInput[0])-1):
+                Vars.AODTracker[1]=0
+                break
+            else:
+                Vars.AODTracker[1] = Vars.AODInput[1][Vars.AODTracker[0]]
+                Vars.AODTracker[0] += 1
+        Vars.AOD=Vars.AODTracker[1]*k_output+m_output
+        if Runtime_Tracker % (4*data_readout) == 0:
+            Vars.AODOutput[int(Runtime_Tracker/(4*data_readout))]=Vars.AOD
+        return 0
 
 class earthsystem:
     """
@@ -2118,7 +2237,7 @@ class earthsystem:
         Q=lna(np.mean(daily_insolation(Vars.Lat,days),axis=1))
         return Q
 
-    def solarradiation(convfactor,timeunit,orbitalyear):
+    def solarradiation(convfactor,timeunit,orbitalyear,Q):
         """ 
         The solar insolation over the latitudes :math:`Q`.
       
@@ -2169,16 +2288,16 @@ class earthsystem:
         #time specified
         if timeunit=='annualmean':
             days=np.linspace(0,365,365)
-            Q=lna(np.mean(daily_insolation(Vars.Lat,days,Vars.orbitals),axis=1))
+            Q=lna(np.mean(daily_insolation(Vars.Lat,days,Vars.orbitals,S0=Q+Vars.TSI),axis=1))
         if timeunit=='year':
-            Q=lna(np.mean(daily_insolation(Vars.Lat,np.linspace(            0,((365*int(Vars.t)-1) % 365)*stepsize_of_integration % 365,36),Vars.orbitals),axis=1))*convfactor
+            Q=lna(np.mean(daily_insolation(Vars.Lat,np.linspace(            0,((365*int(Vars.t)-1) % 365)*stepsize_of_integration % 365,36),Vars.orbitals,S0=Q+Vars.TSI),axis=1))*convfactor
         if timeunit=='month':
-            Q=lna(np.mean(daily_insolation(Vars.Lat,np.linspace(            (int(Vars.t)*365/12) % 365,(int(Vars.t)*365/12-1) % 365,30),Vars.orbitals),axis=1))*convfactor
+            Q=lna(np.mean(daily_insolation(Vars.Lat,np.linspace(            (int(Vars.t)*365/12) % 365,(int(Vars.t)*365/12-1) % 365,30),Vars.orbitals,S0=Q+Vars.TSI),axis=1))*convfactor
         if timeunit=='day':
-            Q=lna(daily_insolation(Vars.Lat,int(Vars.t)%365,Vars.orbitals))*convfactor
+            Q=lna(daily_insolation(Vars.Lat,int(Vars.t)%365,Vars.orbitals,S0=Q+Vars.TSI))*convfactor
         if timeunit=='second':
             tconv=60*60*24
-            Q=lna(daily_insolation(Vars.Lat,int(Vars.t/tconv)%365,Vars.orbitals))*convfactor
+            Q=lna(daily_insolation(Vars.Lat,int(Vars.t/tconv)%365,Vars.orbitals,S0=Q+Vars.TSI))*convfactor
         return Q
 
     def solarradiation_orbital(convfactor,orbitalyear,unit):
@@ -2222,13 +2341,13 @@ class earthsystem:
         if Runtime_Tracker == 0:
             #Vars.orbtable=OrbitalTable()
             Vars.orbitals=Vars.orbtable.lookup_parameters(year/1000)
-            Q=lna(np.mean(daily_insolation(Vars.Lat,days,Vars.orbitals),axis=1))
+            Q=lna(np.mean(daily_insolation(Vars.Lat,days,Vars.orbitals,S0=Q+Vars.TSI),axis=1))
         #updating for each kiloyear
         if unit=='year':            
             if year % 1000==0:
                 print('timeprogress: '+str(year/1000)+'ka')
                 Vars.orbitals=Vars.orbtable.lookup_parameters(year/1000)
-                Q=lna(np.mean(daily_insolation(Vars.Lat,days,Vars.orbitals),axis=1))
+                Q=lna(np.mean(daily_insolation(Vars.Lat,days,Vars.orbitals,S0=Q+Vars.TSI),axis=1))
             else:
                 Q=Vars.solar
         else:

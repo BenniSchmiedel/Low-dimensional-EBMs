@@ -231,4 +231,3 @@ def Locationextractor(Time,RF,AOD,File,delimiter,header,col_time,col_loc,col_NH,
     RFloc=[[Troptime,Trop_RF],[NHtime,NH_RF],[SHtime,SH_RF]]
     return RFloc
 
-
