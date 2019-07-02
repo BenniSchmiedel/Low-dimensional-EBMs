@@ -7,13 +7,9 @@ import setuptools
 
 
 setuptools.setup(name='lowEBMs',
-<<<<<<< HEAD
-      version='0.1.9.8',
-=======
-      version='0.2.1',
->>>>>>> 278b874ff58c947e88d5ecda6b0c8c9472cfed8e
+      version='0.2.2',
       description='A python implementation of low-dimensional EBMs',
-      url='https://github.com/paleovar/lowEBMs',
+      url='https://github.com/BenniSchmiedel/Low-dimensional-EBMs',
       author='Benjamin Schmiedel',
       license='MIT',
       packages=setuptools.find_packages(),
