@@ -156,6 +156,7 @@ class Vars():
     ForcingTracker=[0,0]
     CO2Tracker=[0,0]
     SolarTracker=[0,0]
+    AODTracker=[0,0]
     OrbitalTracker=[0,{'ecc': 0, 'long_peri': 0, 'obliquity': 0}]
     meridional=list
     tempdif=list
@@ -174,6 +175,7 @@ class Vars():
     CO2_time_start=float
     ExternalOrbitals_time_start=float
     Solar_time_start=float
+    AOD_time_start=float
     start_time=float
 
     ###Storage variables###
@@ -193,9 +195,11 @@ class Vars():
     ExternalOrbitals=list
     SolarInput=list
     SolarOutput=list
+    AODInput=list
+    AODOutput=list
     
     Read=dict #{'cL':cL, 'C': C, 'F': F,'P': P,'Transfer': Transfer,'alpha': alpha,'BudTransfer': BudTransfer,'Solar':,Noise,Rdown,Rup,ExternalOutput,CO2Forcing]
-    Readnumber=14
+    Readnumber=15
     
 
 
@@ -214,6 +218,7 @@ class Vars():
         self.ForcingTracker=[0,0]
         self.CO2Tracker=[0,0]
         self.SolarTracker=[0,0]
+        self.AODTracker=[0,0]
         self.OrbitalTracker=[0,{'ecc': 0, 'long_peri': 0, 'obliquity': 0}]
         self.meridional=list
         self.tempdif=list
@@ -228,6 +233,7 @@ class Vars():
         self.CO2_time_start=float
         self.ExternalOrbitals_time_start=float
         self.Solar_time_start=float
+        self.AOD_time_start=float
         self.start_time=float
     
         self.cL=list
@@ -246,15 +252,18 @@ class Vars():
         self.ExternalOrbitals=list
         self.SolarInput=list
         self.SolarOutput=list
+        self.AODInput=list
+        self.AODOutput=list
         
         self.Read=dict #[self.cL,self.C,self.F,self.P,self.Transfer,self.alpha,self.BudTransfer,self.Solar,self.Noise,self.Rin,self.Rout,self.ExternalOutput,self.CO2Forcing]
-        self.Readnumber=14
+        self.Readnumber=15
 
 def trackerreset():
     reset('ForcingTracker')
     reset('CO2Tracker')
     reset('SolarTracker')
     reset('OrbitalTracker')
+    reset('AODTracker')
     
 def reset(x):
     """ 
@@ -488,14 +497,14 @@ def output_importer():
     """
     if (number_of_integration) % data_readout == 0:
         #Assigning dynamical variables in Variables Package with initial values from var
-        Vars.cL,Vars.C,Vars.F,Vars.P,Vars.Transfer,Vars.alpha,Vars.BudTransfer,Vars.solar,Vars.noise,Vars.Rdown,Vars.Rup,Vars.ExternalOutput,Vars.CO2Output,Vars.SolarOutput=np.array([[0]*int(number_of_integration/data_readout)]*Vars.Readnumber,dtype=object)
+        Vars.cL,Vars.C,Vars.F,Vars.P,Vars.Transfer,Vars.alpha,Vars.BudTransfer,Vars.solar,Vars.noise,Vars.Rdown,Vars.Rup,Vars.ExternalOutput,Vars.CO2Output,Vars.SolarOutput,Vars.AODOutput=np.array([[0]*int(number_of_integration/data_readout)]*Vars.Readnumber,dtype=object)
     else: 
-        Vars.cL,Vars.C,Vars.F,Vars.P,Vars.Transfer,Vars.alpha,Vars.BudTransfer,Vars.solar,Vars.noise,Vars.Rdown,Vars.Rup,Vars.ExternalOutput,Vars.CO2Output,Vars.SolarOutput=np.array([[0]*(int(number_of_integration/data_readout)+1)]*Vars.Readnumber,dtype=object)
+        Vars.cL,Vars.C,Vars.F,Vars.P,Vars.Transfer,Vars.alpha,Vars.BudTransfer,Vars.solar,Vars.noise,Vars.Rdown,Vars.Rup,Vars.ExternalOutput,Vars.CO2Output,Vars.SolarOutput,Vars.AODOutput=np.array([[0]*(int(number_of_integration/data_readout)+1)]*Vars.Readnumber,dtype=object)
     Vars.ExternalOutput=np.array([Vars.ExternalOutput for i in range(int(number_of_externals))],dtype=object)
     Vars.External_time_start=np.array([0 for i in range(int(number_of_externals))],dtype=object)
     Vars.ForcingTracker=np.array([[0,0] for i in range(int(number_of_externals))],dtype=object)
     Vars.ExternalInput=np.array([0 for i in range(int(number_of_externals))],dtype=object)
-    Vars.Read={'cL': Vars.cL,'C': Vars.C,'F': Vars.F,'P': Vars.P,'Transfer': Vars.Transfer,'alpha': Vars.alpha,'BudTransfer': Vars.BudTransfer, 'solar': Vars.solar,'noise': Vars.noise,'Rdown': Vars.Rdown,'Rup': Vars.Rup, 'ExternalOutput': Vars.ExternalOutput,'CO2Output': Vars.CO2Output,'SolarOutput':Vars.SolarOutput}
+    Vars.Read={'cL': Vars.cL,'C': Vars.C,'F': Vars.F,'P': Vars.P,'Transfer': Vars.Transfer,'alpha': Vars.alpha,'BudTransfer': Vars.BudTransfer, 'solar': Vars.solar,'noise': Vars.noise,'Rdown': Vars.Rdown,'Rup': Vars.Rup, 'ExternalOutput': Vars.ExternalOutput,'CO2Output': Vars.CO2Output,'SolarOutput':Vars.SolarOutput,'AODOutput':Vars.AODOutput}
 
 
 def variable_importer_parallelized(config,paral_config):
@@ -610,14 +619,14 @@ def output_importer_parallelized():
     """
     if (number_of_integration) % data_readout == 0:
         #Assigning dynamical variables in Variables Package with initial values from var
-        Vars.cL,Vars.C,Vars.F,Vars.P,Vars.Transfer,Vars.alpha,Vars.BudTransfer,Vars.solar,Vars.noise,Vars.Rdown,Vars.Rup,Vars.ExternalOutput,Vars.CO2Output,Vars.SolarOutput=np.array([[0]*int(number_of_integration/data_readout)]*Vars.Readnumber,dtype=object)
+        Vars.cL,Vars.C,Vars.F,Vars.P,Vars.Transfer,Vars.alpha,Vars.BudTransfer,Vars.solar,Vars.noise,Vars.Rdown,Vars.Rup,Vars.ExternalOutput,Vars.CO2Output,Vars.SolarOutput,Vars.AODOutput=np.array([[0]*int(number_of_integration/data_readout)]*Vars.Readnumber,dtype=object)
     else: 
-        Vars.cL,Vars.C,Vars.F,Vars.P,Vars.Transfer,Vars.alpha,Vars.BudTransfer,Vars.solar,Vars.noise,Vars.Rdown,Vars.Rup,Vars.ExternalOutput,Vars.CO2Output,Vars.SolarOutput=np.array([[0]*(int(number_of_integration/data_readout)+1)]*Vars.Readnumber,dtype=object)
+        Vars.cL,Vars.C,Vars.F,Vars.P,Vars.Transfer,Vars.alpha,Vars.BudTransfer,Vars.solar,Vars.noise,Vars.Rdown,Vars.Rup,Vars.ExternalOutput,Vars.CO2Output,Vars.SolarOutput,Vars.AODOutput=np.array([[0]*(int(number_of_integration/data_readout)+1)]*Vars.Readnumber,dtype=object)
     Vars.ExternalOutput=np.array([Vars.ExternalOutput for i in range(int(number_of_externals))],dtype=object)
     Vars.External_time_start=np.array([0 for i in range(int(number_of_externals))],dtype=object)
     Vars.ForcingTracker=np.array([[0,0] for i in range(int(number_of_externals))],dtype=object)
     Vars.ExternalInput=np.array([0 for i in range(int(number_of_externals))],dtype=object)
-    Vars.Read={'cL': Vars.cL,'C': Vars.C,'F': Vars.F,'P': Vars.P,'Transfer': Vars.Transfer,'alpha': Vars.alpha,'BudTransfer': Vars.BudTransfer, 'solar': Vars.solar,'noise': Vars.noise,'Rdown': Vars.Rdown,'Rup': Vars.Rup, 'ExternalOutput': Vars.ExternalOutput,'CO2Output': Vars.CO2Output,'SolarOutput':Vars.SolarOutput}
+    Vars.Read={'cL': Vars.cL,'C': Vars.C,'F': Vars.F,'P': Vars.P,'Transfer': Vars.Transfer,'alpha': Vars.alpha,'BudTransfer': Vars.BudTransfer, 'solar': Vars.solar,'noise': Vars.noise,'Rdown': Vars.Rdown,'Rup': Vars.Rup, 'ExternalOutput': Vars.ExternalOutput,'CO2Output': Vars.CO2Output,'SolarOutput':Vars.SolarOutput,'AODOutput':Vars.AODOutput}
 
 
 def builtin_importer_parallelized(paral_config):
