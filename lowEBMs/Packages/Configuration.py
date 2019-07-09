@@ -677,6 +677,7 @@ def write_parallelparameter(config,parameter,parametersetup):
 
     #for s in range(num_cycles):
     paralleldict=dict()
+
     funckey=list(parameter.keys()) 
     for key in funckey:
         paralleldict.update({key:dict()})
@@ -732,6 +733,7 @@ def write_parallelparameter(config,parameter,parametersetup):
     for key in funckey:
         for paramkey in list(paralleldict[key].keys()):
             config['funccomp']['funcparam'][key][paramkey]=paralleldict[key][paramkey]
+
     #for key in parallel
     #    config['funccomp']['funcparam'][funcnumber][parametername]=parameter
     

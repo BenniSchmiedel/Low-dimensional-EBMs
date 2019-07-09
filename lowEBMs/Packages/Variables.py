@@ -62,6 +62,7 @@ import builtins
 import numpy as np
 import xarray as xr
 
+
 class Vars():
     """
     ``Variables.Vars`` defines any variable desired to store and access from another module's functions.
@@ -509,6 +510,7 @@ def output_importer():
 
 
 def variable_importer_parallelized(config,paral_config,control):
+
     """ 
     Executes all relevant functions to import variables for an ensemble simulation run. From the *configuration* dictionary, returned by ``Configuration.importer``, and the *parallelization_config*, returned by ``Configuration.allocate_parallelparameter``, the relevant infomration is extracted and the specific importer functions are executed in the following order:
 
@@ -536,6 +538,7 @@ def variable_importer_parallelized(config,paral_config,control):
     output_importer()    
     #output_importer_parameterfit(fitconfig)
     return 
+
 
 def initial_importer_parallelized(initials,paral_config):
     """
@@ -611,7 +614,7 @@ def initial_importer_parallelized(initials,paral_config):
     Vars.Lat2=initials['latitude_b']
     Vars.T=np.array([initials['zmt']]*number_of_parallels)
     Vars.T_global=np.array([initials['gmt']]*number_of_parallels)
-    
+
 def output_importer_parallelized():
     """
     Creates empty lists for the storage-variables which will be filled during the ensemble simulation.
@@ -662,6 +665,7 @@ def builtin_importer_parallelized(paral_config,control):
         builtins.eq_condition_length=accuracy_number
         builtins.eq_condition_amplitude=accuracy
         print('Starting controlrun with a temperature accuracy of %s K on the GMT over %s datapoints.' %(accuracy,accuracy_number))
+
 
     return
     

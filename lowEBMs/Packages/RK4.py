@@ -175,6 +175,10 @@ def rk4alg(func,eqparam,funccomp):
     data[2][0]=Vars.T_global #Global mean temperature T_global
     ###Running runge Kutta 4th order n times###
     j=0
+<<<<<<< HEAD
+=======
+
+>>>>>>> 43e0d6a2b30f32d7c57f0f4dc71e89abee9db0fe
     for i in tnrange(1, n + 1):  
         #Calculating increments at 4 positions from the model equation (func)
         T0=Vars.T
@@ -193,19 +197,29 @@ def rk4alg(func,eqparam,funccomp):
         #filling output array "data" with values from the generated increments
         #For the time simply adding the integration stepsize
         Vars.t = Vars.t + h
+<<<<<<< HEAD
         Vars.T = T0 + (k1 + k2 + k2 + k3 + k3 + k4) / 6
         if spatial_resolution>0:
             Vars.T_global = earthsystem.globalmean_temperature()
         else: #if 0 dimensional
             Vars.T_global = Vars.T
+=======
+>>>>>>> 43e0d6a2b30f32d7c57f0f4dc71e89abee9db0fe
         if (i) % data_readout == 0: 
             j += 1       
             data[0][j] = Vars.t 
             #The Temperature is an average over the generated increments
+<<<<<<< HEAD
             data[1][j] = Vars.T  
             #The globalmeantemp calculated from the new generated temperature distribution
             if spatial_resolution>0:
                 data[2][j] = Vars.T_global
+=======
+            data[1][j] = Vars.T = T0 + (k1 + k2 + k2 + k3 + k3 + k4) / 6  
+            #The globalmeantemp calculated from the new generated temperature distribution
+            if spatial_resolution>0:
+                data[2][j] = Vars.T_global = earthsystem.globalmean_temperature()
+>>>>>>> 43e0d6a2b30f32d7c57f0f4dc71e89abee9db0fe
             else: #if 0 dimensional
                 data[2][j] = Vars.T_global = Vars.T
         #Check if the equilibrium condition is fulfilled. If true, break the loop, cut the output array to
