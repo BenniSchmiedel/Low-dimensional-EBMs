@@ -60,6 +60,7 @@ Functions to process variables during or after a simulation run are:
 """
 import builtins
 import numpy as np
+import xarray as xr
 
 class Vars():
     """
@@ -507,7 +508,7 @@ def output_importer():
     Vars.Read={'cL': Vars.cL,'C': Vars.C,'F': Vars.F,'P': Vars.P,'Transfer': Vars.Transfer,'alpha': Vars.alpha,'BudTransfer': Vars.BudTransfer, 'solar': Vars.solar,'noise': Vars.noise,'Rdown': Vars.Rdown,'Rup': Vars.Rup, 'ExternalOutput': Vars.ExternalOutput,'CO2Output': Vars.CO2Output,'SolarOutput':Vars.SolarOutput,'AODOutput':Vars.AODOutput}
 
 
-def variable_importer_parallelized(config,paral_config):
+def variable_importer_parallelized(config,paral_config,control):
     """ 
     Executes all relevant functions to import variables for an ensemble simulation run. From the *configuration* dictionary, returned by ``Configuration.importer``, and the *parallelization_config*, returned by ``Configuration.allocate_parallelparameter``, the relevant infomration is extracted and the specific importer functions are executed in the following order:
 
@@ -529,11 +530,12 @@ def variable_importer_parallelized(config,paral_config):
 
     """
     trackerreset()
-    builtin_importer(config['rk4input'])
-    builtin_importer_parallelized(paral_config)
+    builtin_importer(config['rk4input'],control)
+    builtin_importer_parallelized(paral_config,control)
     initial_importer_parallelized(config['initials'],paral_config)
     output_importer()    
     #output_importer_parameterfit(fitconfig)
+    return 
 
 def initial_importer_parallelized(initials,paral_config):
     """
@@ -605,11 +607,11 @@ def initial_importer_parallelized(initials,paral_config):
                     initials['zmt']=initials['zmt']+initials['initial_temperature_amplitude']*(cosd(initials['latitude_c'])-1)
     
     Vars.t=initials['time']
-    Vars.T=np.array([initials['zmt']]*number_of_parallels)
-    Vars.T_global=np.array([initials['gmt']]*number_of_parallels)
     Vars.Lat=initials['latitude_c']
     Vars.Lat2=initials['latitude_b']
-
+    Vars.T=np.array([initials['zmt']]*number_of_parallels)
+    Vars.T_global=np.array([initials['gmt']]*number_of_parallels)
+    
 def output_importer_parallelized():
     """
     Creates empty lists for the storage-variables which will be filled during the ensemble simulation.
@@ -629,7 +631,7 @@ def output_importer_parallelized():
     Vars.Read={'cL': Vars.cL,'C': Vars.C,'F': Vars.F,'P': Vars.P,'Transfer': Vars.Transfer,'alpha': Vars.alpha,'BudTransfer': Vars.BudTransfer, 'solar': Vars.solar,'noise': Vars.noise,'Rdown': Vars.Rdown,'Rup': Vars.Rup, 'ExternalOutput': Vars.ExternalOutput,'CO2Output': Vars.CO2Output,'SolarOutput':Vars.SolarOutput,'AODOutput':Vars.AODOutput}
 
 
-def builtin_importer_parallelized(paral_config):
+def builtin_importer_parallelized(paral_config,control):
     """
     Adds additional variables from the parallelization setup to the python-builtin functions which are globally accessible.    
 
@@ -651,6 +653,15 @@ def builtin_importer_parallelized(paral_config):
     for i in range(len(keys)):
         exec("builtins.%s=%i" % (keys[i],values[i]))
     builtins.parallelization=True
+    builtins.Runtime_Tracker=0
+    builtins.Noise_Tracker=0
+    if control==True:
+        builtins.eq_condition=True
+        builtins.number_of_integration=10000
+        builtins.data_readout=1    
+        builtins.eq_condition_length=accuracy_number
+        builtins.eq_condition_amplitude=accuracy
+        print('Starting controlrun with a temperature accuracy of %s K on the GMT over %s datapoints.' %(accuracy,accuracy_number))
 
     return
     

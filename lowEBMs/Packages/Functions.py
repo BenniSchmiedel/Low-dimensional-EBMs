@@ -43,6 +43,7 @@ import scipy
 import builtins
 import time
 from lowEBMs.Packages.Variables import Vars
+import xarray as xr
 
 
 
@@ -198,7 +199,7 @@ class flux_down:
         list_parameters=list(funcparam.values())
         #Loading inputparameters
         Q,factor_solar,dQ,albedofunc,albedoread,albedofuncparam,noise,noiseamp,noisedelay,    seed,seedmanipulation,solarinput,convfactor,timeunit,orbital,orbitalyear,updatefrequency=list_parameters#R_ininsolalbedoparam
-       
+        
         if Runtime_Tracker==0 and Vars.TSI==float:
             Vars.TSI=0
         if Runtime_Tracker==0 and Vars.AOD==float:
@@ -212,7 +213,7 @@ class flux_down:
                 #with orbital variations (if False by default present day)
                 if orbital==True: 
                     if spatial_resolution==0:
-                        Vars.Lat=np.linspace(-90,90,18)
+                        Vars.Lat=np.linspace(-85,85,18)
                         Q=earthsystem.solarradiation_orbital(convfactor,orbitalyear,'annualmean',Q)
                         Vars.solar=np.average(Q, weights=cosd(Vars.Lat))
                     else:
@@ -220,10 +221,12 @@ class flux_down:
                     
                 else:
                     if spatial_resolution==0:
-                        Vars.Lat=np.linspace(-90,90,18)
+                        Vars.Lat=np.linspace(-85,85,18)
+                        #Q=earthsystem.solarradiation_self(convfactor,'annualmean',orbitalyear,Q)
                         Q=earthsystem.solarradiation(convfactor,'annualmean',orbitalyear,Q)
                         Vars.solar=np.average(Q, weights=cosd(Vars.Lat))
                     else:
+                        #Vars.solar=earthsystem.solarradiation_self(convfactor,timeunit,orbitalyear,Q)
                         Vars.solar=earthsystem.solarradiation(convfactor,timeunit,orbitalyear,Q)
 
                 if parallelization==True:
@@ -232,9 +235,12 @@ class flux_down:
             else:
                 Vars.solar=Q
 
-        Q_total=Vars.solar+dQ
-        
-        Q_aod=Q_total*np.exp(-Vars.AOD)
+        if solarinput==False and spatial_resolution==0:
+            Q_total=Vars.solar+dQ+Vars.TSI
+        else:
+            Q_total=Vars.solar+dQ
+        if Vars.AOD != 0:
+            Q_aod=Q_total*np.exp(-Vars.AOD)
         
         if Runtime_Tracker % (4*data_readout) == 0:
             Vars.Read['solar'][int(Runtime_Tracker/(4*data_readout))]=Q_total            
@@ -550,12 +556,13 @@ class albedo:
         #Defining the albedo function defined by sellers (1969), with a linear dependency 
         
         #Shift of the temperature with the elevation to gain surface temperatures
+        
         Tg=Vars.T-0.0065*Z
-
         #creating and filling array, depending on the current latitudinal temperature
         if parallelization==True:
             albedo=np.array([[0]*len(Vars.Lat)]*number_of_parallels)
             if len(Z)==number_of_parallels:  
+                
                 for i in range(number_of_parallels):                
                     for j in range(len(Vars.Lat)):
                         if Tg[i,j]<283.16:
@@ -565,6 +572,7 @@ class albedo:
                         if albedo[i,j]>0.85:
                             albedo[i,j]=0.85
             else:
+                
                 for i in range(number_of_parallels):                
                     for j in range(len(Vars.Lat)):
                         if Tg[i,j]<283.16:
@@ -642,7 +650,7 @@ class flux_up:
         #R_outbudncparam=[A,B]
         list_parameters=list(funcparam.values())
         A,B=list_parameters
-        R_out=np.transpose(-(A+B*(np.transpose(Vars.T)-273.15)))
+        R_out=-(A+B*(Vars.T-273.15))
         if Runtime_Tracker % (4*data_readout) == 0:    #Only on 4th step (due to rk4)
             Vars.Read['Rup'][int(Runtime_Tracker/(4*data_readout))]=R_out
         return R_out
@@ -703,7 +711,7 @@ class flux_up:
         #R_outbudcparam=[A,B,A1,B1,f_c]
         list_parameters=list(funcparam.values())
         A,B,A1,B1,f_c=list_parameters
-        R_out=np.transpose(-(A+B*(np.transpose(Vars.T)-273.15)-(A1+B1*(np.transpose(Vars.T)-273.15))*f_c))
+        R_out=-(A+B*(Vars.T-273.15)-(A1+B1*(Vars.T-273.15))*f_c)
         if Runtime_Tracker % (4*data_readout) == 0:    #Only on 4th step (due to rk4)
             Vars.Read['Rup'][int(Runtime_Tracker/(4*data_readout))]=R_out
         return R_out
@@ -747,7 +755,7 @@ class flux_up:
         #R_outplanckparam=[grey,sig]
         list_parameters=list(funcparam.values())
         grey,sig=list_parameters
-        R_out=np.transpose(-(grey*sig*np.transpose(Vars.T**4)))
+        R_out=-(grey*sig*Vars.T**4)
         if Runtime_Tracker % (4*data_readout) == 0:    #Only on 4th step (due to rk4)
             Vars.Read['Rup'][int(Runtime_Tracker/(4*data_readout))]=R_out
         return R_out
@@ -805,7 +813,7 @@ class flux_up:
         #R_outselparam=[sig,grey,gamma,m]"""
         list_parameters=list(funcparam.values())
         m,sigma,gamma,grey=list_parameters
-        R_out=np.transpose(-grey*sigma*np.transpose(Vars.T)**4*(1-m*np.tanh(gamma*np.transpose(Vars.T)**6)))
+        R_out=-grey*sigma*Vars.T**4*(1-m*np.tanh(gamma*Vars.T**6))
         if Runtime_Tracker % (4*data_readout) == 0:    #Only on 4th step (due to rk4)
             Vars.Read['Rup'][int(Runtime_Tracker/(4*data_readout))]=R_out
         return R_out
@@ -1076,8 +1084,19 @@ class transfer:
         #Combined transfer fluxes, Sellers
         #Transfer_Sel=WV_Sel+SH_airSel+SH_oceanSel
         #Transfer_Selparam=[K_wv,g,a,eps,p,e0,L,Rd,dy,dp,K_h,cp,K_o,dz,l_cover,re]
+        
+                                                                                                                                                            
         list_parameters=list(funcparam.values())
         Readout,Activated,K_wv,K_h,K_o,g,a,eps,p,e0,L,Rd,dy,dp     ,cp,dz,l_cover,re,cp_w,dens_w,factor_wv,factor_air,factor_oc,factor_kwv,factor_kair=list_parameters
+        """if parallelization==True:
+            paras=[K_wv,K_h,K_o,g,a,eps,p,e0,L,Rd,dy,dp,cp,dz,l_cover,re,cp_w,dens_w,factor_wv,factor_air,factor_oc,factor_kwv,factor_kair]
+            K_wv,K_h,K_o,g,a,eps,p,e0,L,Rd,dy,dp,cp,dz,l_cover,re,cp_w,dens_w,factor_wv,factor_air,factor_oc,factor_kwv,factor_kair=\
+                [xr.DataArray(paras[i],coords=[np.arange(number_of_parallels)],dims=['parallel']) if np.shape(paras[i])==(number_of_parallels,) else xr.DataArray(paras[i],coords=[Vars.Lat],dims=['lat']) if np.shape(paras[i])==(len(Vars.Lat),) else xr.DataArray(paras[i],coords=[Vars.Lat2],dims=['lat2']) if np.shape(paras[i])==(len(Vars.Lat2),) else xr.DataArray(paras[i],coords=[np.arange(number_of_parallels),Vars.Lat],dims=['parallel','lat']) if np.shape(paras[i])==(number_of_parallels,len(Vars.Lat)) else paras[i] for i in range(len(paras))]
+              """               
+        if parallelization==True:
+            paras=[K_wv,K_h,K_o,g,a,eps,p,e0,L,Rd,dy,dp,cp,dz,l_cover,re,cp_w,dens_w,factor_wv,factor_air,factor_oc,factor_kwv,factor_kair]
+            K_wv,K_h,K_o,g,a,eps,p,e0,L,Rd,dy,dp,cp,dz,l_cover,re,cp_w,dens_w,factor_wv,factor_air,factor_oc,factor_kwv,factor_kair=\
+                [np.transpose(np.array([paras[i]]*len(Vars.Lat2))) if np.shape(paras[i])==(number_of_parallels,) else paras[i] for i in range(len(paras))]
         if Activated==True:
             #Parameters for different transfer Fluxes+their calculation 
 
@@ -1089,13 +1108,16 @@ class transfer:
             #calculating the current temperature differences and wind patterns
             Vars.tempdif=earthsystem.temperature_difference_latitudes()
             Vars.meridional=earthsystem.meridionalwind_sel(a,re)
-            
+            #if parallelization==True: 
+            #    print(Vars.tempdif)
+            #    Vars.tempdif=xr.DataArray(Vars.tempdif, coords=[Vars.tempdif], dims=['tempdif'])
+            #    Vars.meridional=xr.DataArray(Vars.meridional, coords=[Vars.meridional], dims=['meridional'])
             #calculating the 3 transfer components
+            
             cL=transfer.watervapour_sel(WV_Selparam)
             C=transfer.sensibleheat_air_sel(SH_airSelparam)
             F=transfer.sensibleheat_ocean_sel(SH_oceanSelparam)
-            P=cL+C+F              
-            
+            P=cL+C+F  
             #calculation of gridparameters (for 1st step only)
             if Runtime_Tracker==0:
                 Vars.latlength=earthsystem.length_latitudes(re)
@@ -1104,8 +1126,7 @@ class transfer:
             #Converting Arrays to two arrays with an one element shift
             #Apply parallelization if activated
             if parallelization==True: 
-                P1=[0]*number_of_parallels
-                P0=[0]*number_of_parallels
+                P1,P0=np.reshape(np.zeros(number_of_parallels*len(Vars.Lat)*2),(2,number_of_parallels,len(Vars.Lat)))
                 for i in range(number_of_parallels):
                     P_1=np.insert(P[i],0,0)                     
                     P_0=np.append(P[i],0)
@@ -1229,6 +1250,7 @@ class transfer:
         dq=earthsystem.humidity_difference(e0,eps,L,Rd,p)
         if parallelization==True:
         #equation of the water vapour energy transfer
+            #print(Vars.meridional,q,K_wv,factor_kwv,dq,dy)
             a1=Vars.meridional*q
             a2=K_wv*factor_kwv*dq/dy
             a3=dp*const.mb_to_Pa/g
@@ -1765,8 +1787,9 @@ class forcing:
         forcingnumber,datapath,name,delimiter,header,col_time,colrange_forcing,timeunit,BP,time_start,k_output, m_output, k_input, m_input=list_parameters
         if Runtime_Tracker==0:
             forcingscols=np.linspace(colrange_forcing[0],colrange_forcing[1],colrange_forcing[1]-colrange_forcing[0],dtype=int)
+            Vars.ExternalInput[forcingnumber]=[0,0]
             Vars.ExternalInput[forcingnumber][0]=np.genfromtxt(str(datapath)+str(name),delimiter=str(delimiter),skip_header=header,usecols=(col_time),unpack=True,encoding='ISO-8859-1') 
-            Vars.ExternalInput[forcingnumber][1]=np.genfromtxt(str(datapath)+str(name),delimiter=str(delimiter),skip_header=header,usecols=forcingscols,unpack=True,encoding='ISO-8859-1')  
+            Vars.ExternalInput[forcingnumber][1]=np.transpose(np.genfromtxt(str(datapath)+str(name),delimiter=str(delimiter),skip_header=header,usecols=forcingscols,unpack=True,encoding='ISO-8859-1'))  
             Vars.External_time_start[forcingnumber]=time_start   
             Vars.ExternalInput[forcingnumber][1]=lna(Vars.ExternalInput[forcingnumber][1])*k_input+m_input
             if BP==True:
@@ -1785,10 +1808,10 @@ class forcing:
                 Vars.ExternalInput[forcingnumber][0]=lna(Vars.ExternalInput[forcingnumber][0])*60*60*24*365/12
             if timeunit=='year':
                 Vars.ExternalInput[forcingnumber][0]=lna(Vars.ExternalInput[forcingnumber][0])*60*60*24*365
-        
+            Vars.ForcingTracker[forcingnumber][1]=np.zeros(len(Vars.Lat))
         while Vars.t>Vars.ExternalInput[forcingnumber][0][Vars.ForcingTracker[forcingnumber][0]]:
             if Vars.ForcingTracker[forcingnumber][0]==(len(Vars.ExternalInput[forcingnumber][0])-1):
-                Vars.ForcingTracker[forcingnumber][1]=0
+                Vars.ForcingTracker[forcingnumber][1]=np.zeros(len(Vars.Lat))
                 break
             else:
                 Vars.ForcingTracker[forcingnumber][1] = Vars.ExternalInput[forcingnumber][1][Vars.ForcingTracker[forcingnumber][0]]
@@ -2355,6 +2378,64 @@ class earthsystem:
         Q=lna(np.mean(daily_insolation(Vars.Lat,days),axis=1))
         return Q
 
+    def solarradiation_self(convfactor,timeunit,orbitalyear,Q):
+        if orbitalyear==0:
+            Vars.orbitals={'ecc': 0.017236, 'long_peri': 281.37, 'obliquity': 23.446}
+        elif orbitalyear=='external':
+            pass
+        elif orbitalyear!=0:
+            pass
+            #Vars.orbtable=OrbitalTable()
+            #Vars.orbitals=Vars.orbtable.lookup_parameters(orbitalyear)
+            
+        #returning the annual mean solar insolation or solar insolations varying over time, depending on the
+        #time specified
+        if timeunit=='annualmean':
+            days=np.linspace(0,365,365)
+            Q=lna(np.mean(earthsystem.insolation_self(Vars.Lat,days,Vars.orbitals,S0=Q+Vars.TSI),axis=1))
+        if timeunit=='year':
+            Q=lna(np.mean(earthsystem.insolation_self(Vars.Lat,np.linspace(            0,((365*int(Vars.t)-1) % 365)*stepsize_of_integration % 365,36),Vars.orbitals,S0=Q+Vars.TSI),axis=1))*convfactor
+        if timeunit=='month':
+            Q=lna(np.mean(earthsystem.insolation_self(Vars.Lat,np.linspace(            (int(Vars.t)*365/12) % 365,(int(Vars.t)*365/12-1) % 365,30),Vars.orbitals,S0=Q+Vars.TSI),axis=1))*convfactor
+        if timeunit=='day':
+            Q=lna(earthsystem.insolation_self(Vars.Lat,int(Vars.t)%365,Vars.orbitals,S0=Q+Vars.TSI))*convfactor
+        if timeunit=='second':
+            tconv=60*60*24
+            Q=lna(earthsystem.insolation_self(Vars.Lat,int(Vars.t/tconv)%365,Vars.orbitals,S0=Q+Vars.TSI))*convfactor
+        return Q
+        
+    def insolation_self(Lat,Days,orb={'ecc': 0.017236, 'long_peri': 281.37, 'obliquity': 23.446},S0=1366.14):
+        degrad=np.pi/180
+        lat=xr.DataArray(Lat, coords=[Lat], dims=['lat'])
+        if type(Days) is np.ndarray:
+            Days=xr.DataArray(Days, coords=[Days], dims=['day'])
+        ecc = orb['ecc']
+        long_peri = orb['long_peri']
+        obliquity = orb['obliquity']
+
+        phi=lat*degrad
+        long_peri_rad = long_peri*degrad
+        delta_lambda = (Days - 80.) * 2*np.pi/365
+        beta = np.sqrt(1-ecc**2)
+
+        lambda_long_m = -2*((ecc/2 + (ecc**3)/8 ) * (1+beta) * np.sin(-long_peri_rad) -
+                (ecc**2)/4 * (1/2 + beta) * np.sin(-2*long_peri_rad) + (ecc**3)/8 *
+                (1/3 + beta) * np.sin(-3*long_peri_rad)) + delta_lambda
+
+        lambda_long = ( lambda_long_m + (2*ecc - (ecc**3)/4)*np.sin(lambda_long_m - long_peri_rad) +
+                (5/4)*(ecc**2) * np.sin(2*(lambda_long_m - long_peri_rad)) + (13/12)*(ecc**3)
+        * np.sin(3*(lambda_long_m - long_peri_rad)) )
+
+        delta = np.arcsin(np.sin(degrad*obliquity) * np.sin(lambda_long))
+        np.seterr(invalid='ignore')
+        Ho = xr.where( abs(delta)-np.pi/2+abs(phi) < 0.,np.arccos(-np.tan(phi)*np.tan(delta)),
+                    xr.where(phi*delta>0., np.pi, 0. ))
+        coszen = Ho*np.sin(phi)*np.sin(delta) + np.cos(phi)*np.cos(delta)*np.sin(Ho)
+
+        Fw = S0/np.pi*( (1+ecc*np.cos(lambda_long -degrad*long_peri))**2 / (1-ecc**2)**2 * coszen)
+    
+        return Fw
+    
     def solarradiation(convfactor,timeunit,orbitalyear,Q):
         """ 
         The solar insolation over the latitudes :math:`Q`.
@@ -2511,7 +2592,8 @@ class earthsystem:
         #Meriwind_Selparam=[a]"""
         
         if parallelization==True:
-            v=np.array([[0]*len(Vars.Lat2)]*number_of_parallels,dtype=float)
+            #v=xr.DataArray(np.array([[0]*len(Vars.Lat2)]*number_of_parallels,dtype=float),coords=[np.arange(number_of_parallels),Vars.Lat2],dims=['parallel','lat2'])
+            v=np.reshape(np.zeros(number_of_parallels*len(Vars.Lat2)),(number_of_parallels,len(Vars.Lat2)))
             T_av=np.average(np.abs(Vars.tempdif),weights=(2*np.pi*re*cosd(Vars.Lat2)),axis=1)
 
         else: 
@@ -2525,10 +2607,12 @@ class earthsystem:
         while Vars.Lat[i]<5:
             i+=1
         k=i
-
+        
         if parallelization==True:
+            if np.shape(a)==(len(Vars.Lat2),number_of_parallels):
+                a=np.transpose(a)
             for l in range(number_of_parallels):
-                if len(a)==number_of_parallels:
+                if np.shape(a)==(number_of_parallels,len(Vars.Lat2)):
                     for j in range(k):
                         v[l,j]=-a[l,j]*(Vars.tempdif[l,j]-T_av[l])
                     for j in range(k,len(v[l])):
@@ -2537,7 +2621,7 @@ class earthsystem:
                     for j in range(k):
                         v[l,j]=-a[j]*(Vars.tempdif[l,j]-T_av[l])
                     for j in range(k,len(v[l])):
-                        v[l,j]=-a[j]*(Vars.tempdif[l,j]+T_av[l])
+                        v[l,j]=-a[j]*(Vars.tempdif[l,j]+T_av[l])                        
         else:
             for j in range(k):
                 
@@ -2640,6 +2724,7 @@ class earthsystem:
         """
         #temperature dependant equation of saturation pressure
         if parallelization==True:
+            #e=xr.DataArray(e0*(1-0.5*eps*L*np.array(Vars.tempdif)/(Rd*np.array(Vars.T[:,1:])**2)),coords=[np.arange(number_of_parallels),Vars.Lat2],dims=['parallel','lat2'])
             e=e0*(1-0.5*eps*L*Vars.tempdif/(Rd*Vars.T[:,1:]**2))
         else:
             e=e0*(1-0.5*eps*L*Vars.tempdif/(Rd*Vars.T[1:]**2))
@@ -2695,6 +2780,7 @@ class earthsystem:
         
         e=earthsystem.saturation_pressure(e0,eps,L,Rd)
         if parallelization==True:
+            #dq=xr.DataArray(eps**2*L*e*Vars.tempdif/(p*Rd*np.transpose(Vars.T[:,1:])**2),coords=[np.arange(number_of_parallels),Vars.Lat2],dims=['parallel','lat2'])
             dq=eps**2*L*e*Vars.tempdif/(p*Rd*Vars.T[:,1:]**2)
         else:
             dq=eps**2*L*e*Vars.tempdif/(p*Rd*Vars.T[1:]**2)
@@ -2724,7 +2810,8 @@ class earthsystem:
         #Returning the temperature difference between the northern and southern latitudinal boundary
         if latitudinal_belt==True:
             if parallelization==True:
-                dT=Vars.T[:,1:]-Vars.T[:,:-1]  
+                #dT=xr.DataArray(np.array(Vars.T[:,1:])-np.array(Vars.T[:,:-1]),coords=[np.arange(number_of_parallels),Vars.Lat2],dims=['parallel','lat2'])
+                dT=np.array(Vars.T[:,1:])-np.array(Vars.T[:,:-1])
             else:
                 dT=Vars.T[1:]-Vars.T[:-1]  
         #Calculation if for sellers it is desired to be defined on the latitudinal circles, 

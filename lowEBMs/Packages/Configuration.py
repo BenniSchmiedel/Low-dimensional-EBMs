@@ -677,46 +677,61 @@ def write_parallelparameter(config,parameter,parametersetup):
 
     #for s in range(num_cycles):
     paralleldict=dict()
-    for key in list(parameter.keys()):
+    funckey=list(parameter.keys()) 
+    for key in funckey:
         paralleldict.update({key:dict()})
         for paramkey in list(parameter[key].keys()):
             paralleldict[key].update({paramkey:dict()})
-    key=list(parameter.keys())  
+    
+    keylen=len(funckey)
     paramkey=[]
-    for l in key:
+    for l in funckey:
         paramkey.append(list(parameter[l].keys()))
-    for n in range(num_cycles):
-        for m in range(num_cycles):
-            #for o in range(num_cycles):
-            x=paralleldict[key[1]]
-            if n==0 and m==0:
-                x.update({paramkey[1][0]:[]})
-            x.update({paramkey[1][0]:np.append(x.get(paramkey[1][0]),
-                                                 parameter[key[1]][paramkey[1][0]][m])})
-            y=paralleldict[key[2]]
-            if n==0 and m==0:
-                y.update({paramkey[2][0]:[]})
-            y.update({paramkey[2][0]:np.append(y.get(paramkey[2][0]),
-                                                 parameter[key[2]][paramkey[2][0]][n])})
-            paralleldict.update({key[2]:y})
+    
+    for o in range(num_cycles):
+        for n in range(num_cycles):
+            for m in range(num_cycles):
+                #for o in range(num_cycles):
+                num=0
+                par=0
+                x=paralleldict[funckey[num]]
+                if n==0 and m==0 and o==0:
+                    x.update({paramkey[num][par]:[]})
+                    
+                x.update({paramkey[num][par]:np.append(x.get(paramkey[num][par]),
+                                                    parameter[funckey[num]][paramkey[num][par]][m])})
+                
+                paralleldict.update({funckey[num]:x})
+                
+                num=0
+                par=1
+                y=paralleldict[funckey[num]]
+                if n==0 and m==0 and o==0:
+                    y.update({paramkey[num][par]:[]})
+                
+                y.update({paramkey[num][par]:np.append(y.get(paramkey[num][par]),
+                                                    parameter[funckey[num]][paramkey[num][par]][n])})
+                paralleldict.update({key[num]:y})
+                
+                num=0
+                par=2
+                z=paralleldict[funckey[num]]
+                if n==0 and m==0 and o==0:
+                    z.update({paramkey[num][par]:[]})
+               
+                z.update({paramkey[num][par]:np.append(z.get(paramkey[num][par]),
+                                                    parameter[funckey[num]][paramkey[num][par]][o])})
+                paralleldict.update({key[num]:z})
 
-            """z=paralleldict[key[0]]
-            if n==0 and m==0:
-                z.update({paramkey[0][0]:[]})
-            z.update({paramkey[0][0]:np.append(z.get(paramkey[0][0]),
-                                                 fitparameter[key[0]][paramkey[0][0]][n])})
-            paralleldict.update({key[0]:z})"""
-
-    eq=paralleldict.pop('eqparam')
-    func=paralleldict
-    for eqkey in list(eq.keys()):
+    #eq=paralleldict.pop('eqparam')
+    """for eqkey in list(eq.keys()):
         if bool(eq)==False:
             break
         config['eqparam'][eqkey]=eq[eqkey]
-        print('hi')
-    for key in list(func.keys()):
-        for paramkey in list(func[key].keys()):
-            config['funccomp']['funcparam'][key][paramkey]=func[key][paramkey]
+        print('hi')"""
+    for key in funckey:
+        for paramkey in list(paralleldict[key].keys()):
+            config['funccomp']['funcparam'][key][paramkey]=paralleldict[key][paramkey]
     #for key in parallel
     #    config['funccomp']['funcparam'][funcnumber][parametername]=parameter
     
