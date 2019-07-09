@@ -12,4 +12,4 @@
 .ipynb_checkpoints
 **/*.ipynb_checkpoints/
 */.ipynb_checkpoints/*
-
+Data/EVA_800_2000_1D_10deg.txt
