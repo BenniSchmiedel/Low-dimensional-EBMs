@@ -233,8 +233,6 @@ class flux_down:
 
                         Vars.solar=earthsystem.solarradiation(convfactor,timeunit,orbitalyear,Q)
 
-                if parallelization==True:
-                    Vars.solar=np.array([Vars.solar]*(number_of_parallels))
             #total solar insolation with possible offset
             else:
                 Vars.solar=Q
@@ -278,9 +276,9 @@ class flux_down:
         #Equation of incoming radiation
         #print(Q_total.shape,alpha.shape,type(Q_total),type(alpha),factor_solar.shape)
         if Vars.AOD != 0:
-            R_in=np.transpose((np.transpose(Q_aod)+z)*(1-np.transpose(alpha))*factor_solar)
+            R_in=(Q_aod+z)*(1-alpha)*factor_solar
         else:
-            R_in=np.transpose((np.transpose(Q_total)+z)*(1-np.transpose(alpha))*factor_solar)
+            R_in=(Q_total+z)*(1-alpha)*factor_solar
         if Runtime_Tracker % (4*data_readout) == 0:    #Only on 4th step (due to rk4)
             Vars.Read['Rdown'][int(Runtime_Tracker/(4*data_readout))]=R_in
         return R_in
@@ -564,7 +562,7 @@ class albedo:
         Tg=Vars.T-0.0065*Z
         #creating and filling array, depending on the current latitudinal temperature
         if parallelization==True:
-            albedo=np.array([[0]*len(Vars.Lat)]*number_of_parallels)
+            albedo=np.reshape(np.zeros(len(Vars.Lat)*number_of_parallels),(number_of_parallels,len(Vars.Lat)))
             if len(Z)==number_of_parallels:  
                 for i in range(number_of_parallels):                
                     for j in range(len(Vars.Lat)):
@@ -2730,7 +2728,7 @@ class earthsystem:
         #temperature dependant equation of saturation pressure
         if parallelization==True:
 
-            e=e0*(1-0.5*eps*L*Vars.tempdif/(Rd*Vars.T[:,1:]**2))
+            e=e0*(1-0.5*eps*L*Vars.tempdif/(Rd*np.array(Vars.T[:,1:])**2))
         else:
             e=e0*(1-0.5*eps*L*Vars.tempdif/(Rd*Vars.T[1:]**2))
         return e
@@ -2785,7 +2783,7 @@ class earthsystem:
         
         e=earthsystem.saturation_pressure(e0,eps,L,Rd)
         if parallelization==True:
-            dq=eps**2*L*e*Vars.tempdif/(p*Rd*Vars.T[:,1:]**2)
+            dq=eps**2*L*e*Vars.tempdif/(p*Rd*np.array(Vars.T[:,1:])**2)
         else:
             dq=eps**2*L*e*Vars.tempdif/(p*Rd*Vars.T[1:]**2)
         return dq
