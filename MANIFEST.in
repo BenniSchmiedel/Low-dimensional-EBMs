@@ -1,4 +1,3 @@
-include lowEBMs/Configuration.ini
 include lowEBMs/Tutorials/*
 include lowEBMs/Tutorials/Config/*
 include lowEBMs/Tutorials/Config/Data/*
