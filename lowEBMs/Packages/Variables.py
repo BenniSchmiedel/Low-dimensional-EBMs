@@ -60,7 +60,7 @@ Functions to process variables during or after a simulation run are:
 """
 import builtins
 import numpy as np
-import xarray as xr
+#import xarray as xr
 
 
 class Vars():
@@ -146,7 +146,7 @@ class Vars():
     +---------------+-----------------------------------------------------------------------+             
  
     """
-    ###Running variables -- RK4 ###
+    ###Running variables -- RK4###
     t=float
     T=float
     T_global=float
@@ -154,6 +154,8 @@ class Vars():
 
     ###Running variables### 
     orbitals=float
+    solar=list
+    alpha=list
     noise=float
     ForcingTracker=[0,0]
     CO2Tracker=[0,0]
@@ -168,7 +170,6 @@ class Vars():
     ###Static variables###
     Lat=float
     Lat2=float
-    solar=list    
     orbtable=float
     area=list
     bounds=list
@@ -187,7 +188,6 @@ class Vars():
     P=list
     Transfer=list
     BudTransfer=list
-    alpha=list
     Rdown=list
     Rup=list
     ExternalOutput=list
@@ -201,9 +201,6 @@ class Vars():
     AODOutput=list
     
     Read=dict #{'cL':cL, 'C': C, 'F': F,'P': P,'Transfer': Transfer,'alpha': alpha,'BudTransfer': BudTransfer,'Solar':,Noise,Rdown,Rup,ExternalOutput,CO2Forcing]
-    Readnumber=15
-    
-
 
     ###Variables initial values### (for reset)
     def __init__(self):
@@ -258,10 +255,10 @@ class Vars():
         self.AODOutput=list
         
         self.Read=dict #[self.cL,self.C,self.F,self.P,self.Transfer,self.alpha,self.BudTransfer,self.Solar,self.Noise,self.Rin,self.Rout,self.ExternalOutput,self.CO2Forcing]
-        self.Readnumber=15
 
 def trackerreset():
     reset('ForcingTracker')
+    Vars.ForcingTracker=np.array([Vars.ForcingTracker for i in range(int(number_of_externals))],dtype=object)
     reset('CO2Tracker')
     reset('SolarTracker')
     reset('OrbitalTracker')
@@ -306,7 +303,7 @@ def datareset():
     Vars.Lat=classreset.Lat
     Vars.Lat2=classreset.Lat2
 
-def variable_importer(config,control,*args,**kwargs):
+def variable_importer(config,initialZMT=True,control=False,parallel=False,parallel_config=0,accuracy=1e-3,accuracy_number=1000):
     """ 
     Executes all relevant functions to import variables for a single simulation run. From the *configuration* dictionary, returned by ``Configuration.importer``, the relevant information is extracted and the specific importer functions are executed in the following order:
 
@@ -325,13 +322,12 @@ def variable_importer(config,control,*args,**kwargs):
     :returns:                   No return
 
     """
-    accuracy,accuracy_number=kwargs.get('accuracy',1e-3),kwargs.get('accuracy_number',1000)
+    builtin_importer(config['rk4input'],control=control,parallel=parallel,parallel_config=parallel_config,accuracy=accuracy,accuracy_number=accuracy_number)
     trackerreset()
-    builtin_importer(config['rk4input'],control,accuracy=accuracy,accuracy_number=accuracy_number)
-    initial_importer(config['initials'])
-    output_importer()
+    initial_importer(config['initials'],initialZMT=initialZMT,control=control,parallel=parallel)
+    output_importer(config['funccomp']['funclist'])
 
-def builtin_importer(rk4input,control,*args,**kwargs):
+def builtin_importer(rk4input,control=False,parallel=False,parallel_config=0,accuracy=1e-3,accuracy_number=1000):
     """
     Adds the most important variables to the python-builtin functions which are globally accessible. This enables calling and writing variables globally and across different files.
 
@@ -383,14 +379,25 @@ def builtin_importer(rk4input,control,*args,**kwargs):
     """
     #Writing systemparameters into builtin-module to make them globally callable
     #Overview given in Readme.txt
-    accuracy,accuracy_number=kwargs.get('accuracy',1e-3),kwargs.get('accuracy_number',1000)
     keys=list(rk4input.keys())
     values=list(rk4input.values())
     for i in range(len(keys)):
         exec("builtins.%s=%f" % (keys[i],values[i]))
     builtins.Runtime_Tracker=0
     builtins.Noise_Tracker=0
-    builtins.parallelization=False
+    if parallel==True:
+        builtins.parallelization=True
+        if parallel_config==0:
+            print('Specify the parallelization configuration file!') 
+            
+        keys_parallel=list(parallel_config.keys())
+        values_parallel=list(parallel_config.values())
+        for i in range(len(keys_parallel)):
+            exec("builtins.%s=%i" % (keys_parallel[i],values_parallel[i])) 
+        
+    else:
+        builtins.parallelization=False
+        
     if control==True:
         builtins.eq_condition=True
         builtins.number_of_integration=10000
@@ -417,7 +424,7 @@ def builtin_importer(rk4input,control,*args,**kwargs):
     builtins.data_readout=rk4input[15]
     builtins.number_of_externals=rk4input[16]"""
 
-def initial_importer(initials):
+def initial_importer(initials,initialZMT=True,control=False,parallel=False):
     """
     Calculates the initial conditions of the *primary variables* from the ``initials``-section.
 
@@ -442,55 +449,62 @@ def initial_importer(initials):
             Latrange=180
 
             #Checking if Temperature and Latitude is set on a latitudal circle (0°,10°,..if step=10)
-            #or on a latitudinal belt and therefore right between the boundaries (5°,15°,..if step=10)
+            #or on a latitudinal belt and therefore between the boundaries (5°,15°,..if step=10)
 
             #circle==True and belt==False says on the latitudinal circle
             if latitudinal_circle==True and latitudinal_belt==False:      
-                initials['latitude_c']=np.linspace(-90+spatial_resolution,90-spatial_resolution,int(Latrange/spatial_resolution-1))
-                initials['latitude_b']=np.linspace(-90,90-spatial_resolution,int(Latrange/spatial_resolution))+spatial_resolution/2
-                initials['zmt']=np.array([initials['zmt']]*int(Latrange/spatial_resolution-1))
-                #Checking if the Temperature for each latitude starts with the same value or a 
-                #cosine shifted value range
-                if initials['initial_temperature_cosine']==True:
-                    initials['zmt']=initials['zmt']+initials['initial_temperature_amplitude']*(cosd(initials['latitude_c'])-1)
+                Vars.Lat=np.linspace(-90+spatial_resolution,90-spatial_resolution,int(Latrange/spatial_resolution-1))
+                Vars.Lat2=np.linspace(-90,90-spatial_resolution,int(Latrange/spatial_resolution))+spatial_resolution/2
+                if initialZMT==True:
+                    Vars.T=np.array([initials['zmt']]*int(Latrange/spatial_resolution-1))
+                    #Checking if the Temperature for each latitude starts with the same value or a 
+                    #cosine shifted value range
+                    if initials['initial_temperature_cosine']==True:
+                        Vars.T=Vars.T+initials['initial_temperature_amplitude']*(cosd(Vars.Lat)-1)
 
             #circle==False and belt==True say on the latitudinal belt
             if latitudinal_circle==False and latitudinal_belt==True:
-                initials['latitude_b']=np.linspace(-90+spatial_resolution,90-spatial_resolution,int(Latrange/spatial_resolution-1))
-                initials['latitude_c']=np.linspace(-90,90-spatial_resolution,int(Latrange/spatial_resolution))+spatial_resolution/2
-                initials['zmt']=np.array([initials['zmt']]*int(Latrange/spatial_resolution))
-                if initials['initial_temperature_cosine']==True:
-                    if initials['initial_temperature_noise']==True:
-                        z=[0]*len(initials['latitude_c'])
-                        for k in range(len(initials['latitude_c'])):
-                            z[k]=np.random.normal(0,initials['initial_temperature_noise_amplitude'])
-                    else: 
-                        z=0
-                    initials['zmt']=initials['zmt']+initials['initial_temperature_amplitude']*(cosd(initials['latitude_c'])-1)+lna(z)
+                Vars.Lat2=np.linspace(-90+spatial_resolution,90-spatial_resolution,int(Latrange/spatial_resolution-1))
+                Vars.Lat=np.linspace(-90,90-spatial_resolution,int(Latrange/spatial_resolution))+spatial_resolution/2
+                if initialZMT==True:
+                    Vars.T=np.array([initials['zmt']]*int(Latrange/spatial_resolution))
+                    if initials['initial_temperature_cosine']==True:
+                        if initials['initial_temperature_noise']==True:
+                            z=[0]*len(Vars.Lat)
+                            for k in range(len(Vars.Lat)):
+                                z[k]=np.random.normal(0,initials['initial_temperature_noise_amplitude'])
+                        else: 
+                            z=0
+                        Vars.T=Vars.T+initials['initial_temperature_amplitude']*(cosd(Vars.Lat)-1)+lna(z)
 
         #Not from southpole to northpole rather equator to pole
         else:
             Latrange=90     
             if latitudinal_circle==True and latitudinal_belt==False:
-                initials['latitude_c']=np.linspace(0,90-spatial_resolution,int(Latrange/spatial_resolution))
-                initials['latitude_b']=np.linspace(0,90-spatial_resolution,int(Latrange/spatial_resolution))+spatial_resolution/2
-                initials['zmt']=np.array([initials['zmt']]*int(Latrange/spatial_resolution))
-                if initials['initial_temperature_cosine']==True:
-                    initials['zmt']=initials['zmt']+initials['initial_temperature_amplitude']*(cosd(initials['latitude_c'])-1)
+                Vars.Lat=np.linspace(0,90-spatial_resolution,int(Latrange/spatial_resolution))
+                Vars.Lat2=np.linspace(0,90-spatial_resolution,int(Latrange/spatial_resolution))+spatial_resolution/2
+                if initialZMT==True:
+                    Vars.T=np.array([initials['zmt']]*int(Latrange/spatial_resolution))
+                    if initials['initial_temperature_cosine']==True:
+                        Vars.T=Vars.T+initials['initial_temperature_amplitude']*(cosd(Vars.Lat)-1)
             if latitudinal_circle==False and latitudinal_belt==True:
-                initials['latitude_b']=np.linspace(0,90-spatial_resolution,int(Latrange/spatial_resolution))
-                initials['latitude_c']=np.linspace(0,90-spatial_resolution,int(Latrange/spatial_resolution))+spatial_resolution/2
-                initials['zmt']=np.array([initials['zmt']]*int(Latrange/spatial_resolution))
-                if initials['initial_temperature_cosine']==True:
-                    initials['zmt']=initials['zmt']+initials['initial_temperature_amplitude']*(cosd(initials['latitude_c'])-1)
+                Vars.Lat2=np.linspace(0,90-spatial_resolution,int(Latrange/spatial_resolution))
+                Vars.Lat=np.linspace(0,90-spatial_resolution,int(Latrange/spatial_resolution))+spatial_resolution/2
+                if initialZMT==True:
+                    Vars.T=np.array([initials['zmt']]*int(Latrange/spatial_resolution))
+                    if initials['initial_temperature_cosine']==True:
+                        Vars.T=Vars.T+initials['initial_temperature_amplitude']*(cosd(Vars.Lat)-1)
     
-    Vars.t=initials['time']
-    Vars.T=initials['zmt']
-    Vars.T_global=initials['gmt']
-    Vars.Lat=initials['latitude_c']
-    Vars.Lat2=initials['latitude_b']
+    Vars.t=initials['time'] 
+    if parallel==True:
+        if initialZMT==True:
+            Vars.T=np.array([Vars.T]*number_of_parallels)
+        Vars.T_global=np.array([initials['gmt']]*number_of_parallels)
+    else:
+        Vars.T_global=initials['gmt']
 
-def output_importer():
+def output_importer(functiondict):
+    functionlist=list(functiondict.values())
     """
     Creates empty lists for the storage-variables which will be filled during the simulation.
 
@@ -499,173 +513,57 @@ def output_importer():
     """
     if (number_of_integration) % data_readout == 0:
         #Assigning dynamical variables in Variables Package with initial values from var
-        Vars.cL,Vars.C,Vars.F,Vars.P,Vars.Transfer,Vars.alpha,Vars.BudTransfer,Vars.solar,Vars.noise,Vars.Rdown,Vars.Rup,Vars.ExternalOutput,Vars.CO2Output,Vars.SolarOutput,Vars.AODOutput=np.array([[0]*int(number_of_integration/data_readout)]*Vars.Readnumber,dtype=object)
+        for func in functionlist:
+            if func.__qualname__=='transfer.sellers':
+                Vars.cL=np.array([0]*int(number_of_integration/data_readout),dtype=object)
+                Vars.C=np.array([0]*int(number_of_integration/data_readout),dtype=object)
+                Vars.F=np.array([0]*int(number_of_integration/data_readout),dtype=object)
+                Vars.P=np.array([0]*int(number_of_integration/data_readout),dtype=object)
+                Vars.Transfer=np.array([0]*int(number_of_integration/data_readout),dtype=object)
+            if func.__qualname__=='transfer.budyko':
+                Vars.BudTransfer=np.array([0]*int(number_of_integration/data_readout),dtype=object)
+            if func.__qualname__=='forcing.co2myhre':
+                Vars.CO2Output=np.array([0]*int(number_of_integration/data_readout),dtype=object)
+            if func.__qualname__=='forcing.solar':                
+                Vars.SolarOutput=np.array([0]*int(number_of_integration/data_readout),dtype=object)
+            if func.__qualname__=='forcing.aod':            
+                Vars.AODOutput==np.array([0]*int(number_of_integration/data_readout),dtype=object)
+                
+        Vars.ExternalOutput=np.array([0]*int(number_of_integration/data_readout),dtype=object)
+        Vars.alpha=np.array([0]*int(number_of_integration/data_readout),dtype=object)
+        Vars.solar=np.array([0]*int(number_of_integration/data_readout),dtype=object)
+        Vars.noise=np.array([0]*int(number_of_integration/data_readout),dtype=object)
+        Vars.Rdown=np.array([0]*int(number_of_integration/data_readout),dtype=object)
+        #Vars.Rup=np.reshape(np.zeros(int(number_of_integration/data_readout)*len(Vars.Lat)),(int(number_of_integration/data_readout),len(Vars.Lat)))
+        Vars.Rup=np.array([0]*int(number_of_integration/data_readout),dtype=object)
     else: 
-        Vars.cL,Vars.C,Vars.F,Vars.P,Vars.Transfer,Vars.alpha,Vars.BudTransfer,Vars.solar,Vars.noise,Vars.Rdown,Vars.Rup,Vars.ExternalOutput,Vars.CO2Output,Vars.SolarOutput,Vars.AODOutput=np.array([[0]*(int(number_of_integration/data_readout)+1)]*Vars.Readnumber,dtype=object)
-    Vars.ExternalOutput=np.array([Vars.ExternalOutput for i in range(int(number_of_externals))],dtype=object)
-    Vars.External_time_start=np.array([0 for i in range(int(number_of_externals))],dtype=object)
-    Vars.ForcingTracker=np.array([[0,0] for i in range(int(number_of_externals))],dtype=object)
-    Vars.ExternalInput=np.array([0 for i in range(int(number_of_externals))],dtype=object)
-    Vars.Read={'cL': Vars.cL,'C': Vars.C,'F': Vars.F,'P': Vars.P,'Transfer': Vars.Transfer,'alpha': Vars.alpha,'BudTransfer': Vars.BudTransfer, 'solar': Vars.solar,'noise': Vars.noise,'Rdown': Vars.Rdown,'Rup': Vars.Rup, 'ExternalOutput': Vars.ExternalOutput,'CO2Output': Vars.CO2Output,'SolarOutput':Vars.SolarOutput,'AODOutput':Vars.AODOutput}
-
-
-def variable_importer_parallelized(config,paral_config,control):
-
-    """ 
-    Executes all relevant functions to import variables for an ensemble simulation run. From the *configuration* dictionary, returned by ``Configuration.importer``, and the *parallelization_config*, returned by ``Configuration.allocate_parallelparameter``, the relevant infomration is extracted and the specific importer functions are executed in the following order:
-
-    .. math::
+        for func in functionlist:
+            if func.__qualname__=='transfer.sellers':
+                Vars.cL=np.array([0]*int(number_of_integration/data_readout+1),dtype=object)
+                Vars.C=np.array([0]*int(number_of_integration/data_readout+1),dtype=object)
+                Vars.F=np.array([0]*int(number_of_integration/data_readout+1),dtype=object)
+                Vars.P=np.array([0]*int(number_of_integration/data_readout+1),dtype=object)
+                Vars.Transfer=np.array([0]*int(number_of_integration/data_readout+1),dtype=object)
+            if func.__qualname__=='transfer.budyko':
+                Vars.BudTransfer=np.array([0]*int(number_of_integration/data_readout+1),dtype=object)
+            if func.__qualname__=='forcing.co2myhre':
+                Vars.CO2Output=np.array([0]*int(number_of_integration/data_readout+1),dtype=object)
+            if func.__qualname__=='forcing.solar':                
+                Vars.SolarOutput=np.array([0]*int(number_of_integration/data_readout+1),dtype=object)
+            if func.__qualname__=='forcing.aod':            
+                Vars.AODOutput==np.array([0]*int(number_of_integration/data_readout+1),dtype=object)
+                
+        Vars.ExternalOutput=np.array([0]*int(number_of_integration/data_readout+1),dtype=object)
+        Vars.alpha=np.array([0]*int(number_of_integration/data_readout+1),dtype=object)
+        Vars.solar=np.array([0]*int(number_of_integration/data_readout+1),dtype=object)
+        Vars.noise=np.array([0]*int(number_of_integration/data_readout+1),dtype=object)
+        Vars.Rdown=np.array([0]*int(number_of_integration/data_readout+1),dtype=object)
+        #Vars.Rup=np.reshape(np.zeros(int(number_of_integration/data_readout)*len(Vars.Lat)),(int(number_of_integration/data_readout),len(Vars.Lat)))
+        Vars.Rup=np.array([0]*int(number_of_integration/data_readout+1),dtype=object)
         
-        buliltin \_ importer \quad \\rightarrow  \quad buliltin \_ importer \_ parallelized \quad \\rightarrow  \quad initial \_ importer \_ parallelized \quad \\rightarrow \quad output \_ importer
-
-    .. Note::
-
-        When doing this manually, maintain the order!
-
-    **Function-call arguments** \n
-
-    :param dict config:         The configuration dictionary returned by ``Configuration.importer``
-
-    :param dict paral_config:   The parallelization setup configuration returned by ``Configuration.allocate_parallelparameter`` (second entry of return)  
-
-    :returns:                   No return
-
-    """
-    trackerreset()
-    builtin_importer(config['rk4input'],control)
-    builtin_importer_parallelized(paral_config,control)
-    initial_importer_parallelized(config['initials'],paral_config)
-    output_importer()    
-    #output_importer_parameterfit(fitconfig)
-    return 
-
-
-def initial_importer_parallelized(initials,paral_config):
-    """
-    Calculates the initial conditions of the *primary variables* from the ``initials``-section for parallelized simulations.
-
-    The initial conditions are directly written to their entry in ``Variable.Vars``. 
-
-    **Function-call arguments** \n
-
-    :param dict initials:       The ``[initials]``-section from the configuration dictionary returned by ``Configuration.importer``  
-
-    :param dict paral_config:   The parallelization setup configuration returned by ``Configuration.allocate_parallelparameter`` (second entry of return)  
-
-    :returns:                   No return
-    """ 
-    from lowEBMs.Packages.Functions import cosd, lna
-    ###filling the running variables with values depending on the systemconfiguration in rk4input###
-
-    if spatial_resolution==0:
-        dim=0
-        print('0D')
-    else:
-        dim=1
-       #NS==True corresponds to southpole to northpole representation (180 Degrees)
-        if both_hemispheres==True:    
-            Latrange=180
-
-            #Checking if Temperature and Latitude is set on a latitudal circle (0°,10°,..if step=10)
-            #or on a latitudinal belt and therefore right between the boundaries (5°,15°,..if step=10)
-
-            #circle==True and belt==False says on the latitudinal circle
-            if latitudinal_circle==True and latitudinal_belt==False:      
-                initials['latitude_c']=np.linspace(-90+spatial_resolution,90-spatial_resolution,int(Latrange/spatial_resolution-1))
-                initials['latitude_b']=np.linspace(-90,90-spatial_resolution,int(Latrange/spatial_resolution))+spatial_resolution/2
-                initials['zmt']=np.array([initials['zmt']]*int(Latrange/spatial_resolution-1))
-                #Checking if the Temperature for each latitude starts with the same value or a 
-                #cosine shifted value range
-                if initials['initial_temperature_cosine']==True:
-                    initials['zmt']=initials['zmt']+initials['initial_temperature_amplitude']*(cosd(initials['latitude_c'])-1)
-
-            #circle==False and belt==True say on the latitudinal belt
-            if latitudinal_circle==False and latitudinal_belt==True:
-                initials['latitude_b']=np.linspace(-90+spatial_resolution,90-spatial_resolution,int(Latrange/spatial_resolution-1))
-                initials['latitude_c']=np.linspace(-90,90-spatial_resolution,int(Latrange/spatial_resolution))+spatial_resolution/2
-                initials['zmt']=np.array([initials['zmt']]*int(Latrange/spatial_resolution))
-                if initials['initial_temperature_cosine']==True:
-                    if initials['initial_temperature_noise']==True:
-                        z=[0]*len(initials['latitude_c'])
-                        for k in range(len(initials['latitude_c'])):
-                            z[k]=np.random.normal(0,initials['initial_temperature_noise_amplitude'])
-                    else: 
-                        z=0
-                    initials['zmt']=initials['zmt']+initials['initial_temperature_amplitude']*(cosd(initials['latitude_c'])-1)+lna(z)
-
-        #Not from southpole to northpole rather equator to pole
-        else:
-            Latrange=90     
-            if latitudinal_circle==True and latitudinal_belt==False:
-                initials['latitude_c']=np.linspace(0,90-spatial_resolution,int(Latrange/spatial_resolution))
-                initials['latitude_b']=np.linspace(0,90-spatial_resolution,int(Latrange/spatial_resolution))+spatial_resolution/2
-                initials['zmt']=np.array([initials['zmt']]*int(Latrange/spatial_resolution))
-                if initials['initial_temperature_cosine']==True:
-                    initials['zmt']=initials['zmt']+initials['initial_temperature_amplitude']*(cosd(initials['latitude_c'])-1)
-            if latitudinal_circle==False and latitudinal_belt==True:
-                initials['latitude_b']=np.linspace(0,90-spatial_resolution,int(Latrange/spatial_resolution))
-                initials['latitude_c']=np.linspace(0,90-spatial_resolution,int(Latrange/spatial_resolution))+spatial_resolution/2
-                initials['zmt']=np.array([initials['zmt']]*int(Latrange/spatial_resolution))
-                if initials['initial_temperature_cosine']==True:
-                    initials['zmt']=initials['zmt']+initials['initial_temperature_amplitude']*(cosd(initials['latitude_c'])-1)
     
-    Vars.t=initials['time']
-    Vars.Lat=initials['latitude_c']
-    Vars.Lat2=initials['latitude_b']
-    Vars.T=np.array([initials['zmt']]*number_of_parallels)
-    Vars.T_global=np.array([initials['gmt']]*number_of_parallels)
-
-def output_importer_parallelized():
-    """
-    Creates empty lists for the storage-variables which will be filled during the ensemble simulation.
-
-    The lists are directly written to their entry in ``Variable.Vars`` and can be returned after the simulation is finished. 
-
-    """
-    if (number_of_integration) % data_readout == 0:
-        #Assigning dynamical variables in Variables Package with initial values from var
-        Vars.cL,Vars.C,Vars.F,Vars.P,Vars.Transfer,Vars.alpha,Vars.BudTransfer,Vars.solar,Vars.noise,Vars.Rdown,Vars.Rup,Vars.ExternalOutput,Vars.CO2Output,Vars.SolarOutput,Vars.AODOutput=np.array([[0]*int(number_of_integration/data_readout)]*Vars.Readnumber,dtype=object)
-    else: 
-        Vars.cL,Vars.C,Vars.F,Vars.P,Vars.Transfer,Vars.alpha,Vars.BudTransfer,Vars.solar,Vars.noise,Vars.Rdown,Vars.Rup,Vars.ExternalOutput,Vars.CO2Output,Vars.SolarOutput,Vars.AODOutput=np.array([[0]*(int(number_of_integration/data_readout)+1)]*Vars.Readnumber,dtype=object)
     Vars.ExternalOutput=np.array([Vars.ExternalOutput for i in range(int(number_of_externals))],dtype=object)
     Vars.External_time_start=np.array([0 for i in range(int(number_of_externals))],dtype=object)
     Vars.ForcingTracker=np.array([[0,0] for i in range(int(number_of_externals))],dtype=object)
     Vars.ExternalInput=np.array([0 for i in range(int(number_of_externals))],dtype=object)
     Vars.Read={'cL': Vars.cL,'C': Vars.C,'F': Vars.F,'P': Vars.P,'Transfer': Vars.Transfer,'alpha': Vars.alpha,'BudTransfer': Vars.BudTransfer, 'solar': Vars.solar,'noise': Vars.noise,'Rdown': Vars.Rdown,'Rup': Vars.Rup, 'ExternalOutput': Vars.ExternalOutput,'CO2Output': Vars.CO2Output,'SolarOutput':Vars.SolarOutput,'AODOutput':Vars.AODOutput}
-
-
-def builtin_importer_parallelized(paral_config,control):
-    """
-    Adds additional variables from the parallelization setup to the python-builtin functions which are globally accessible.    
-
-    The initial conditions are directly written to their entry in ``Variable.Vars``. 
-
-    **Function-call arguments** \n
-
-    :param dict initials:       The ``[initials]``-section from the configuration dictionary returned by ``Configuration.importer``  
-
-    :param dict paral_config:   The parallelization setup configuration returned by ``Configuration.allocate_parallelparameter`` (second entry of return)  
-
-    :returns:                   No return
-    """ 
-    #Writing systemparameters into builtin-module to make them globally callable
-    #Overview given in Readme.txt
-    
-    keys=list(paral_config.keys())
-    values=list(paral_config.values())
-    for i in range(len(keys)):
-        exec("builtins.%s=%i" % (keys[i],values[i]))
-    builtins.parallelization=True
-    builtins.Runtime_Tracker=0
-    builtins.Noise_Tracker=0
-    if control==True:
-        builtins.eq_condition=True
-        builtins.number_of_integration=10000
-        builtins.data_readout=1    
-        builtins.eq_condition_length=accuracy_number
-        builtins.eq_condition_amplitude=accuracy
-        print('Starting controlrun with a temperature accuracy of %s K on the GMT over %s datapoints.' %(accuracy,accuracy_number))
-
-
-    return
-    

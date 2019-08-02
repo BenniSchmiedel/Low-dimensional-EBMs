@@ -49,7 +49,7 @@ import builtins
 import time
 
 
-def rk4alg(func,eqparam,funccomp):
+def rk4alg(func,eqparam,funccomp,progressbar=True):
     from tqdm import tqdm, tnrange
     """This functions main task is performing the numerical integration explained above by using the solution of the model equation from ``lowEBMs.Packages.ModelEquations``. 
 
@@ -163,7 +163,7 @@ def rk4alg(func,eqparam,funccomp):
     
     #Start the runtime tracker
     Vars.start_time = time.time()
-    print('Starting simulation...')
+    #print('Starting simulation...')
     #locally defining rk4input parameters
     n,h=int(number_of_integration),stepsize_of_integration
     #Creating an array of the variables t,T,Lat,T_global which will be the outputarray
@@ -175,51 +175,96 @@ def rk4alg(func,eqparam,funccomp):
     data[2][0]=Vars.T_global #Global mean temperature T_global
     ###Running runge Kutta 4th order n times###
     j=0
-    for i in tnrange(1, n + 1):  
-        #Calculating increments at 4 positions from the model equation (func)
-        T0=Vars.T
-        k1 = h * func(eqparam,funccomp)
-        builtins.Runtime_Tracker += 1
-        Vars.T=T0+0.5*k1
-        k2 = h * func(eqparam,funccomp)
-        builtins.Runtime_Tracker += 1
-        Vars.T=T0+0.5*k2
-        k3 = h * func(eqparam,funccomp)
-        builtins.Runtime_Tracker += 1
-        Vars.T=T0+k3
-        k4 = h * func(eqparam,funccomp)
-        builtins.Runtime_Tracker += 1
-        
-        #filling output array "data" with values from the generated increments
-        #For the time simply adding the integration stepsize
-        Vars.t = Vars.t + h
-        Vars.T = T0 + (k1 + k2 + k2 + k3 + k3 + k4) / 6
-        if spatial_resolution>0:
-            Vars.T_global = earthsystem.globalmean_temperature()
-        else: #if 0 dimensional
-            Vars.T_global = Vars.T
-        if (i) % data_readout == 0: 
-            j += 1       
-            data[0][j] = Vars.t 
-            #The Temperature is an average over the generated increments
-            data[1][j] = Vars.T  
-            #The globalmeantemp calculated from the new generated temperature distribution
-            data[2][j] = Vars.T_global
-        #Check if the equilibrium condition is fulfilled. If true, break the loop, cut the output array to
-        #the current length and move on to return the output data
-        if eq_condition==True:
-            if Runtime_Tracker > 4*eq_condition_length:
-                if SteadyStateConditionGlobal(data[2][j-eq_condition_length:j])==True:
-                    for l in range(len(data)):
-                        data[l]=data[l][:(j+1)]
-                    for m in Vars.Read:
-                        Vars.Read[m]=Vars.Read[m][:(j)]
-                    break
-    #Return the written data (Cut excessive 0s)
-    dataout=[np.array(data[0][:(j+1)]),np.array(data[1][:(j+1)]),np.array(data[2][:(j+1)])]
+    if progressbar==True:
+        for i in tnrange(1, n + 1):  
+            #Calculating increments at 4 positions from the model equation (func)
+            T0=Vars.T
+            k1 = h * func(eqparam,funccomp)
+            builtins.Runtime_Tracker += 1
+            Vars.T=T0+0.5*k1
+            k2 = h * func(eqparam,funccomp)
+            builtins.Runtime_Tracker += 1
+            Vars.T=T0+0.5*k2
+            k3 = h * func(eqparam,funccomp)
+            builtins.Runtime_Tracker += 1
+            Vars.T=T0+k3
+            k4 = h * func(eqparam,funccomp)
+            builtins.Runtime_Tracker += 1
             
-    print('Simulation finished within %s seconds' %(time.time() - Vars.start_time))
-
+            #filling output array "data" with values from the generated increments
+            #For the time simply adding the integration stepsize
+            Vars.t = Vars.t + h
+            Vars.T = T0 + (k1 + k2 + k2 + k3 + k3 + k4) / 6
+            if spatial_resolution>0:
+                Vars.T_global = earthsystem.globalmean_temperature()
+            else: #if 0 dimensional
+                Vars.T_global = Vars.T
+            if (i) % data_readout == 0: 
+                j += 1       
+                data[0][j] = Vars.t 
+                #The Temperature is an average over the generated increments
+                data[1][j] = Vars.T  
+                #The globalmeantemp calculated from the new generated temperature distribution
+                data[2][j] = Vars.T_global
+            #Check if the equilibrium condition is fulfilled. If true, break the loop, cut the output array to
+            #the current length and move on to return the output data
+            if eq_condition==True:
+                if Runtime_Tracker > 4*eq_condition_length:
+                    if SteadyStateConditionGlobal(data[2][j-eq_condition_length:j])==True:
+                        for l in range(len(data)):
+                            data[l]=data[l][:(j+1)]
+                        for m in Vars.Read:
+                            Vars.Read[m]=Vars.Read[m][:(j)]
+                        break
+        #Return the written data (Cut excessive 0s)
+        dataout=[np.array(data[0][:(j+1)]),np.array(data[1][:(j+1)]),np.array(data[2][:(j+1)])]
+                
+        #print('Simulation finished within %s seconds' %(time.time() - Vars.start_time))
+    else:
+        for i in range(1, n + 1):  
+            #Calculating increments at 4 positions from the model equation (func)
+            T0=Vars.T
+            k1 = h * func(eqparam,funccomp)
+            builtins.Runtime_Tracker += 1
+            Vars.T=T0+0.5*k1
+            k2 = h * func(eqparam,funccomp)
+            builtins.Runtime_Tracker += 1
+            Vars.T=T0+0.5*k2
+            k3 = h * func(eqparam,funccomp)
+            builtins.Runtime_Tracker += 1
+            Vars.T=T0+k3
+            k4 = h * func(eqparam,funccomp)
+            builtins.Runtime_Tracker += 1
+            
+            #filling output array "data" with values from the generated increments
+            #For the time simply adding the integration stepsize
+            Vars.t = Vars.t + h
+            Vars.T = T0 + (k1 + k2 + k2 + k3 + k3 + k4) / 6
+            if spatial_resolution>0:
+                Vars.T_global = earthsystem.globalmean_temperature()
+            else: #if 0 dimensional
+                Vars.T_global = Vars.T
+            if (i) % data_readout == 0: 
+                j += 1       
+                data[0][j] = Vars.t 
+                #The Temperature is an average over the generated increments
+                data[1][j] = Vars.T  
+                #The globalmeantemp calculated from the new generated temperature distribution
+                data[2][j] = Vars.T_global
+            #Check if the equilibrium condition is fulfilled. If true, break the loop, cut the output array to
+            #the current length and move on to return the output data
+            if eq_condition==True:
+                if Runtime_Tracker > 4*eq_condition_length:
+                    if SteadyStateConditionGlobal(data[2][j-eq_condition_length:j])==True:
+                        for l in range(len(data)):
+                            data[l]=data[l][:(j+1)]
+                        for m in Vars.Read:
+                            Vars.Read[m]=Vars.Read[m][:(j)]
+                        break
+        #Return the written data (Cut excessive 0s)
+        dataout=[np.array(data[0][:(j+1)]),np.array(data[1][:(j+1)]),np.array(data[2][:(j+1)])]
+                
+        #print('Simulation finished within %s seconds' %(time.time() - Vars.start_time))
     return dataout
 
 def controlrun(configdic):

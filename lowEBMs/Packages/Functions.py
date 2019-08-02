@@ -35,15 +35,16 @@ Additionally defined are tools for evaluation or simplification in the class:
 """
 
 import numpy as np
-from climlab import constants as const
-from climlab.solar.insolation import daily_insolation
+#from climlab import constants as const
+#from climlab.solar.insolation import daily_insolation
 #from climlab.solar.orbital import OrbitalTable
 #from climlab.solar.orbital import LongOrbitalTable
-import scipy
+#import scipy
 import builtins
 import time
 from lowEBMs.Packages.Variables import Vars
-import xarray as xr
+from lowEBMs import constants as const
+#import xarray as xr
 
 
 
@@ -244,6 +245,9 @@ class flux_down:
         if Vars.AOD != 0:
             Q_aod=Q_total*np.exp(-Vars.AOD)
         
+        #if Runtime_Tracker==0:
+        #    if len(Q_total)!=1:
+        #        Vars.Read['solar']=np.reshape(np.zeros(len(Vars.Read['solar'])*len(Q_total)),(len(Vars.Read['solar']),len(Q_total)))
         if Runtime_Tracker % (4*data_readout) == 0:
             Vars.Read['solar'][int(Runtime_Tracker/(4*data_readout))]=Q_total            
         
@@ -251,6 +255,9 @@ class flux_down:
         alpha=albedofunc(*albedofuncparam) 
         #Readout to give albedo as output
         if albedoread==True: 
+            #if Runtime_Tracker==0:
+            #    if len(alpha)!=1:
+            #        Vars.Read['alpha']=np.reshape(np.zeros(len(Vars.Read['alpha'])*len(alpha)),(len(Vars.Read['alpha']),len(alpha)))
             if Runtime_Tracker % (4*data_readout) == 0:    #Only on 4th step (due to rk4)
                 Vars.alpha=alpha
                 Vars.Read['alpha'][int(Runtime_Tracker/(4*data_readout))]=alpha
@@ -649,10 +656,28 @@ class flux_up:
         #Outgoing radiation, from empirical approximation formula by Budyko (no clouds)
         #R_outbudncparam=[A,B]
         list_parameters=list(funcparam.values())
-        A,B=list_parameters
-        R_out=-(A+B*(Vars.T-273.15))
+        Activation,A,B=list_parameters
+        
+        if parallelization==True:
+            paras=[A,B]
+            A,B=[np.transpose(np.array([paras[i]]*len(Vars.Lat))) if np.shape(paras[i])==(number_of_parallels,) else paras[i] for i in range(len(paras))]
+            if type(Activation)==bool:
+                R_out=-(A+B*(Vars.T-273.15))
+            else:
+                R_out=np.reshape(np.zeros(number_of_parallels*len(Vars.Lat)),(number_of_parallels,len(Vars.Lat)))
+                for i in range(number_of_parallels):
+                    if Activation[i]==False:
+                        R_out[i]=np.zeros(len(Vars.Lat))
+                    else:
+                        R_out[i]=-(A+B*(Vars.T[i]-273.15))
+                    
+        else:
+            if Activation==False:
+                R_out=0
+            else:
+                R_out=-(A+B*(Vars.T-273.15))
         if Runtime_Tracker % (4*data_readout) == 0:    #Only on 4th step (due to rk4)
-            Vars.Read['Rup'][int(Runtime_Tracker/(4*data_readout))]=R_out
+                Vars.Read['Rup'][int(Runtime_Tracker/(4*data_readout))]=R_out
         return R_out
 
     def budyko_clouds(funcparam):
@@ -710,10 +735,28 @@ class flux_up:
         #Outgoing radiation, from empirical approximation formula by Budyko (clouds)
         #R_outbudcparam=[A,B,A1,B1,f_c]
         list_parameters=list(funcparam.values())
-        A,B,A1,B1,f_c=list_parameters
-        R_out=-(A+B*(Vars.T-273.15)-(A1+B1*(Vars.T-273.15))*f_c)
+        Activation,A,B,A1,B1,f_c=list_parameters
+        if parallelization==True:
+            paras=[A,B,A1,B1,f_c]
+            A,B,A1,B1,f_c=[np.transpose(np.array([paras[i]]*len(Vars.Lat))) if np.shape(paras[i])==(number_of_parallels,) else paras[i] for i in range(len(paras))]
+            if type(Activation)==bool:
+                R_out=-(A+B*(Vars.T-273.15)-(A1+B1*(Vars.T-273.15))*f_c)
+            else:
+                R_out=np.reshape(np.zeros(number_of_parallels*len(Vars.Lat)),(number_of_parallels,len(Vars.Lat)))
+                for i in range(number_of_parallels):
+                    if Activation[i]==False:
+                        R_out[i]=np.zeros(len(Vars.Lat))
+                    else:
+                        R_out[i]=-(A+B*(Vars.T[i]-273.15)-(A1+B1*(Vars.T[i]-273.15))*f_c)
+                    
+        else:
+            if Activation==False:
+                R_out=np.zeros(len(Vars.Lat))
+            else:
+                R_out=-(A+B*(Vars.T-273.15)-(A1+B1*(Vars.T-273.15))*f_c)
         if Runtime_Tracker % (4*data_readout) == 0:    #Only on 4th step (due to rk4)
             Vars.Read['Rup'][int(Runtime_Tracker/(4*data_readout))]=R_out
+                
         return R_out
 
     def planck(funcparam):
@@ -754,8 +797,25 @@ class flux_up:
         #Outgoing radiation, from plancks radiation law
         #R_outplanckparam=[grey,sig]
         list_parameters=list(funcparam.values())
-        grey,sig=list_parameters
-        R_out=-(grey*sig*Vars.T**4)
+        Activation,grey,sig=list_parameters
+        if parallelization==True:
+            paras=[grey,sig]
+            grey,sig=[np.transpose(np.array([paras[i]]*len(Vars.Lat))) if np.shape(paras[i])==(number_of_parallels,) else paras[i] for i in range(len(paras))]
+            if type(Activation)==bool:
+                R_out=-(grey*sig*Vars.T**4)
+            else:
+                R_out=np.reshape(np.zeros(number_of_parallels*len(Vars.Lat)),(number_of_parallels,len(Vars.Lat)))
+                for i in range(number_of_parallels):
+                    if Activation[i]==False:
+                        R_out[i]=np.zeros(len(Vars.Lat))
+                    else:
+                        R_out[i]=-(grey*sig*Vars.T[i]**4)
+        else:
+            if Activation==False:
+                R_out=np.zeros(len(Vars.Lat))
+            else:
+                R_out=-(grey*sig*Vars.T**4)
+                
         if Runtime_Tracker % (4*data_readout) == 0:    #Only on 4th step (due to rk4)
             Vars.Read['Rup'][int(Runtime_Tracker/(4*data_readout))]=R_out
         return R_out
@@ -812,9 +872,24 @@ class flux_up:
         #Outgoing radiation, from Sellers earth-atmosphere model
         #R_outselparam=[sig,grey,gamma,m]"""
         list_parameters=list(funcparam.values())
-        m,sigma,gamma,grey=list_parameters
-        R_out=-grey*sigma*Vars.T**4*(1-m*np.tanh(gamma*Vars.T**6))
-
+        Activation,m,sigma,gamma,k=list_parameters
+        if parallelization==True:
+            paras=[m,sigma,gamma,k]
+            m,sigma,gamma,k=[np.transpose(np.array([paras[i]]*len(Vars.Lat))) if np.shape(paras[i])==(number_of_parallels,) else paras[i] for i in range(len(paras))]
+            if type(Activation)==bool:
+                R_out=-k*sigma*Vars.T**4*(1-m*np.tanh(gamma*Vars.T**6))
+            else:
+                R_out=np.reshape(np.zeros(number_of_parallels*len(Vars.Lat)),(number_of_parallels,len(Vars.Lat)))
+                for i in range(number_of_parallels):
+                    if Activation[i]==False:
+                        R_out[i]=np.zeros(len(Vars.Lat))
+                    else:
+                        R_out[i]=-k*sigma*Vars.T[i]**4*(1-m*np.tanh(gamma*Vars.T[i]**6))
+        else:
+            if Activation==False:
+                R_out=np.zeros(len(Vars.Lat))
+            else:
+                R_out=-k*sigma*Vars.T**4*(1-m*np.tanh(gamma*Vars.T**6))
         if Runtime_Tracker % (4*data_readout) == 0:    #Only on 4th step (due to rk4)
             Vars.Read['Rup'][int(Runtime_Tracker/(4*data_readout))]=R_out
         return R_out
@@ -1127,24 +1202,25 @@ class transfer:
             if parallelization==True: 
                 P1,P0=np.reshape(np.zeros(number_of_parallels*len(Vars.Lat)*2),(2,number_of_parallels,len(Vars.Lat)))
                 for i in range(number_of_parallels):
-                    P_1=np.insert(P[i],0,0)                     
-                    P_0=np.append(P[i],0)
-                    P1[i]=P_1
-                    P0[i]=P_0            
+                    P_0=np.append(P[i],0)                    
+                    P_1=np.insert(P[i],0,0) 
+                    P0[i]=P_0
+                    P1[i]=P_1            
             else:
-                P1=np.insert(P,0,0)                       
-                P0=np.append(P,0)
-            l1=np.insert(Vars.latlength,0,0)
+                P0=np.append(P,0)                       
+                P1=np.insert(P,0,0)
             l0=np.append(Vars.latlength,0)
+            l1=np.insert(Vars.latlength,0,0)
             
             #resulting latitudinal transfer flow, weighted with the gridparameters
             Transfer=(P1*l1-P0*l0)/Vars.area
-            Readdata=[cL,C,F,P,Transfer]
-            Readdatakeys=['cL','C','F','P','Transfer']
+            
 
             #reading for output
             if Readout==True:
                 if Runtime_Tracker % (4*data_readout) == 0:
+                    Readdata=[cL,C,F,P,Transfer]
+                    Readdatakeys=['cL','C','F','P','Transfer']
                     for l in range(len(Readdata)):
                         Vars.Read[Readdatakeys[l]][int(Runtime_Tracker/(4*data_readout))]=Readdata[l]
         else:
@@ -1327,12 +1403,12 @@ class transfer:
         
         #equation of the atmosphere sensible heat transfer, with dependence on Temperature and Temperature difference
         if parallelization==True:
-            a1=Vars.meridional*Vars.T[:,:-1]
+            a1=Vars.meridional*Vars.T[:,1:]
             a2=K_h*factor_kair*Vars.tempdif/dy
             a3=cp*dp*const.mb_to_Pa/g
             C=(a1-a2)*a3*factor_air
         else:
-            C=(Vars.meridional*Vars.T[:-1]-K_h*factor_kair*(Vars.tempdif/(dy)))*(cp*dp*const.mb_to_Pa/g)*factor_air
+            C=(Vars.meridional*Vars.T[1:]-K_h*factor_kair*(Vars.tempdif/(dy)))*(cp*dp*const.mb_to_Pa/g)*factor_air
         return C
         
     def sensibleheat_ocean_sel(funcparam):
@@ -1581,7 +1657,6 @@ class forcing:
             Vars.ExternalOutput[forcingnumber][int(Runtime_Tracker/(4*data_readout))]=F
         return F
 
-
     def predefined(funcparam):
         """ 
         The predefined forcing imports data containing external radiative forcings.
@@ -1784,7 +1859,7 @@ class forcing:
         list_parameters=list(funcparam.values())
         forcingnumber,datapath,name,delimiter,header,col_time,colrange_forcing,timeunit,BP,time_start,k_output, m_output, k_input, m_input=list_parameters
         if Runtime_Tracker==0:
-            forcingscols=np.linspace(colrange_forcing[0],colrange_forcing[1],colrange_forcing[1]-colrange_forcing[0],dtype=int)
+            forcingscols=np.arange(colrange_forcing[0],colrange_forcing[1],dtype=int)
 
             Vars.ExternalInput[forcingnumber]=[0,0]
             Vars.ExternalInput[forcingnumber][0]=np.genfromtxt(str(datapath)+str(name),delimiter=str(delimiter),skip_header=header,usecols=(col_time),unpack=True,encoding='ISO-8859-1') 
@@ -1962,7 +2037,6 @@ class forcing:
             Vars.CO2Output[int(Runtime_Tracker/(4*data_readout))]=F
         return F
 
-
     def orbital(funcparam):
         """ 
         Includes forcing from orbital parameter changes.
@@ -2085,7 +2159,6 @@ class forcing:
         Vars.orbitals=Vars.OrbitalTracker[1]
 
         return 0
-
 
     def solar(funcparam):
         """ 
@@ -2334,7 +2407,7 @@ class earthsystem:
         :toctree:
 
         globalmean_temperature
-        zonalmean_insolation
+        insolation
         solarradiation
         solarradiation_orbital
         specific_saturation_humidity_sel
@@ -2371,50 +2444,21 @@ class earthsystem:
         else:
             GMT=np.average(Vars.T, weights=cosd(Vars.Lat))
         return GMT
-
-    def zonalmean_insolation():
-        #Calculation of the annual mean solar radiation over latitudes from
-        #the climlab package 
-        days=np.linspace(0,365,365)
-        Q=lna(np.mean(daily_insolation(Vars.Lat,days),axis=1))
-        return Q
-
-    def solarradiation_self(convfactor,timeunit,orbitalyear,Q):
-        if orbitalyear==0:
-            Vars.orbitals={'ecc': 0.017236, 'long_peri': 281.37, 'obliquity': 23.446}
-        elif orbitalyear=='external':
-            pass
-        elif orbitalyear!=0:
-            pass
-            #Vars.orbtable=OrbitalTable()
-            #Vars.orbitals=Vars.orbtable.lookup_parameters(orbitalyear)
-            
-        #returning the annual mean solar insolation or solar insolations varying over time, depending on the
-        #time specified
-        if timeunit=='annualmean':
-            days=np.linspace(0,365,365)
-            Q=lna(np.mean(earthsystem.insolation_self(Vars.Lat,days,Vars.orbitals,S0=Q+Vars.TSI),axis=1))
-        if timeunit=='year':
-            Q=lna(np.mean(earthsystem.insolation_self(Vars.Lat,np.linspace(            0,((365*int(Vars.t)-1) % 365)*stepsize_of_integration % 365,36),Vars.orbitals,S0=Q+Vars.TSI),axis=1))*convfactor
-        if timeunit=='month':
-            Q=lna(np.mean(earthsystem.insolation_self(Vars.Lat,np.linspace(            (int(Vars.t)*365/12) % 365,(int(Vars.t)*365/12-1) % 365,30),Vars.orbitals,S0=Q+Vars.TSI),axis=1))*convfactor
-        if timeunit=='day':
-            Q=lna(earthsystem.insolation_self(Vars.Lat,int(Vars.t)%365,Vars.orbitals,S0=Q+Vars.TSI))*convfactor
-        if timeunit=='second':
-            tconv=60*60*24
-            Q=lna(earthsystem.insolation_self(Vars.Lat,int(Vars.t/tconv)%365,Vars.orbitals,S0=Q+Vars.TSI))*convfactor
-        return Q
-        
-    def insolation_self(Lat,Days,orb={'ecc': 0.017236, 'long_peri': 281.37, 'obliquity': 23.446},S0=1366.14):
+    
+    def insolation(Lat_in,Days_in,orb={'ecc': 0.017236, 'long_peri': 281.37, 'obliquity': 23.446},S0=1366.14):
         degrad=np.pi/180
-        lat=xr.DataArray(Lat, coords=[Lat], dims=['lat'])
-        if type(Days) is np.ndarray:
-            Days=xr.DataArray(Days, coords=[Days], dims=['day'])
+        if type(Days_in)==np.ndarray and type(Lat_in)==np.ndarray:
+            Lat=np.tile(Lat_in,(len(Days_in),1))
+            Days=np.transpose(np.tile(Days_in,(len(Lat_in),1)))
+        else:
+            Lat=Lat_in
+            Days=Days_in
+            
         ecc = orb['ecc']
         long_peri = orb['long_peri']
         obliquity = orb['obliquity']
 
-        phi=lat*degrad
+        phi=Lat*degrad
         long_peri_rad = long_peri*degrad
         delta_lambda = (Days - 80.) * 2*np.pi/365
         beta = np.sqrt(1-ecc**2)
@@ -2429,20 +2473,17 @@ class earthsystem:
 
         delta = np.arcsin(np.sin(degrad*obliquity) * np.sin(lambda_long))
         np.seterr(invalid='ignore')
-        Ho = xr.where( abs(delta)-np.pi/2+abs(phi) < 0.,np.arccos(-np.tan(phi)*np.tan(delta)),
-                    xr.where(phi*delta>0., np.pi, 0. ))
+        Ho = np.where( abs(delta)-np.pi/2+abs(phi) < 0.,np.arccos(-np.tan(phi)*np.tan(delta)),
+                    np.where(phi*delta>0., np.pi, 0. ))
         coszen = Ho*np.sin(phi)*np.sin(delta) + np.cos(phi)*np.cos(delta)*np.sin(Ho)
 
         Fw = S0/np.pi*( (1+ecc*np.cos(lambda_long -degrad*long_peri))**2 / (1-ecc**2)**2 * coszen)
     
         return Fw
-
+    
     def solarradiation(convfactor,timeunit,orbitalyear,Q):
         """ 
         The solar insolation over the latitudes :math:`Q`.
-      
-        The distribution of the solar insolation is imported from ``climlab.solar.insolation.daily_insolation``.
-        As described in ``flux_down.insolation`` the orbital parameters can be adjusted to another time (in spaces of kiloyears), import from ``climlab.solar.orbital``.
         
         **Function-call arguments** \n
 
@@ -2472,9 +2513,6 @@ class earthsystem:
         :rtype:                     float / array(float) (0D / 1D) 
 
         """
-        #Calculation of the mean solar radiation over latitude with time specification
-        
-        #Adjustment of orbital parameters to specfific year (from climlab), else present day
         if orbitalyear==0:
             Vars.orbitals={'ecc': 0.017236, 'long_peri': 281.37, 'obliquity': 23.446}
         elif orbitalyear=='external':
@@ -2487,19 +2525,23 @@ class earthsystem:
         #returning the annual mean solar insolation or solar insolations varying over time, depending on the
         #time specified
         if timeunit=='annualmean':
-            days=np.linspace(0,365,365)
-            Q=lna(np.mean(daily_insolation(Vars.Lat,days,Vars.orbitals,S0=Q+Vars.TSI),axis=1))
+            days=np.arange(365)
+            Q=lna(np.mean(earthsystem.insolation(Vars.Lat,days,Vars.orbitals,S0=Q+Vars.TSI),axis=0))
         if timeunit=='year':
-            Q=lna(np.mean(daily_insolation(Vars.Lat,np.linspace(            0,((365*int(Vars.t)-1) % 365)*stepsize_of_integration % 365,36),Vars.orbitals,S0=Q+Vars.TSI),axis=1))*convfactor
+            days=np.linspace(0,((365*int(Vars.t)-1) % 365)*stepsize_of_integration % 365,36)
+            Q=lna(np.mean(earthsystem.insolation(Vars.Lat,days,Vars.orbitals,S0=Q+Vars.TSI),axis=0))*convfactor
         if timeunit=='month':
-            Q=lna(np.mean(daily_insolation(Vars.Lat,np.linspace(            (int(Vars.t)*365/12) % 365,(int(Vars.t)*365/12-1) % 365,30),Vars.orbitals,S0=Q+Vars.TSI),axis=1))*convfactor
+            days=np.linspace((int(Vars.t)*365/12) % 365,(int(Vars.t)*365/12-1) % 365,30)
+            Q=lna(np.mean(earthsystem.insolation(Vars.Lat,days,Vars.orbitals,S0=Q+Vars.TSI),axis=0))*convfactor
         if timeunit=='day':
-            Q=lna(daily_insolation(Vars.Lat,int(Vars.t)%365,Vars.orbitals,S0=Q+Vars.TSI))*convfactor
+            days=int(Vars.t)%365
+            Q=lna(earthsystem.insolation(Vars.Lat,days,Vars.orbitals,S0=Q+Vars.TSI))*convfactor
         if timeunit=='second':
             tconv=60*60*24
-            Q=lna(daily_insolation(Vars.Lat,int(Vars.t/tconv)%365,Vars.orbitals,S0=Q+Vars.TSI))*convfactor
+            days=int(Vars.t/tconv)%365
+            Q=lna(earthsystem.insolation(Vars.Lat,days,Vars.orbitals,S0=Q+Vars.TSI))*convfactor
         return Q
-
+        
     def solarradiation_orbital(convfactor,orbitalyear,unit):
         """ 
         The solar insolation over the latitudes :math:`Q` with changing orbital parameters.
@@ -2541,13 +2583,13 @@ class earthsystem:
         if Runtime_Tracker == 0:
             #Vars.orbtable=OrbitalTable()
             Vars.orbitals=Vars.orbtable.lookup_parameters(year/1000)
-            Q=lna(np.mean(daily_insolation(Vars.Lat,days,Vars.orbitals,S0=Q+Vars.TSI),axis=1))
+            Q=lna(np.mean(insolation(Vars.Lat,days,Vars.orbitals,S0=Q+Vars.TSI),axis=1))
         #updating for each kiloyear
         if unit=='year':            
             if year % 1000==0:
                 print('timeprogress: '+str(year/1000)+'ka')
                 Vars.orbitals=Vars.orbtable.lookup_parameters(year/1000)
-                Q=lna(np.mean(daily_insolation(Vars.Lat,days,Vars.orbitals,S0=Q+Vars.TSI),axis=1))
+                Q=lna(np.mean(insolation(Vars.Lat,days,Vars.orbitals,S0=Q+Vars.TSI),axis=1))
             else:
                 Q=Vars.solar
         else:
@@ -2890,9 +2932,6 @@ class earthsystem:
         #calculation from the areaportions of a sphere
         A=np.pi*re**2*(sind((90-lat_southbound))**2+(1-cosd(90-lat_southbound))**2)-         np.pi*re**2*(np.sin((90-lat_northbound)*np.pi/180)**2+(1-np.cos((90-lat_northbound)*np.pi/180))**2)
         
-        #define globally
-        Vars.area=A
-        Vars.bounds=[lat_southbound,lat_northbound]
         return A
         
 #class tools:

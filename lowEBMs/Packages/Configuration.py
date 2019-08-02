@@ -115,12 +115,12 @@ def importer(filename,*args,**kwargs):
     #packing the function components into one dictionary
     funccompd={'funclist':funclistd,'funcparam':funcparamd} 
     #converting to list-type to allow indexing
-    funccomp=dict_to_list(funccompd)     
-    eqparam=dict_to_list(eqparamd)     
-    rk4input=dict_to_list(rk4inputd)
-    initials=dict_to_list(initialsd)     
+    #funccomp=dict_to_list(funccompd)     
+    #eqparam=dict_to_list(eqparamd)     
+    #rk4input=dict_to_list(rk4inputd)
+    #initials=dict_to_list(initialsd)     
     #creating output array
-    configa=[eqparam, rk4input, funccomp, initials]
+    #configa=[eqparam, rk4input, funccomp, initials]
     configad=[eqparamd, rk4inputd, funccompd, initialsd]
     #creating array with the names of configa
     configdicnames=lna(['eqparam','rk4input','funccomp','initials'])
@@ -468,7 +468,7 @@ def parameterinterpolatorstepwise(filename,*args,**kwargs):
 #Function to rewrite parameters with arrays of parameters from the Sellers parameterinterpolator
 #Hardcoded! So take care on which index the sellers functions are placed, standard is:
 #func0 = Incoming Radiation , func1 = Outgoing Radiation, func2 = Transfer, ...
-def add_sellersparameters(config,importer,file,transfernumber,incomingnumber,solar,albedo,*args,**kwargs): 
+def add_sellersparameters(config,importer,file,transfernumber,downwardnumber,solar,albedo,*args,**kwargs): 
     """
     Overwrites the model setup with one-dimensional sellers parameters. It takes a model configuration with 0D sellers parameters, the filename of new parameters and a method of interpolation.
 
@@ -542,7 +542,7 @@ def add_sellersparameters(config,importer,file,transfernumber,incomingnumber,sol
     funct['dz']=lna(dz)*1000
     
     #rewriting the incoming radiation parameters with conversion + choice to be activated or not
-    funcin=config['funccomp']['funcparam']['func'+str(incomingnumber)]
+    funcin=config['funccomp']['funcparam']['func'+str(downwardnumber)]
     if albedo==True:
         funcin['albedoparam'][0]=lna(Z)
         funcin['albedoparam'][1]=lna(b)
@@ -550,7 +550,7 @@ def add_sellersparameters(config,importer,file,transfernumber,incomingnumber,sol
         Vars.Solar=lna(Q)*1.327624658#1.2971#
     configout=config
     configout['funccomp']['funcparam']['func'+str(transfernumber)]=funct
-    configout['funccomp']['funcparam']['func'+str(incomingnumber)]=funcin
+    configout['funccomp']['funcparam']['func'+str(downwardnumber)]=funcin
     return configout, paras
     
 def import_parallelparameter(parallelconfig_filename,*args,**kwargs):
@@ -688,44 +688,44 @@ def write_parallelparameter(config,parameter,parametersetup):
     paramkey=[]
     for l in funckey:
         paramkey.append(list(parameter[l].keys()))
-    """
-    for o in range(num_cycles):
-        for n in range(num_cycles):"""
-    for m in range(num_cycles):
+    
+    #for o in range(num_cycles):
+    for n in range(num_cycles):
+        for m in range(num_cycles):
         #for o in range(num_cycles):
-        num=0
-        par=0
-        x=paralleldict[funckey[num]]
-        if m==0:
-        #if n==0 and m==0 and o==0:
-            x.update({paramkey[num][par]:[]})
+            num=0
+            par=0
+            x=paralleldict[funckey[num]]
+            #if m==0:
+            if n==0 and m==0:# and o==0:
+                x.update({paramkey[num][par]:[]})
+                
+            x.update({paramkey[num][par]:np.append(x.get(paramkey[num][par]),
+                                                parameter[funckey[num]][paramkey[num][par]][m])})
             
-        x.update({paramkey[num][par]:np.append(x.get(paramkey[num][par]),
-                                            parameter[funckey[num]][paramkey[num][par]][m])})
+            paralleldict.update({funckey[num]:x})
         
-        paralleldict.update({funckey[num]:x})
+
+            num=0
+            par=1
+            y=paralleldict[funckey[num]]
+            if n==0 and m==0:# and o==0:
+                y.update({paramkey[num][par]:[]})
             
-    """
-    num=0
-    par=1
-    y=paralleldict[funckey[num]]
-    if n==0 and m==0 and o==0:
-        y.update({paramkey[num][par]:[]})
-    
-    y.update({paramkey[num][par]:np.append(y.get(paramkey[num][par]),
-                                        parameter[funckey[num]][paramkey[num][par]][n])})
-    paralleldict.update({key[num]:y})
-    
-    num=0
-    par=2
-    z=paralleldict[funckey[num]]
-    if n==0 and m==0 and o==0:
-        z.update({paramkey[num][par]:[]})
-    
-    z.update({paramkey[num][par]:np.append(z.get(paramkey[num][par]),
-                                        parameter[funckey[num]][paramkey[num][par]][o])})
-    paralleldict.update({key[num]:z})
-            """
+            y.update({paramkey[num][par]:np.append(y.get(paramkey[num][par]),
+                                                parameter[funckey[num]][paramkey[num][par]][n])})
+            paralleldict.update({key[num]:y})
+            """    
+                num=0
+                par=2
+                z=paralleldict[funckey[num]]
+                if n==0 and m==0 and o==0:
+                    z.update({paramkey[num][par]:[]})
+                
+                z.update({paramkey[num][par]:np.append(z.get(paramkey[num][par]),
+                                                    parameter[funckey[num]][paramkey[num][par]][o])})
+                paralleldict.update({key[num]:z})"""
+            
     #eq=paralleldict.pop('eqparam')
     """for eqkey in list(eq.keys()):
         if bool(eq)==False:

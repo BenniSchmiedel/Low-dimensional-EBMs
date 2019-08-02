@@ -10,6 +10,9 @@ with the deviation function :math:`y=\\frac{dT}{dt}` required by the ``lowEBMs.P
 
 
 """
+import numpy as np
+from lowEBMs.Packages.Variables import Vars
+import builtins
 
 def model_equation(eqparam,funccomp):
     """
@@ -43,6 +46,8 @@ def model_equation(eqparam,funccomp):
     funclist=funccomp['funclist']             #Extracting needed arrays from the funccomp array
     funcparam=funccomp['funcparam']
     C_ao=eqparam['c_ao']                    #Extracting Equationparameters
+    if parallelization==True:
+            C_ao=np.transpose(np.array([C_ao]*len(Vars.Lat))) if np.shape(C_ao)==(number_of_parallels,) else C_ao
     for i in range(len(funclist)):
             y += funclist['func'+str(i)](funcparam['func'+str(i)])    #Calling the selected function and sum them up 
     return y/C_ao           #output of y, weighted with the heat capacity
