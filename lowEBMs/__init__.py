@@ -34,7 +34,13 @@ def update_plotstyle():
     matplotlib.rcParams['xtick.direction']='inout'
     matplotlib.rcParams['xtick.major.size']=10
     matplotlib.rcParams['xtick.minor.size']=5
-    
+
+def moving_average(signal, period):
+    buffer = [np.nan] * period
+    for i in range(period,len(signal)):
+        buffer.append(signal[i-period:i].mean())
+    return buffer
+
 class constants:
     import numpy as np
     a = 6.373E6      # Radius of Earth (m)
@@ -62,3 +68,5 @@ class constants:
     rho_w = 1000.    # density of water (kg / m**3)
     cw = 4181.3      # specific heat of liquid water (J / kg / K)
     mb_to_Pa = 100.
+    time_sec_year=60*60*24*365
+    time_sec_day=60*60*24
