@@ -380,7 +380,7 @@ class albedo:
                 albedo[i]=alpha_p+0.18
             if np.abs(Vars.Lat[i]) <= 90 and np.abs(Vars.Lat[i]) > border_2:
                 albedo[i]=alpha_p+0.3
-        return albedo
+        return np.array(albedo)
 
     def dynamic_bud(T_1,T_2,alpha_0,alpha_1,alpha_2):
 
