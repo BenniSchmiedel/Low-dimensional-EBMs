@@ -442,6 +442,7 @@ def initial_importer(initials,initialZMT=True,control=False,parallel=False):
     if spatial_resolution==0:
         dim=0
         print('0D')
+        Vars.T=initials['zmt']
     else:
         dim=1
        #NS==True corresponds to southpole to northpole representation (180 Degrees)
