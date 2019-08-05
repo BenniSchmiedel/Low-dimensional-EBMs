@@ -5,7 +5,7 @@ Physical Background / Model Types
 *********************************
 
 With this project different types of EBMs can be used to run simulations. 
-However, the versatility of the resolution is limited to low dimensional EBMs from zero to one dimensionsal EBMs and additionally one dimensional EBMs that are resolved over the latitudes. It would be nice and is planned by me to extent this project to higher resolutions (for more information see :doc:`ToDo <todo>`)
+However, the versatility of the resolution is limited to low dimensional EBMs from zero dimensionsal EBMs to one one dimensional EBMs resolved over the latitudes. It would be nice and is planned by me to extend this project to higher resolutions (for more information see :doc:`ToDo <todo>`)
 
 Physical Background
 ===================
@@ -20,7 +20,7 @@ In general, energy balance models describe the behaviour of a planet's energy ba
 
 Here shown is a 0D schematic of the earth's energy balance like it is often given in the standard literature. The radiative energy fluxes (in :math:`Wm^{-2}`) of the earth are indicated with their strength and direction. However, EBMs describe the energy balance mostly with the crucial parts only, which means that small or strongly regional energy fluxes are neglected.
 
-EBMs are commonly restricted to the **downward radiative energy flux** (:math:`R_{down}`), the **upward radiative energy flux** (:math:`R_{up}`) and in some cases of 0D-EBMs to a **forcing energy flux** (:math:`F_{forced}`) (e.g. Carbon Dioxide forcing), or in cases of 1D-EBMs to **latitudinal transfer energy fluxes** (:math:`F_{transfer}`). This is of course no necessity rather than a general identification of EBMs since they are specifically characterized by their simplicity.
+EBMs are commonly restricted to the **downward radiative energy flux** (:math:`R_{down}`), the **upward radiative energy flux** (:math:`R_{up}`), in the case of the treated 1D-EBMs to the **latitudinal transfer energy fluxes** (:math:`F_{transfer}`) and in some cases of to additional **forcing energy flux** (:math:`F_{forced}`) (e.g. Carbon Dioxide forcing). This is of course no necessity rather than a general identification of EBMs since they are specifically characterized by their simplicity.
 
 The physical basis of EBMs can be expressed in a model equation which commonly has the following form:
 
@@ -61,7 +61,7 @@ With the chapter :doc:`How to use <howtouse>` it will be investigated in detail 
 1D-EBM
 ------
 
-1D EBMs do not differ much from 0D ones. In 1D EBMs the earth is commonly described by a grid of latitudinal bands.
+The description of 1D EBMs does not differ much from 0D EBMs. In 1D EBMs the earth is commonly described by a grid of latitudinal bands.
 The model equation as introduced above_ can directly be transfered to be valid for each latitudinal band seperately. 
 
 As already mentioned, 1D EBMs use latitudinal transfer energy fluxes :math:`F_{transfer}` which consider an exchange of energy between latitudinal bands. This term is crucial, because the energy balance resolved over the latitudes shows strong differences between equator and poles due to the stronger insolation at the equator.
@@ -72,7 +72,7 @@ By identifying each latitudinal band and all its parameters with an index i, the
 
     C \cdot \frac{dT_i}{dt} = R_{down,i} + R_{up,i} + F_{transfer,i}
 
-There are many different approaches to discretize these terms in 1D. Because this project was started to implement two specific EBMs, one created by :doc:`Michail Budyko <references>` and one by :doc:`William Seller  <references>`, both published in the late 1960s, these two discretizations will be shown. 
+There are many different approaches to discretize these terms in 1D. Because this project was started to implement two specific EBMs, one developed by :doc:`Michail Budyko <references>` and one by :doc:`William Seller  <references>`, both published in the late 1960s, these two discretizations will be shown. 
 
 Budyko-type model
 ^^^^^^^^^^^^^^^^^
@@ -83,7 +83,7 @@ This EBM constructed by :doc:`Michail Budyko  <references>` uses various assumpt
 
 - An albedo seperated into three different regions with dependence on latitude (or by customization on temperature), with high albedo values towards the polar regions and low albedo values in the equatorial regions.
 
-- A symmetric transfer energy flux with dependence on the difference of zonal (ZMT) to global (GMT) mean temperature.
+- A symmetric diffusive transfer energy flux with dependence on the difference of zonal (ZMT) to global (GMT) mean temperature.
 
 - A grid resolving latitudinal bands of any width (in this project mostly used is a width of 1°)
 

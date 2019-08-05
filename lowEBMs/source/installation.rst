@@ -10,13 +10,10 @@ To properly use this package there are several other packages required:
 
 - Python (2.7 should work but I recommend higher versions, 3.5, 3.6 ...)
 - ``numpy`` (for mathematical calculations)
-- ``climlab`` (to import distributions of solar radiation)
-- ``xarray`` (required by climlab)
-- ``attrdict`` (required by climlab)
 
 - ``matplotlib`` (for plotting)
 - ``netCDF4`` (for comparison to observational data stored as netCDF-files)
-
+- ``tqdm`` (for progress visualization)
 Python Package
 ==============
 
@@ -25,6 +22,8 @@ To download and install ``lowEBMs`` with all its dependencies, go to the command
     
     pip install lowEBMs
 
+.. Note::
+    Depending on how your system is confiured you might have to exchange ``pip`` with ``pip3``, which uses python 3. 
 
 Alternatively, you can clone the git repository of the source code and manually run the setup.py which installs the package with all its dependencies::
 

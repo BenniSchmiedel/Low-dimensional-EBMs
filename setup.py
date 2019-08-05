@@ -7,7 +7,7 @@ import setuptools
 
 
 setuptools.setup(name='lowEBMs',
-      version='0.3.1',
+      version='0.3.2',
       description='A python implementation of low-dimensional EBMs',
       url='https://github.com/BenniSchmiedel/Low-dimensional-EBMs',
       author='Benjamin Schmiedel',
@@ -17,9 +17,6 @@ setuptools.setup(name='lowEBMs',
           'matplotlib',
           'numpy',
           'netCDF4',
-          'climlab',
-          'xarray',
-          'attrdict',
           'tqdm',
       ],
       classifiers=[

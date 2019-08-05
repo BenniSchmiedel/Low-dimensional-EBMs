@@ -37,7 +37,7 @@ To import this file use the ``importer``-function::
     configuration=importer('filename',path='path/to/your/configuration.ini')
 
 .. Note::
-    It is not mandatory to add the argument ``path=``, but since you very likely work in another directory than the installation directory of the project you will have to add the path where your **configuration.ini** is located.
+    It is not necessary to add the argument ``path=``, but since you very likely work in another directory than the installation directory of the project you will have to add the path where your **configuration.ini** is located.
  
 
 ``configuration`` is an dictionary which contains all required input parameters. To seperate them for a clearer structure you can use::
