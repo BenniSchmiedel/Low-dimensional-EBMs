@@ -523,7 +523,7 @@ def output_importer(functiondict):
                 Vars.Transfer=np.array([0]*int(number_of_integration/data_readout),dtype=object)
             if func.__qualname__=='transfer.budyko':
                 Vars.BudTransfer=np.array([0]*int(number_of_integration/data_readout),dtype=object)
-            if func.__qualname__=='forcing.co2myhre':
+            if func.__qualname__=='forcing.co2_myhre':
                 Vars.CO2Output=np.array([0]*int(number_of_integration/data_readout),dtype=object)
             if func.__qualname__=='forcing.solar':                
                 Vars.SolarOutput=np.array([0]*int(number_of_integration/data_readout),dtype=object)
