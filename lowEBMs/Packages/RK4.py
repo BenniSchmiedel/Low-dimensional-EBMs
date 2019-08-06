@@ -258,8 +258,9 @@ def rk4alg(func,eqparam,funccomp,progressbar=True):
                     if SteadyStateConditionGlobal(data[2][j-eq_condition_length:j])==True:
                         for l in range(len(data)):
                             data[l]=data[l][:(j+1)]
-                        for m in Vars.Read:
-                            Vars.Read[m]=Vars.Read[m][:(j)]
+                        for m in Vars.Read.keys():
+                            if len(Vars.Read[m])==n:
+                                Vars.Read[m]=Vars.Read[m][:(j)]
                         break
         #Return the written data (Cut excessive 0s)
         dataout=[np.array(data[0][:(j+1)]),np.array(data[1][:(j+1)]),np.array(data[2][:(j+1)])]

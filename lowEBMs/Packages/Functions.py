@@ -1495,6 +1495,13 @@ class forcing:
         co2_myhre
     
     """
+    def offset(funcparam):
+        list_parameters=list(funcparam.values())
+        F=list_parameters[0]
+        F=np.transpose(np.array([F]*len(Vars.Lat))) if np.shape(F)==(number_of_parallels,) else F
+        
+        return F
+        
     def random(funcparam):
         """ 
         The random forcing mimics randomly occuring radiative forcing events.
