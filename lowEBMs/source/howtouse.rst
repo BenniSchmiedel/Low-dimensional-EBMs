@@ -68,19 +68,21 @@ Depending on your settings the algorithm will need some time until it prints *Fi
 Final Step: Evaluating the output
 =================================
 
-From the algorithm you will directly get the ``outputdata`` array. It is a three-dimensional array with **outputdata=[time, zonal mean temperature, global mean temperature]**. Other variables which are of interest, for example the grid specifications, can be accessed by importing the :doc:`variables <code/variables>` package::
+The function ``rk4alg`` return three arrays, the **Time, zonal mean temperature (ZMT) and global mean temperature (GMT)**. Other variables which are of interest, for example the grid specifications, can be accessed by importing the :doc:`variables <code/variables>` package and additional constants by importing the :doc:`constants <code/constants>` class::
 
     import Variables as Vars
+    from lowEBMs import constants as const
 
-and then call the desired variables by their name, for example::
+and then return the desired variables by their specified name, for example::
 
     latitudinal_grid=Vars.Lat
 
 For detailed information about output variables see section :doc:`output <output>`. 
 
-You can plot the global temperature over time with::
+You can plot the global temperature over time with (with time conversion)::
 
-    plt.plot(np.array(outputdata[0])/stepsize_of_integration/365,outputdata[2])
+    from lowEBMs import constants as const
+    plt.plot(Time/const.time_sec_year,GMT)
     plt.xlabel('time [years]')
     plt.ylabel('GMT [K]')
 
@@ -112,12 +114,12 @@ The summary of what you need to get the model running. Import packages::
 
 and run the specific modules::
 
-    configuration=importer('EBM0D_simple_config.ini')
-    eq=configuration['eqparam']
-    rk4=configuration['rk4input']
-    fun=configuration['funccomp']
-    variable_importer(configuration)
-    outputdata=rk4alg(model_equation,eq,fun)
+    configdic=importer('EBM0D_simple_config.ini')
+    eq=configdic['eqparam']
+    rk=configdic['rk4input']
+    fun=configdic['funccomp']
+    variable_importer(configdic)
+    Time,ZMT,GMT=rk4alg(model_equation,eq,fun)
 
 This demonstration also exists as a jupyter notebook in the *'Tutorials/'* directive of this project (*EBM0D_simple.ipynb*).
 
