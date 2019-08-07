@@ -17,6 +17,32 @@ import sys
 sys.path.insert(0, os.path.abspath('../'))
 sys.path.insert(0, os.path.abspath('../../'))
 
+from mock import Mock
+
+class Mock(MagicMock):
+    @classmethod
+    def getattr(cls, name):
+        return Mock()
+    def mul(self, other):
+        return Mock()
+    def rmul(self, other):
+        return Mock()
+    def pow(self, other):
+        return Mock()
+    def div(self, other):
+        return Mock()
+class Mock(MagicMock):
+    @classmethod
+    def getattr(cls, name):
+        return Mock()
+    def mul(self, other):
+        return Mock()
+    def rmul(self, other):
+        return Mock()
+    def pow(self, other):
+        return Mock()
+    def div(self, other):
+        return Mock()
 
 # -- Project information -----------------------------------------------------
 
@@ -134,18 +160,4 @@ epub_title = project
 # A list of files that should not be packed into the epub file.
 epub_exclude_files = ['search.html']
 
-from mock import Mock as MagicMock
-
-class Mock(MagicMock):
-    @classmethod
-    def __getattr__(cls, name):
-        return Mock()
-    def __mul__(self, other):
-        return Mock()
-    def __rmul__(self, other):
-        return Mock()
-    def __pow__(self, other):
-        return Mock()
-    def __div__(self, other):
-        return Mock()
 
