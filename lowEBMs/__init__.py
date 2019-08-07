@@ -71,3 +71,6 @@ class constants():
     mb_to_Pa = 100.
     time_sec_year=60*60*24*365
     time_sec_day=60*60*24
+
+    def __init__(self):
+
