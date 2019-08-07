@@ -36,6 +36,7 @@ def update_plotstyle():
     matplotlib.rcParams['xtick.minor.size']=5
 
 def moving_average(signal, period):
+    import numpy as np
     buffer = [np.nan] * period
     for i in range(period,len(signal)):
         buffer.append(signal[i-period:i].mean())

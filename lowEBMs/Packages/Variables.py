@@ -399,13 +399,15 @@ def builtin_importer(rk4input,control=False,parallel=False,parallel_config=0,acc
         builtins.parallelization=False
         
     if control==True:
+        builtins.control=True
         builtins.eq_condition=True
-        builtins.number_of_integration=10000
+        builtins.number_of_integration=100000
         builtins.data_readout=1    
         builtins.eq_condition_length=accuracy_number
         builtins.eq_condition_amplitude=accuracy
         print('Starting controlrun with a temperature accuracy of %s K on the GMT over %s datapoints.' %(accuracy,accuracy_number))
-
+    else:
+        builtins.control=False
     """builtins.number_of_integration=rk4input['number_of_integration']     
     builtins.stepsize_of_integration=rk4input[1] 
     builtins.spatial_resolution=rk4input[2]      

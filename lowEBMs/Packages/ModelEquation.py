@@ -47,8 +47,14 @@ def model_equation(eqparam,funccomp):
     funcparam=funccomp['funcparam']
     C_ao=eqparam['c_ao']                    #Extracting Equationparameters
     if parallelization==True:
-            C_ao=np.transpose(np.array([C_ao]*len(Vars.Lat))) if np.shape(C_ao)==(number_of_parallels,) else C_ao
+        C_ao=np.transpose(np.array([C_ao]*len(Vars.Lat))) if np.shape(C_ao)==(number_of_parallels,) else C_ao
     for i in range(len(funclist)):
+        if control==True:
+            if funclist['func'+str(i)].__qualname__[:7]=='forcing':
+                pass
+            else:
+                y += funclist['func'+str(i)](funcparam['func'+str(i)])    #Calling the selected function and sum them up 
+        else:
             y += funclist['func'+str(i)](funcparam['func'+str(i)])    #Calling the selected function and sum them up 
     return y/C_ao           #output of y, weighted with the heat capacity
 

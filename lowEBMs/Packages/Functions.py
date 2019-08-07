@@ -1498,7 +1498,8 @@ class forcing:
     def offset(funcparam):
         list_parameters=list(funcparam.values())
         F=list_parameters[0]
-        F=np.transpose(np.array([F]*len(Vars.Lat))) if np.shape(F)==(number_of_parallels,) else F
+        if parallelization:
+            F=np.transpose(np.array([F]*len(Vars.Lat))) if np.shape(F)==(number_of_parallels,) else F
         
         return F
         
