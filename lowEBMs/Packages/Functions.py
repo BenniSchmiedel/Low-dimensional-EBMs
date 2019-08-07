@@ -43,7 +43,7 @@ import numpy as np
 import builtins
 import time
 from lowEBMs.Packages.Variables import Vars
-from lowEBMs import constants as const
+import lowEBMs.Packages.Constants as const
 #import xarray as xr
 
 
