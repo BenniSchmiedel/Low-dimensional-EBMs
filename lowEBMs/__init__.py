@@ -53,7 +53,7 @@ class constants():
     kappa = Rd / cp
     Rv = 461.5       # gas constant for water vapor (J / kg / K)
     cpv = 1875.   # specific heat at constant pressure for water vapor (J / kg / K)
-    Omega = 2 * np.math.pi / 24. / 3600.  # Earth's rotation rate, (s**(-1))
+    Omega = 2*np.pi / 24. / 3600.  # Earth's rotation rate, (s**(-1))
     g = 9.8          # gravitational acceleration (m / s**2)
     kBoltzmann = 1.3806488E-23  # the Boltzmann constant (J / K)
     c_light = 2.99792458E8   # speed of light (m/s)
