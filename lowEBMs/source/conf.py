@@ -60,10 +60,8 @@ autodoc_docstring_signature = False
 autodoc_mock_imports = ['matplotlib',
           'numpy',
           'netCDF4',
-          'climlab',
-          'xarray',
-          'attrdict',
-          'scipy'
+          'scipy',
+          'tqdm'
 ]
 
 language = 'en'

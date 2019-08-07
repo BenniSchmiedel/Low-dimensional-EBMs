@@ -1748,9 +1748,9 @@ class forcing:
 
         """
         list_parameters=list(funcparam.values())
-        forcingnumber,datapath,name,delimiter,header,col_time,col_forcing,timeunit,BP,time_start,k_output, m_output, k_input, m_input=list_parameters
+        forcingnumber,datapath,name,delimiter,header,footer,col_time,col_forcing,timeunit,BP,time_start,k_output, m_output, k_input, m_input=list_parameters
         if Runtime_Tracker==0:
-            Vars.ExternalInput[forcingnumber]=np.genfromtxt(str(datapath)+str(name),delimiter=str(delimiter),skip_header=header,usecols=(col_time,col_forcing),unpack=True,encoding='ISO-8859-1')  
+            Vars.ExternalInput[forcingnumber]=np.genfromtxt(str(datapath)+str(name),delimiter=str(delimiter),skip_header=header,skip_footer=footer,usecols=(col_time,col_forcing),unpack=True,encoding='ISO-8859-1')  
             Vars.External_time_start[forcingnumber]=time_start   
             Vars.ExternalInput[forcingnumber][1]=lna(Vars.ExternalInput[forcingnumber][1])*k_input+m_input
             if BP==True:
@@ -1865,12 +1865,12 @@ class forcing:
 
         """
         list_parameters=list(funcparam.values())
-        forcingnumber,datapath,name,delimiter,header,col_time,colrange_forcing,timeunit,BP,time_start,k_output, m_output, k_input, m_input=list_parameters
+        forcingnumber,datapath,name,delimiter,header,footer,col_time,colrange_forcing,timeunit,BP,time_start,k_output, m_output, k_input, m_input=list_parameters
         if Runtime_Tracker==0:
             forcingscols=np.arange(colrange_forcing[0],colrange_forcing[1],dtype=int)
 
             Vars.ExternalInput[forcingnumber]=[0,0]
-            Vars.ExternalInput[forcingnumber][0]=np.genfromtxt(str(datapath)+str(name),delimiter=str(delimiter),skip_header=header,usecols=(col_time),unpack=True,encoding='ISO-8859-1') 
+            Vars.ExternalInput[forcingnumber][0]=np.genfromtxt(str(datapath)+str(name),delimiter=str(delimiter),skip_header=header,skip_footer=footer,usecols=(col_time),unpack=True,encoding='ISO-8859-1') 
             Vars.ExternalInput[forcingnumber][1]=np.transpose(np.genfromtxt(str(datapath)+str(name),delimiter=str(delimiter),skip_header=header,usecols=forcingscols,unpack=True,encoding='ISO-8859-1'))  
 
             Vars.External_time_start[forcingnumber]=time_start   
@@ -2251,9 +2251,9 @@ class forcing:
 
         """
         list_parameters=list(funcparam.values())
-        forcingnumber,datapath,name,delimiter,header,col_time,col_forcing,timeunit,BP,time_start,k_output, m_output, k_input, m_input=list_parameters
+        datapath,name,delimiter,header,footer,col_time,col_forcing,timeunit,BP,time_start,k_output, m_output, k_input, m_input=list_parameters
         if Runtime_Tracker==0:
-            Vars.SolarInput=np.genfromtxt(str(datapath)+str(name),delimiter=str(delimiter),skip_header=header,usecols=(col_time,col_forcing),unpack=True,encoding='ISO-8859-1')  
+            Vars.SolarInput=np.genfromtxt(str(datapath)+str(name),delimiter=str(delimiter),skip_header=header,skip_footer=footer,usecols=(col_time,col_forcing),unpack=True,encoding='ISO-8859-1')  
             Vars.Solar_time_start=time_start   
             Vars.SolarInput[1]=lna(Vars.SolarInput[1])*k_input+m_input
             if BP==True:
@@ -2370,9 +2370,9 @@ class forcing:
 
         """
         list_parameters=list(funcparam.values())
-        forcingnumber,datapath,name,delimiter,header,col_time,col_forcing,timeunit,BP,time_start,k_output, m_output, k_input, m_input=list_parameters
+        datapath,name,delimiter,header,footer,col_time,col_forcing,timeunit,BP,time_start,k_output, m_output, k_input, m_input=list_parameters
         if Runtime_Tracker==0:
-            Vars.AODInput=np.genfromtxt(str(datapath)+str(name),delimiter=str(delimiter),skip_header=header,usecols=(col_time,col_forcing),unpack=True,encoding='ISO-8859-1')  
+            Vars.AODInput=np.genfromtxt(str(datapath)+str(name),delimiter=str(delimiter),skip_header=header,skip_footer=footer,usecols=(col_time,col_forcing),unpack=True,encoding='ISO-8859-1')  
             Vars.AOD_time_start=time_start   
             Vars.AODInput[1]=lna(Vars.AODInput[1])*k_input+m_input
             if BP==True:

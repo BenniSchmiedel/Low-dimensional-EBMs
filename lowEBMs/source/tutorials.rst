@@ -92,4 +92,23 @@ A 1D EBM equipped with:
 
 The parameters of the tutorial-file are chosen to reproduce the EBM as it was introduced by :ref:`Sellers (1969) <Sellers>`.
 
+1D EBM Sellers-type, Volcanic Forcing
+=====================================
+
+A 1D EBM equipped with:
+
+- dynamic albedo distribution with a continuous temperature dependant albedo function |rarr| dynamic absorbed downward solar radiation flux  
+
+- upward radiation flux given by an edited Stefan-Boltzmann radiation law according to :ref:`Sellers (1969) <Sellers>`
+
+- transfer energy flux according to :ref:`Sellers <Sellers>`
+
+- temperature distributions corrected by the average latitudinal band elevation
+
+- volcanic radiative forcing, imported from an external dataset
+
+The parameters of the tutorial-file are chosen to reproduce the EBM as it was introduced by :ref:`Sellers (1969) <Sellers>`.
+The volcanic radiative forcing was created with the **ForcingGenerator**-module, an adopted simplified version of the EVA-Generator from :ref:`Toohey (2016) <Toohey>`.
+
+
 

@@ -67,7 +67,7 @@ For the 0D-EBM (the *EBM0D_simple_config.ini*), the model setup might look like 
     #Initial model setup & algorithm parameters 
     #------------------------------------------
     [eqparam]
-    C_ao=70*4.2e6
+    c_ao=70*4.2e6
 
     [rk4input]
     number_of_integration=365*10
@@ -88,8 +88,6 @@ For the 0D-EBM (the *EBM0D_simple_config.ini*), the model setup might look like 
     time=0
     zmt=273+15
     gmt=273+15
-    latitude_c=0
-    latitude_b=0
     initial_temperature_cosine=False
     initial_temperature_amplitude=30
     initial_temperature_noise=True
@@ -101,9 +99,9 @@ If you now want to give a model structure with a downward radiative energy flux 
     #----------------------------------------------
     [func0]
     func=flux_down.insolation
-    Q=342
+    q=342
     m=1
-    dQ=0
+    dq=0
 
     albedo=albedo.static 
     albedoread=True           
@@ -123,6 +121,7 @@ If you now want to give a model structure with a downward radiative energy flux 
 
     [func1]
     func=flux_up.planck
+    activation=True
     grey=0.612
     sigma=const.sigma
 

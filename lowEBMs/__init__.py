@@ -42,7 +42,7 @@ def moving_average(signal, period):
         buffer.append(signal[i-period:i].mean())
     return buffer
 
-class constants:
+class constants():
     import numpy as np
     a = 6.373E6      # Radius of Earth (m)
     Lhvap = 2.5E6    # Latent heat of vaporization (J / kg)

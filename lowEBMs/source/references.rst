@@ -26,3 +26,6 @@ References
 
 - G. Myhre, E. J. Highwood, K. P. Shine and Frode Stordal: New estimates of radiative forcing due to well mixed greenhouse gases. Geophysical Research Letters, 25(14):2715–2718, 1998.
 
+.. _Toohey:
+
+- M. Toohey, B. Stevens, H. Schmidt and C. Timmreck: Easy Volcanic Aerosol (EVA v1.0): an idealized forcing generator for climate simulations. Geosci. Model Dev., 2016. doi: 10.5194/gmd-9-4049-2016

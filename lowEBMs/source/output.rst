@@ -14,18 +14,19 @@ There are two types of data to print.
 The first type are the **primary variables**: **time** and **temperature**. They are returned directly by the algorithm (for details see :doc:`How to use <howtouse>` or :doc:`RK4 <code/rk4>`).
 
 The second type are secondary variables, such as the albedo or the insolation, which might be of interest to observe. They are stored by the :doc:`Variables <code/variables>` package within the class ``Vars``. 
-Most of them are written into the specific array ``Vars.Read`` and callable with::
+Most of them are written into the dictionary ``Vars.Read`` and callable with::
 
     from Variables import Vars
     Vars.Read
 
-and contains the following variables::
+and contains the following variables, callable with::
 
-    Read=[cL,C,F,v,P,Transfer,alpha,BudTransfer,Solar,Noise,Rin,Rout,ExternalOutput,CO2Forcing]
+    cL,C,F,P,Transfer,alpha,BudTransfer,solar,noise,Rdown,Rup,ExternalOutput,CO2Output,SolarOutput,AODOutput
+
+    Insolation_over_time=Vars.Read['solar']
 
 Beneath the variables in ``Vars.Read``, there are additional variables which can be printed, for example the following static variables::
-s
-    Solar=list
+
     Area=list
     bounds=list
     latlength=list
