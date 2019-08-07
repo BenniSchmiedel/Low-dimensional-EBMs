@@ -7,7 +7,7 @@ import setuptools
 
 
 setuptools.setup(name='lowEBMs',
-      version='0.3.6',
+      version='0.3.7',
       description='A python implementation of low-dimensional EBMs',
       url='https://github.com/BenniSchmiedel/Low-dimensional-EBMs',
       author='Benjamin Schmiedel',
