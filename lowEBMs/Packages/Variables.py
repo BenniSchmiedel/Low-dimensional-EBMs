@@ -60,6 +60,7 @@ Functions to process variables during or after a simulation run are:
 """
 import builtins
 import numpy as np
+from qualname import qualname
 #import xarray as xr
 
 
@@ -500,19 +501,19 @@ def output_importer(functiondict):
     if (builtins.number_of_integration) % builtins.data_readout == 0:
         #Assigning dynamical variables in Variables Package with initial values from var
         for func in functionlist:
-            if func.__qualname__=='transfer.sellers':
+            if qualname(func)=='transfer.sellers':
                 Vars.cL=np.array([0]*int(builtins.number_of_integration/builtins.data_readout),dtype=object)
                 Vars.C=np.array([0]*int(builtins.number_of_integration/builtins.data_readout),dtype=object)
                 Vars.F=np.array([0]*int(builtins.number_of_integration/builtins.data_readout),dtype=object)
                 Vars.P=np.array([0]*int(builtins.number_of_integration/builtins.data_readout),dtype=object)
                 Vars.Transfer=np.array([0]*int(builtins.number_of_integration/builtins.data_readout),dtype=object)
-            if func.__qualname__=='transfer.budyko':
+            if qualname(func)=='transfer.budyko':
                 Vars.BudTransfer=np.array([0]*int(builtins.number_of_integration/builtins.data_readout),dtype=object)
-            if func.__qualname__=='forcing.co2_myhre':
+            if qualname(func)=='forcing.co2_myhre':
                 Vars.CO2Output=np.array([0]*int(builtins.number_of_integration/builtins.data_readout),dtype=object)
-            if func.__qualname__=='forcing.solar':                
+            if qualname(func)=='forcing.solar':                
                 Vars.SolarOutput=np.array([0]*int(builtins.number_of_integration/builtins.data_readout),dtype=object)
-            if func.__qualname__=='forcing.aod':            
+            if qualname(func)=='forcing.aod':            
                 Vars.AODOutput==np.array([0]*int(builtins.number_of_integration/builtins.data_readout),dtype=object)
                 
         Vars.ExternalOutput=np.array([0]*int(builtins.number_of_integration/builtins.data_readout),dtype=object)
@@ -524,19 +525,19 @@ def output_importer(functiondict):
         Vars.Rup=np.array([0]*int(builtins.number_of_integration/builtins.data_readout),dtype=object)
     else: 
         for func in functionlist:
-            if func.__qualname__=='transfer.sellers':
+            if qualname(func)=='transfer.sellers':
                 Vars.cL=np.array([0]*int(builtins.number_of_integration/builtins.data_readout+1),dtype=object)
                 Vars.C=np.array([0]*int(builtins.number_of_integration/builtins.data_readout+1),dtype=object)
                 Vars.F=np.array([0]*int(builtins.number_of_integration/builtins.data_readout+1),dtype=object)
                 Vars.P=np.array([0]*int(builtins.number_of_integration/builtins.data_readout+1),dtype=object)
                 Vars.Transfer=np.array([0]*int(builtins.number_of_integration/builtins.data_readout+1),dtype=object)
-            if func.__qualname__=='transfer.budyko':
+            if qualname(func)=='transfer.budyko':
                 Vars.BudTransfer=np.array([0]*int(builtins.number_of_integration/builtins.data_readout+1),dtype=object)
-            if func.__qualname__=='forcing.co2_myhre':
+            if qualname(func)=='forcing.co2_myhre':
                 Vars.CO2Output=np.array([0]*int(builtins.number_of_integration/builtins.data_readout+1),dtype=object)
-            if func.__qualname__=='forcing.solar':                
+            if qualname(func)=='forcing.solar':                
                 Vars.SolarOutput=np.array([0]*int(builtins.number_of_integration/builtins.data_readout+1),dtype=object)
-            if func.__qualname__=='forcing.aod':            
+            if qualname(func)=='forcing.aod':            
                 Vars.AODOutput==np.array([0]*int(builtins.number_of_integration/builtins.data_readout+1),dtype=object)
                 
         Vars.ExternalOutput=np.array([0]*int(builtins.number_of_integration/builtins.data_readout+1),dtype=object)

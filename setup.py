@@ -18,6 +18,7 @@ setuptools.setup(name='lowEBMs',
           'numpy',
           'netCDF4',
           'tqdm',
+          'qualname'
       ],
       classifiers=[
     'Development Status :: 3 - Alpha'],

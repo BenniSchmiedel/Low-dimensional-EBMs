@@ -34,7 +34,7 @@ For now you can simply use the **EBM0D_simple_config.ini** file which imports a 
 
 To import this file use the ``importer``-function::
 
-    configuration=importer('filename')
+    configuration=importer('EBM0D_simple_config.ini')
 
 .. Note::
     In case you work in another directory than the installation directory of the project or get the error 'File not found', add the additional argument path: **importer('filename',path='path/to/your/configuration.ini')**. The path can be a relative or full path to where your **configuration.ini** is located.
