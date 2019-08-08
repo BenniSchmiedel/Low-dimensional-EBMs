@@ -70,8 +70,7 @@ Final Step: Evaluating the output
 
 The function ``rk4alg`` return three arrays, the **Time, zonal mean temperature (ZMT) and global mean temperature (GMT)**. Other variables which are of interest, for example the grid specifications, can be accessed by importing the :doc:`variables <code/variables>` package and additional constants by importing the :doc:`constants <code/constants>` class::
 
-    import Variables as Vars
-    from lowEBMs import constants as const
+    import lowEBMs.Packages.Variables as Vars
 
 and then return the desired variables by their specified name, for example::
 
@@ -81,7 +80,7 @@ For detailed information about output variables see section :doc:`output <output
 
 You can plot the global temperature over time with (with time conversion)::
 
-    from lowEBMs import constants as const
+    import lowEBMs.Packages.Constants as const
     plt.plot(Time/const.time_sec_year,GMT)
     plt.xlabel('time [years]')
     plt.ylabel('GMT [K]')
@@ -105,7 +104,7 @@ Putting it together
 
 The summary of what you need to get the model running. Import packages::
 
-    import matplotlib as plt
+    import matplotlib.pyplot as plt
     import numpy as np
     from lowEBMs.Packages.Configuration import importer 
     from lowEBMs.Packages.Variables import variable_importer
