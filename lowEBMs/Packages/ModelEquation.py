@@ -46,7 +46,7 @@ def model_equation(eqparam,funccomp):
     funclist=funccomp['funclist']             #Extracting needed arrays from the funccomp array
     funcparam=funccomp['funcparam']
     C_ao=eqparam['c_ao']                    #Extracting Equationparameters
-    if parallelization==True:
+    if builtins.parallelization==True:
         C_ao=np.transpose(np.array([C_ao]*len(Vars.Lat))) if np.shape(C_ao)==(number_of_parallels,) else C_ao
     for i in range(len(funclist)):
         if control==True:

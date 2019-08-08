@@ -74,19 +74,19 @@ def rk4alg(func,eqparam,rk4input,funccomp,progressbar=True):
 
     :param dict rk4input:       Configuration dictionary containing the parameters to run:
 
-                                    * number_of_integration: Number of iterations to perfom
+                                    * builtins.number_of_integration: Number of iterations to perfom
                                         
                                         * type: integer
                                         * unit: dimensionless
                                         * value: minimum 1
 
-                                    * stepsize_of_integration: Time steps between iteration steps
+                                    * builtins.stepsize_of_integration: Time steps between iteration steps
 
                                         * type: float
                                         * unit: seconds
                                         * value: positive float (for hours 3600, days 86400,..)
 
-                                    * spatial_resolution: Grid resolution (width of one latitudinal band)
+                                    * builtins.spatial_resolution: Grid resolution (width of one latitudinal band)
 
                                         * type: float
                                         * unit: dimensionless
@@ -165,7 +165,7 @@ def rk4alg(func,eqparam,rk4input,funccomp,progressbar=True):
     Vars.start_time = time.time()
     #print('Starting simulation...')
     #locally defining rk4input parameters
-    n,h=int(number_of_integration),stepsize_of_integration
+    n,h=int(builtins.number_of_integration),builtins.stepsize_of_integration
     #Creating an array of the variables t,T,Lat,T_global which will be the outputarray
     data=np.array([[0]*(n+1)]*3 )
     #Filling data with intitial conditions at positions data[.][0]
@@ -199,11 +199,11 @@ def rk4alg(func,eqparam,rk4input,funccomp,progressbar=True):
         #For the time simply adding the integration stepsize
         Vars.t = Vars.t + h
         Vars.T = T0 + (k1 + k2 + k2 + k3 + k3 + k4) / 6
-        if spatial_resolution>0:
+        if builtins.spatial_resolution>0:
             Vars.T_global = earthsystem.globalmean_temperature()
         else: #if 0 dimensional
             Vars.T_global = Vars.T
-        if (i) % data_readout == 0: 
+        if (i) % builtins.data_readout == 0: 
             j += 1       
             data[0][j] = Vars.t 
             #The Temperature is an average over the generated increments
@@ -212,10 +212,10 @@ def rk4alg(func,eqparam,rk4input,funccomp,progressbar=True):
             data[2][j] = Vars.T_global
         #Check if the equilibrium condition is fulfilled. If true, break the loop, cut the output array to
         #the current length and move on to return the output data
-        if eq_condition:
-            if Runtime_Tracker > 4*eq_condition_length:
-                if parallelization:
-                    if all(SteadyStateConditionGlobal(data[2][j-eq_condition_length:j][k]) for k in range(number_of_parallels)):
+        if builtins.eq_condition:
+            if builtins.Runtime_Tracker > 4*builtins.eq_condition_length:
+                if builtins.parallelization:
+                    if all(SteadyStateConditionGlobal(data[2][j-builtins.eq_condition_length:j][k]) for k in range(builtins.number_of_parallels)):
                         for l in range(len(data)):
                             data[l]=data[l][:(j+1)]
                         for m in Vars.Read.keys():
@@ -223,7 +223,7 @@ def rk4alg(func,eqparam,rk4input,funccomp,progressbar=True):
                                 Vars.Read[m]=Vars.Read[m][:(j)]
                         break
                 else:
-                    if SteadyStateConditionGlobal(data[2][j-eq_condition_length:j])==True:
+                    if SteadyStateConditionGlobal(data[2][j-builtins.eq_condition_length:j])==True:
                         for l in range(len(data)):
                             data[l]=data[l][:(j+1)]
                         for m in Vars.Read.keys():
@@ -233,7 +233,7 @@ def rk4alg(func,eqparam,rk4input,funccomp,progressbar=True):
     #Return the written data (Cut excessive 0s)
     dataout=[np.array(data[0][:(j+1)]),np.array(data[1][:(j+1)]),np.array(data[2][:(j+1)])]
     
-    if control:
+    if builtins.control:
         runtime=time.time()-Vars.start_time
 
         print('Finished controlrun over %s years. Runtime: %s s' %(dataout[0][-1]/60/60/24/365,runtime))

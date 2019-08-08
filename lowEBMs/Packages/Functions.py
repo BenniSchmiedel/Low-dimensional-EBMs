@@ -170,7 +170,7 @@ class flux_down:
                                             * unit: depending on the conversion applied
                                             * value: > 0
 
-                                        * *timeunit*: Determines which timeunit of the solarradiation shall be used for averaging (depending on how the *stepsize_of_integration* is chosen*)
+                                        * *timeunit*: Determines which timeunit of the solarradiation shall be used for averaging (depending on how the *builtins.stepsize_of_integration* is chosen*)
 
                                             * type:  string
                                             * unit: -
@@ -201,19 +201,19 @@ class flux_down:
         #Loading inputparameters
         Q,factor_solar,dQ,albedofunc,albedoread,albedofuncparam,noise,noiseamp,noisedelay,    seed,seedmanipulation,solarinput,convfactor,timeunit,orbital,orbitalyear,updatefrequency=list_parameters#R_ininsolalbedoparam
 
-        if Runtime_Tracker==0 and Vars.TSI==float:
+        if builtins.Runtime_Tracker==0 and Vars.TSI==float:
             Vars.TSI=0
-        if Runtime_Tracker==0 and Vars.AOD==float:
+        if builtins.Runtime_Tracker==0 and Vars.AOD==float:
             Vars.AOD=0    
             
         if updatefrequency=='number_of_integration':
-            updatefrequency=number_of_integration
-        if Runtime_Tracker % (4*updatefrequency) == 0:
+            updatefrequency=builtins.number_of_integration
+        if builtins.Runtime_Tracker % (4*updatefrequency) == 0:
             if solarinput==True:
 
                 #with orbital variations (if False by default present day)
                 if orbital==True: 
-                    if spatial_resolution==0:
+                    if builtins.spatial_resolution==0:
 
                         Vars.Lat=np.linspace(-85,85,18)
 
@@ -223,7 +223,7 @@ class flux_down:
                         Vars.solar=earthsystem.solarradiation_orbital(convfactor,orbitalyear,timeunit,Q)
                     
                 else:
-                    if spatial_resolution==0:
+                    if builtins.spatial_resolution==0:
 
                         Vars.Lat=np.linspace(-85,85,18)
                         #Q=earthsystem.solarradiation_self(convfactor,'annualmean',orbitalyear,Q)
@@ -238,36 +238,36 @@ class flux_down:
             else:
                 Vars.solar=Q
 
-        if solarinput==False and spatial_resolution==0:
+        if solarinput==False and builtins.spatial_resolution==0:
             Q_total=Vars.solar+dQ+Vars.TSI
         else:
             Q_total=Vars.solar+dQ
         if Vars.AOD != 0:
             Q_aod=Q_total*np.exp(-Vars.AOD)
         
-        #if Runtime_Tracker==0:
+        #if builtins.Runtime_Tracker==0:
         #    if len(Q_total)!=1:
         #        Vars.Read['solar']=np.reshape(np.zeros(len(Vars.Read['solar'])*len(Q_total)),(len(Vars.Read['solar']),len(Q_total)))
-        if Runtime_Tracker % (4*data_readout) == 0:
-            Vars.Read['solar'][int(Runtime_Tracker/(4*data_readout))]=Q_total            
+        if builtins.Runtime_Tracker % (4*builtins.data_readout) == 0:
+            Vars.Read['solar'][int(builtins.Runtime_Tracker/(4*builtins.data_readout))]=Q_total            
         
         #Calculating albedo from given albedofunction
         alpha=albedofunc(*albedofuncparam) 
         #Readout to give albedo as output
         if albedoread==True: 
-            #if Runtime_Tracker==0:
+            #if builtins.Runtime_Tracker==0:
             #    if len(alpha)!=1:
             #        Vars.Read['alpha']=np.reshape(np.zeros(len(Vars.Read['alpha'])*len(alpha)),(len(Vars.Read['alpha']),len(alpha)))
-            if Runtime_Tracker % (4*data_readout) == 0:    #Only on 4th step (due to rk4)
+            if builtins.Runtime_Tracker % (4*builtins.data_readout) == 0:    #Only on 4th step (due to rk4)
                 Vars.alpha=alpha
-                Vars.Read['alpha'][int(Runtime_Tracker/(4*data_readout))]=alpha
+                Vars.Read['alpha'][int(builtins.Runtime_Tracker/(4*builtins.data_readout))]=alpha
 
         #Noise factor z on the solar insolation        
         z=0
-        if Runtime_Tracker % 4 == 0:
+        if builtins.Runtime_Tracker % 4 == 0:
             if noise==True:
                 #possible noisedelay which indicates a gap between updating the noise factor
-                if (int(Vars.t/stepsize_of_integration) % noisedelay)==0:
+                if (int(Vars.t/builtins.stepsize_of_integration) % noisedelay)==0:
                     #seed if same noise is desired
                     if seed==True:
                         np.random.seed(int(Vars.t)+seedmanipulation)
@@ -276,8 +276,8 @@ class flux_down:
                 builtins.Noise_Tracker=z 
 
         z=builtins.Noise_Tracker
-        if Runtime_Tracker % (4*data_readout)==0:
-            Vars.Read['noise'][int(Runtime_Tracker/(4*data_readout))]=z
+        if builtins.Runtime_Tracker % (4*builtins.data_readout)==0:
+            Vars.Read['noise'][int(builtins.Runtime_Tracker/(4*builtins.data_readout))]=z
         #Calculating solar insolation distribution from functions using climlab
         
         #Equation of incoming radiation
@@ -286,8 +286,8 @@ class flux_down:
             R_in=(Q_aod+z)*(1-alpha)*factor_solar
         else:
             R_in=(Q_total+z)*(1-alpha)*factor_solar
-        if Runtime_Tracker % (4*data_readout) == 0:    #Only on 4th step (due to rk4)
-            Vars.Read['Rdown'][int(Runtime_Tracker/(4*data_readout))]=R_in
+        if builtins.Runtime_Tracker % (4*builtins.data_readout) == 0:    #Only on 4th step (due to rk4)
+            Vars.Read['Rdown'][int(builtins.Runtime_Tracker/(4*builtins.data_readout))]=R_in
         return R_in
 
 class albedo:
@@ -443,11 +443,11 @@ class albedo:
         #alpha_1) and T_2 (alpha_1 to alpha_2), with alpha_0 ice free, alpha_1 intermediate and alpha_2 ice
         
         #Creating array and filling with values, depending on the current latitudinal temperature
-        if parallelization==True:
+        if builtins.parallelization==True:
             
-            albedo=np.array([[0]*len(Vars.Lat)]*number_of_parallels)
-            if len(T_1)==number_of_parallels:  
-                for i in range(number_of_parallels):          
+            albedo=np.array([[0]*len(Vars.Lat)]*builtins.number_of_parallels)
+            if len(T_1)==builtins.number_of_parallels:  
+                for i in range(builtins.number_of_parallels):          
                     for j in range(len(Vars.Lat)):
                         if Vars.T[i,j]>T_1[i]:
                             albedo[i,j]=alpha_0[i]
@@ -456,7 +456,7 @@ class albedo:
                         if Vars.T[j]<=T_2[i]:
                             albedo[i,j]=alpha_2[i]
             else:
-                for i in range(number_of_parallels):          
+                for i in range(builtins.number_of_parallels):          
                     for j in range(len(Vars.Lat)):
                         if Vars.T[i,j]>T_1:
                             albedo[i,j]=alpha_0
@@ -568,10 +568,10 @@ class albedo:
 
         Tg=Vars.T-0.0065*Z
         #creating and filling array, depending on the current latitudinal temperature
-        if parallelization==True:
-            albedo=np.reshape(np.zeros(len(Vars.Lat)*number_of_parallels),(number_of_parallels,len(Vars.Lat)))
-            if len(Z)==number_of_parallels:  
-                for i in range(number_of_parallels):                
+        if builtins.parallelization==True:
+            albedo=np.reshape(np.zeros(len(Vars.Lat)*builtins.number_of_parallels),(builtins.number_of_parallels,len(Vars.Lat)))
+            if len(Z)==builtins.number_of_parallels:  
+                for i in range(builtins.number_of_parallels):                
                     for j in range(len(Vars.Lat)):
                         if Tg[i,j]<283.16:
                             albedo[i,j]=b[i,j]-0.009*Tg[i,j]
@@ -580,7 +580,7 @@ class albedo:
                         if albedo[i,j]>0.85:
                             albedo[i,j]=0.85
             else:
-                for i in range(number_of_parallels):                
+                for i in range(builtins.number_of_parallels):                
                     for j in range(len(Vars.Lat)):
                         if Tg[i,j]<283.16:
                             albedo[i,j]=b[j]-0.009*Tg[i,j]
@@ -658,14 +658,14 @@ class flux_up:
         list_parameters=list(funcparam.values())
         Activation,A,B=list_parameters
         
-        if parallelization==True:
+        if builtins.parallelization==True:
             paras=[A,B]
-            A,B=[np.transpose(np.array([paras[i]]*len(Vars.Lat))) if np.shape(paras[i])==(number_of_parallels,) else paras[i] for i in range(len(paras))]
+            A,B=[np.transpose(np.array([paras[i]]*len(Vars.Lat))) if np.shape(paras[i])==(builtins.number_of_parallels,) else paras[i] for i in range(len(paras))]
             if type(Activation)==bool:
                 R_out=-(A+B*(Vars.T-273.15))
             else:
-                R_out=np.reshape(np.zeros(number_of_parallels*len(Vars.Lat)),(number_of_parallels,len(Vars.Lat)))
-                for i in range(number_of_parallels):
+                R_out=np.reshape(np.zeros(builtins.number_of_parallels*len(Vars.Lat)),(builtins.number_of_parallels,len(Vars.Lat)))
+                for i in range(builtins.number_of_parallels):
                     if Activation[i]==False:
                         R_out[i]=np.zeros(len(Vars.Lat))
                     else:
@@ -676,8 +676,8 @@ class flux_up:
                 R_out=0
             else:
                 R_out=-(A+B*(Vars.T-273.15))
-        if Runtime_Tracker % (4*data_readout) == 0:    #Only on 4th step (due to rk4)
-                Vars.Read['Rup'][int(Runtime_Tracker/(4*data_readout))]=R_out
+        if builtins.Runtime_Tracker % (4*builtins.data_readout) == 0:    #Only on 4th step (due to rk4)
+                Vars.Read['Rup'][int(builtins.Runtime_Tracker/(4*builtins.data_readout))]=R_out
         return R_out
 
     def budyko_clouds(funcparam):
@@ -736,14 +736,14 @@ class flux_up:
         #R_outbudcparam=[A,B,A1,B1,f_c]
         list_parameters=list(funcparam.values())
         Activation,A,B,A1,B1,f_c=list_parameters
-        if parallelization==True:
+        if builtins.parallelization==True:
             paras=[A,B,A1,B1,f_c]
-            A,B,A1,B1,f_c=[np.transpose(np.array([paras[i]]*len(Vars.Lat))) if np.shape(paras[i])==(number_of_parallels,) else paras[i] for i in range(len(paras))]
+            A,B,A1,B1,f_c=[np.transpose(np.array([paras[i]]*len(Vars.Lat))) if np.shape(paras[i])==(builtins.number_of_parallels,) else paras[i] for i in range(len(paras))]
             if type(Activation)==bool:
                 R_out=-(A+B*(Vars.T-273.15)-(A1+B1*(Vars.T-273.15))*f_c)
             else:
-                R_out=np.reshape(np.zeros(number_of_parallels*len(Vars.Lat)),(number_of_parallels,len(Vars.Lat)))
-                for i in range(number_of_parallels):
+                R_out=np.reshape(np.zeros(builtins.number_of_parallels*len(Vars.Lat)),(builtins.number_of_parallels,len(Vars.Lat)))
+                for i in range(builtins.number_of_parallels):
                     if Activation[i]==False:
                         R_out[i]=np.zeros(len(Vars.Lat))
                     else:
@@ -754,8 +754,8 @@ class flux_up:
                 R_out=np.zeros(len(Vars.Lat))
             else:
                 R_out=-(A+B*(Vars.T-273.15)-(A1+B1*(Vars.T-273.15))*f_c)
-        if Runtime_Tracker % (4*data_readout) == 0:    #Only on 4th step (due to rk4)
-            Vars.Read['Rup'][int(Runtime_Tracker/(4*data_readout))]=R_out
+        if builtins.Runtime_Tracker % (4*builtins.data_readout) == 0:    #Only on 4th step (due to rk4)
+            Vars.Read['Rup'][int(builtins.Runtime_Tracker/(4*builtins.data_readout))]=R_out
                 
         return R_out
 
@@ -798,14 +798,14 @@ class flux_up:
         #R_outplanckparam=[grey,sig]
         list_parameters=list(funcparam.values())
         Activation,grey,sig=list_parameters
-        if parallelization==True:
+        if builtins.parallelization==True:
             paras=[grey,sig]
-            grey,sig=[np.transpose(np.array([paras[i]]*len(Vars.Lat))) if np.shape(paras[i])==(number_of_parallels,) else paras[i] for i in range(len(paras))]
+            grey,sig=[np.transpose(np.array([paras[i]]*len(Vars.Lat))) if np.shape(paras[i])==(builtins.number_of_parallels,) else paras[i] for i in range(len(paras))]
             if type(Activation)==bool:
                 R_out=-(grey*sig*Vars.T**4)
             else:
-                R_out=np.reshape(np.zeros(number_of_parallels*len(Vars.Lat)),(number_of_parallels,len(Vars.Lat)))
-                for i in range(number_of_parallels):
+                R_out=np.reshape(np.zeros(builtins.number_of_parallels*len(Vars.Lat)),(builtins.number_of_parallels,len(Vars.Lat)))
+                for i in range(builtins.number_of_parallels):
                     if Activation[i]==False:
                         R_out[i]=np.zeros(len(Vars.Lat))
                     else:
@@ -816,8 +816,8 @@ class flux_up:
             else:
                 R_out=-(grey*sig*Vars.T**4)
                 
-        if Runtime_Tracker % (4*data_readout) == 0:    #Only on 4th step (due to rk4)
-            Vars.Read['Rup'][int(Runtime_Tracker/(4*data_readout))]=R_out
+        if builtins.Runtime_Tracker % (4*builtins.data_readout) == 0:    #Only on 4th step (due to rk4)
+            Vars.Read['Rup'][int(builtins.Runtime_Tracker/(4*builtins.data_readout))]=R_out
         return R_out
 
     def sellers(funcparam):
@@ -873,14 +873,14 @@ class flux_up:
         #R_outselparam=[sig,grey,gamma,m]"""
         list_parameters=list(funcparam.values())
         Activation,m,sigma,gamma,k=list_parameters
-        if parallelization==True:
+        if builtins.parallelization==True:
             paras=[m,sigma,gamma,k]
-            m,sigma,gamma,k=[np.transpose(np.array([paras[i]]*len(Vars.Lat))) if np.shape(paras[i])==(number_of_parallels,) else paras[i] for i in range(len(paras))]
+            m,sigma,gamma,k=[np.transpose(np.array([paras[i]]*len(Vars.Lat))) if np.shape(paras[i])==(builtins.number_of_parallels,) else paras[i] for i in range(len(paras))]
             if type(Activation)==bool:
                 R_out=-k*sigma*Vars.T**4*(1-m*np.tanh(gamma*Vars.T**6))
             else:
-                R_out=np.reshape(np.zeros(number_of_parallels*len(Vars.Lat)),(number_of_parallels,len(Vars.Lat)))
-                for i in range(number_of_parallels):
+                R_out=np.reshape(np.zeros(builtins.number_of_parallels*len(Vars.Lat)),(builtins.number_of_parallels,len(Vars.Lat)))
+                for i in range(builtins.number_of_parallels):
                     if Activation[i]==False:
                         R_out[i]=np.zeros(len(Vars.Lat))
                     else:
@@ -890,8 +890,8 @@ class flux_up:
                 R_out=np.zeros(len(Vars.Lat))
             else:
                 R_out=-k*sigma*Vars.T**4*(1-m*np.tanh(gamma*Vars.T**6))
-        if Runtime_Tracker % (4*data_readout) == 0:    #Only on 4th step (due to rk4)
-            Vars.Read['Rup'][int(Runtime_Tracker/(4*data_readout))]=R_out
+        if builtins.Runtime_Tracker % (4*builtins.data_readout) == 0:    #Only on 4th step (due to rk4)
+            Vars.Read['Rup'][int(builtins.Runtime_Tracker/(4*builtins.data_readout))]=R_out
         return R_out
 
 class transfer:
@@ -968,8 +968,8 @@ class transfer:
             F=0
         #Reading the distribution to give an output
         if Read==True:
-            if Runtime_Tracker % (4*data_readout) == 0:
-                Vars.Read['BudTransfer'][int(Runtime_Tracker/(4*data_readout))]=F
+            if builtins.Runtime_Tracker % (4*builtins.data_readout) == 0:
+                Vars.Read['BudTransfer'][int(builtins.Runtime_Tracker/(4*builtins.data_readout))]=F
         return F
 
     def sellers(funcparam):
@@ -1163,15 +1163,15 @@ class transfer:
                                                                                                                                                             
         list_parameters=list(funcparam.values())
         Readout,Activated,K_wv,K_h,K_o,g,a,eps,p,e0,L,Rd,dy,dp     ,cp,dz,l_cover,re,cp_w,dens_w,factor_wv,factor_air,factor_oc,factor_kwv,factor_kair=list_parameters
-        """if parallelization==True:
+        """if builtins.parallelization==True:
             paras=[K_wv,K_h,K_o,g,a,eps,p,e0,L,Rd,dy,dp,cp,dz,l_cover,re,cp_w,dens_w,factor_wv,factor_air,factor_oc,factor_kwv,factor_kair]
             K_wv,K_h,K_o,g,a,eps,p,e0,L,Rd,dy,dp,cp,dz,l_cover,re,cp_w,dens_w,factor_wv,factor_air,factor_oc,factor_kwv,factor_kair=\
-                [xr.DataArray(paras[i],coords=[np.arange(number_of_parallels)],dims=['parallel']) if np.shape(paras[i])==(number_of_parallels,) else xr.DataArray(paras[i],coords=[Vars.Lat],dims=['lat']) if np.shape(paras[i])==(len(Vars.Lat),) else xr.DataArray(paras[i],coords=[Vars.Lat2],dims=['lat2']) if np.shape(paras[i])==(len(Vars.Lat2),) else xr.DataArray(paras[i],coords=[np.arange(number_of_parallels),Vars.Lat],dims=['parallel','lat']) if np.shape(paras[i])==(number_of_parallels,len(Vars.Lat)) else paras[i] for i in range(len(paras))]
+                [xr.DataArray(paras[i],coords=[np.arange(builtins.number_of_parallels)],dims=['parallel']) if np.shape(paras[i])==(builtins.number_of_parallels,) else xr.DataArray(paras[i],coords=[Vars.Lat],dims=['lat']) if np.shape(paras[i])==(len(Vars.Lat),) else xr.DataArray(paras[i],coords=[Vars.Lat2],dims=['lat2']) if np.shape(paras[i])==(len(Vars.Lat2),) else xr.DataArray(paras[i],coords=[np.arange(builtins.number_of_parallels),Vars.Lat],dims=['parallel','lat']) if np.shape(paras[i])==(builtins.number_of_parallels,len(Vars.Lat)) else paras[i] for i in range(len(paras))]
               """               
-        if parallelization==True:
+        if builtins.parallelization==True:
             paras=[K_wv,K_h,K_o,g,a,eps,p,e0,L,Rd,dy,dp,cp,dz,l_cover,re,cp_w,dens_w,factor_wv,factor_air,factor_oc,factor_kwv,factor_kair]
             K_wv,K_h,K_o,g,a,eps,p,e0,L,Rd,dy,dp,cp,dz,l_cover,re,cp_w,dens_w,factor_wv,factor_air,factor_oc,factor_kwv,factor_kair=\
-                [np.transpose(np.array([paras[i]]*len(Vars.Lat2))) if np.shape(paras[i])==(number_of_parallels,) else paras[i] for i in range(len(paras))]
+                [np.transpose(np.array([paras[i]]*len(Vars.Lat2))) if np.shape(paras[i])==(builtins.number_of_parallels,) else paras[i] for i in range(len(paras))]
 
         if Activated==True:
             #Parameters for different transfer Fluxes+their calculation 
@@ -1193,15 +1193,15 @@ class transfer:
             P=cL+C+F  
 
             #calculation of gridparameters (for 1st step only)
-            if Runtime_Tracker==0:
+            if builtins.Runtime_Tracker==0:
                 Vars.latlength=earthsystem.length_latitudes(re)
                 Vars.area=earthsystem.area_latitudes(re)
                 
             #Converting Arrays to two arrays with an one element shift
-            #Apply parallelization if activated
-            if parallelization==True: 
-                P1,P0=np.reshape(np.zeros(number_of_parallels*len(Vars.Lat)*2),(2,number_of_parallels,len(Vars.Lat)))
-                for i in range(number_of_parallels):
+            #Apply builtins.parallelization if activated
+            if builtins.parallelization==True: 
+                P1,P0=np.reshape(np.zeros(builtins.number_of_parallels*len(Vars.Lat)*2),(2,builtins.number_of_parallels,len(Vars.Lat)))
+                for i in range(builtins.number_of_parallels):
                     P_0=np.append(P[i],0)                    
                     P_1=np.insert(P[i],0,0) 
                     P0[i]=P_0
@@ -1218,11 +1218,11 @@ class transfer:
 
             #reading for output
             if Readout==True:
-                if Runtime_Tracker % (4*data_readout) == 0:
+                if builtins.Runtime_Tracker % (4*builtins.data_readout) == 0:
                     Readdata=[cL,C,F,P,Transfer]
                     Readdatakeys=['cL','C','F','P','Transfer']
                     for l in range(len(Readdata)):
-                        Vars.Read[Readdatakeys[l]][int(Runtime_Tracker/(4*data_readout))]=Readdata[l]
+                        Vars.Read[Readdatakeys[l]][int(builtins.Runtime_Tracker/(4*builtins.data_readout))]=Readdata[l]
         else:
             Transfer=0
         return Transfer
@@ -1323,7 +1323,7 @@ class transfer:
         #calculating the specific humidity q and its latitudinal difference dq
         q=earthsystem.specific_saturation_humidity_sel(e0,eps,L,Rd,p)
         dq=earthsystem.humidity_difference(e0,eps,L,Rd,p)
-        if parallelization==True:
+        if builtins.parallelization==True:
         #equation of the water vapour energy transfer
             a1=Vars.meridional*q
             a2=K_wv*factor_kwv*dq/dy
@@ -1402,7 +1402,7 @@ class transfer:
         K_h,g,dy,cp,dp,factor_air,factor_kair=funcparam
         
         #equation of the atmosphere sensible heat transfer, with dependence on Temperature and Temperature difference
-        if parallelization==True:
+        if builtins.parallelization==True:
             a1=Vars.meridional*Vars.T[:,1:]
             a2=K_h*factor_kair*Vars.tempdif/dy
             a3=cp*dp*const.mb_to_Pa/g
@@ -1474,7 +1474,7 @@ class transfer:
         K_o,dz,l_cover,dy,cp_w,dens_w,factor_oc=funcparam
         
         #equation of ocean sensible heat transfer
-        if parallelization==True:
+        if builtins.parallelization==True:
             F=-K_o*dz*l_cover*Vars.tempdif/dy*cp_w*dens_w*factor_oc
         else:
             F=-K_o*dz*l_cover*Vars.tempdif/(dy)*cp_w*dens_w*factor_oc
@@ -1497,11 +1497,26 @@ class forcing:
     """
     def offset(funcparam):
         list_parameters=list(funcparam.values())
-        F=list_parameters[0]
-        if parallelization:
-            F=np.transpose(np.array([F]*len(Vars.Lat))) if np.shape(F)==(number_of_parallels,) else F
+        F1,F2,F3,F4,F5,F6,F7,F8,F9,F10,F11,F12,F13,F14,F15,F16,F17,F18,Correction_Latitudes=list_parameters
+        paras=[F1,F2,F3,F4,F5,F6,F7,F8,F9,F10,F11,F12,F13,F14,F15,F16,F17,F18]
         
-        return F
+        
+        Fcorrection=np.array(paras)
+        if builtins.parallelization:
+            Fcorrection=np.transpose(Fcorrection)
+            
+        if len(Correction_Latitudes) != len(Vars.Lat):
+            Fcorrection=np.zeros(len(Vars.Lat))
+            j=0
+            for k in range(len(Vars.Lat)):
+                if Correction_Latitudes[j]==Vars.Lat[k]:
+                    Fcorrection[k]=paras[k]
+                    j+=1
+                if j==len(Correction_Latitudes):
+                    break
+            
+            
+        return Fcorrection
         
     def random(funcparam):
         """ 
@@ -1538,7 +1553,7 @@ class forcing:
 
                                         * type: int 
                                         * unit: -
-                                        * value: any (preferably the same as ``stepsize_of_integration``)
+                                        * value: any (preferably the same as ``builtins.stepsize_of_integration``)
                               
                                     * *timeunit*: The unit of time for the forcing
 
@@ -1597,7 +1612,7 @@ class forcing:
         """
         list_parameters=list(funcparam.values())
         forcingnumber,start,stop,steps,timeunit,strength,frequency,behaviour,lifetime,seed,sign=list_parameters
-        if Runtime_Tracker==0:
+        if builtins.Runtime_Tracker==0:
             random_events_time=np.arange(start,stop+steps,steps)
 
             #if BP==True:
@@ -1661,8 +1676,8 @@ class forcing:
                 Vars.ForcingTracker[forcingnumber][1] = Vars.ExternalInput[forcingnumber][1][Vars.ForcingTracker[forcingnumber][0]]
                 Vars.ForcingTracker[forcingnumber][0] += 1
         F=Vars.ForcingTracker[forcingnumber][1]
-        if Runtime_Tracker % (4*data_readout) == 0:
-            Vars.ExternalOutput[forcingnumber][int(Runtime_Tracker/(4*data_readout))]=F
+        if builtins.Runtime_Tracker % (4*builtins.data_readout) == 0:
+            Vars.ExternalOutput[forcingnumber][int(builtins.Runtime_Tracker/(4*builtins.data_readout))]=F
         return F
 
     def predefined(funcparam):
@@ -1749,7 +1764,7 @@ class forcing:
         """
         list_parameters=list(funcparam.values())
         forcingnumber,datapath,name,delimiter,header,footer,col_time,col_forcing,timeunit,BP,time_start,k_output, m_output, k_input, m_input=list_parameters
-        if Runtime_Tracker==0:
+        if builtins.Runtime_Tracker==0:
             Vars.ExternalInput[forcingnumber]=np.genfromtxt(str(datapath)+str(name),delimiter=str(delimiter),skip_header=header,skip_footer=footer,usecols=(col_time,col_forcing),unpack=True,encoding='ISO-8859-1')  
             Vars.External_time_start[forcingnumber]=time_start   
             Vars.ExternalInput[forcingnumber][1]=lna(Vars.ExternalInput[forcingnumber][1])*k_input+m_input
@@ -1778,8 +1793,8 @@ class forcing:
                 Vars.ForcingTracker[forcingnumber][1] = Vars.ExternalInput[forcingnumber][1][Vars.ForcingTracker[forcingnumber][0]]
                 Vars.ForcingTracker[forcingnumber][0] += 1
         F=Vars.ForcingTracker[forcingnumber][1]*k_output+m_output
-        if Runtime_Tracker % (4*data_readout) == 0:
-            Vars.ExternalOutput[forcingnumber][int(Runtime_Tracker/(4*data_readout))]=F
+        if builtins.Runtime_Tracker % (4*builtins.data_readout) == 0:
+            Vars.ExternalOutput[forcingnumber][int(builtins.Runtime_Tracker/(4*builtins.data_readout))]=F
         return F
 
     def predefined1d(funcparam):
@@ -1866,7 +1881,7 @@ class forcing:
         """
         list_parameters=list(funcparam.values())
         forcingnumber,datapath,name,delimiter,header,footer,col_time,colrange_forcing,timeunit,BP,time_start,k_output, m_output, k_input, m_input=list_parameters
-        if Runtime_Tracker==0:
+        if builtins.Runtime_Tracker==0:
             forcingscols=np.arange(colrange_forcing[0],colrange_forcing[1],dtype=int)
 
             Vars.ExternalInput[forcingnumber]=[0,0]
@@ -1901,8 +1916,8 @@ class forcing:
                 Vars.ForcingTracker[forcingnumber][1] = Vars.ExternalInput[forcingnumber][1][Vars.ForcingTracker[forcingnumber][0]]
                 Vars.ForcingTracker[forcingnumber][0] += 1
         F=Vars.ForcingTracker[forcingnumber][1]*k_output+m_output
-        if Runtime_Tracker % (4*data_readout) == 0:
-            Vars.ExternalOutput[forcingnumber][int(Runtime_Tracker/(4*data_readout))]=F
+        if builtins.Runtime_Tracker % (4*builtins.data_readout) == 0:
+            Vars.ExternalOutput[forcingnumber][int(builtins.Runtime_Tracker/(4*builtins.data_readout))]=F
         return F
 
     def co2_myhre(funcparam):
@@ -2008,7 +2023,7 @@ class forcing:
         """
         list_parameters=list(funcparam.values())
         A,C_0,CO2_base,datapath,name,delimiter,header,footer,col_time,col_conc,timeunit,BP,time_start=list_parameters
-        if Runtime_Tracker==0:
+        if builtins.Runtime_Tracker==0:
             Vars.CO2Input=np.genfromtxt(str(datapath)+str(name),delimiter=str(delimiter),skip_header=header,skip_footer=footer,usecols=(col_time,col_conc),unpack=True,encoding='ISO-8859-1')  
             Vars.CO2_time_start=time_start    
             if BP==True:
@@ -2041,8 +2056,8 @@ class forcing:
                 Vars.CO2Tracker[1] = A*(np.log(Vars.CO2Input[1][Vars.CO2Tracker[0]]/C_0))
                 Vars.CO2Tracker[0] += 1
         F=Vars.CO2Tracker[1]
-        if Runtime_Tracker % (4*data_readout) == 0:
-            Vars.CO2Output[int(Runtime_Tracker/(4*data_readout))]=F
+        if builtins.Runtime_Tracker % (4*builtins.data_readout) == 0:
+            Vars.CO2Output[int(builtins.Runtime_Tracker/(4*builtins.data_readout))]=F
         return F
 
     def orbital(funcparam):
@@ -2130,7 +2145,7 @@ class forcing:
         list_parameters=list(funcparam.values())
         datapath,name,delimiter,header,footer,col_time,col_ecc,col_per,col_obl,timeunit,BP,time_start,initial,perishift=list_parameters
 
-        if Runtime_Tracker==0:
+        if builtins.Runtime_Tracker==0:
             Vars.ExternalOrbitals=np.genfromtxt(str(datapath)+str(name),delimiter=str(delimiter),skip_header=header,skip_footer=footer,usecols=(col_time,col_ecc,col_per,col_obl),unpack=True,encoding='ISO-8859-1')  
             Vars.External_time_start=time_start   
  
@@ -2252,7 +2267,7 @@ class forcing:
         """
         list_parameters=list(funcparam.values())
         datapath,name,delimiter,header,footer,col_time,col_forcing,timeunit,BP,time_start,k_output, m_output, k_input, m_input=list_parameters
-        if Runtime_Tracker==0:
+        if builtins.Runtime_Tracker==0:
             Vars.SolarInput=np.genfromtxt(str(datapath)+str(name),delimiter=str(delimiter),skip_header=header,skip_footer=footer,usecols=(col_time,col_forcing),unpack=True,encoding='ISO-8859-1')  
             Vars.Solar_time_start=time_start   
             Vars.SolarInput[1]=lna(Vars.SolarInput[1])*k_input+m_input
@@ -2273,7 +2288,7 @@ class forcing:
             if timeunit=='year':
                 Vars.SolarInput[0]=lna(Vars.SolarInput[0])*60*60*24*365
                 
-        if Runtime_Tracker==0:
+        if builtins.Runtime_Tracker==0:
             Vars.TSI=Vars.SolarInput[1][0]
         while Vars.t>Vars.SolarInput[0][Vars.SolarTracker[0]]:
             if Vars.SolarTracker[0]==(len(Vars.SolarInput[0])-1):
@@ -2283,8 +2298,8 @@ class forcing:
                 Vars.SolarTracker[1] = Vars.SolarInput[1][Vars.SolarTracker[0]]
                 Vars.SolarTracker[0] += 1
         Vars.TSI=Vars.SolarTracker[1]*k_output+m_output
-        if Runtime_Tracker % (4*data_readout) == 0:
-            Vars.SolarOutput[int(Runtime_Tracker/(4*data_readout))]=Vars.TSI
+        if builtins.Runtime_Tracker % (4*builtins.data_readout) == 0:
+            Vars.SolarOutput[int(builtins.Runtime_Tracker/(4*builtins.data_readout))]=Vars.TSI
         return 0
 
     def aod(funcparam):
@@ -2371,7 +2386,7 @@ class forcing:
         """
         list_parameters=list(funcparam.values())
         datapath,name,delimiter,header,footer,col_time,col_forcing,timeunit,BP,time_start,k_output, m_output, k_input, m_input=list_parameters
-        if Runtime_Tracker==0:
+        if builtins.Runtime_Tracker==0:
             Vars.AODInput=np.genfromtxt(str(datapath)+str(name),delimiter=str(delimiter),skip_header=header,skip_footer=footer,usecols=(col_time,col_forcing),unpack=True,encoding='ISO-8859-1')  
             Vars.AOD_time_start=time_start   
             Vars.AODInput[1]=lna(Vars.AODInput[1])*k_input+m_input
@@ -2392,7 +2407,7 @@ class forcing:
             if timeunit=='year':
                 Vars.AODInput[0]=lna(Vars.AODInput[0])*60*60*24*365
                 
-        if Runtime_Tracker==0:
+        if builtins.Runtime_Tracker==0:
             Vars.AOD=Vars.AODInput[1][0]
         while Vars.t>Vars.AODInput[0][Vars.AODTracker[0]]:
             if Vars.AODTracker[0]==(len(Vars.AODInput[0])-1):
@@ -2402,8 +2417,8 @@ class forcing:
                 Vars.AODTracker[1] = Vars.AODInput[1][Vars.AODTracker[0]]
                 Vars.AODTracker[0] += 1
         Vars.AOD=Vars.AODTracker[1]*k_output+m_output
-        if Runtime_Tracker % (4*data_readout) == 0:
-            Vars.AODOutput[int(Runtime_Tracker/(4*data_readout))]=Vars.AOD
+        if builtins.Runtime_Tracker % (4*builtins.data_readout) == 0:
+            Vars.AODOutput[int(builtins.Runtime_Tracker/(4*builtins.data_readout))]=Vars.AOD
         return 0
 
 class earthsystem:
@@ -2447,7 +2462,7 @@ class earthsystem:
         """
         #Returning the cosine weighted sum of the mean annual latitudal temperature 
         #as global mean annual temperature 
-        if parallelization==True:
+        if builtins.parallelization==True:
             GMT=np.average(Vars.T, weights=cosd(Vars.Lat),axis=1)
         else:
             GMT=np.average(Vars.T, weights=cosd(Vars.Lat))
@@ -2536,7 +2551,7 @@ class earthsystem:
             days=np.arange(365)
             Q=lna(np.mean(earthsystem.insolation(Vars.Lat,days,Vars.orbitals,S0=Q+Vars.TSI),axis=0))
         if timeunit=='year':
-            days=np.linspace(0,((365*int(Vars.t)-1) % 365)*stepsize_of_integration % 365,36)
+            days=np.linspace(0,((365*int(Vars.t)-1) % 365)*builtins.stepsize_of_integration % 365,36)
             Q=lna(np.mean(earthsystem.insolation(Vars.Lat,days,Vars.orbitals,S0=Q+Vars.TSI),axis=0))*convfactor
         if timeunit=='month':
             days=np.linspace((int(Vars.t)*365/12) % 365,(int(Vars.t)*365/12-1) % 365,30)
@@ -2588,7 +2603,7 @@ class earthsystem:
         year=orbitalyear*1000+Vars.t
         days=np.linspace(0,365,365)
         #calculation for first step
-        if Runtime_Tracker == 0:
+        if builtins.Runtime_Tracker == 0:
             #Vars.orbtable=OrbitalTable()
             Vars.orbitals=Vars.orbtable.lookup_parameters(year/1000)
             Q=lna(np.mean(insolation(Vars.Lat,days,Vars.orbitals,S0=Q+Vars.TSI),axis=1))
@@ -2642,9 +2657,9 @@ class earthsystem:
         #Calculating the global wind patterns, with the function from sellers (1969)
         #Meriwind_Selparam=[a]"""
         
-        if parallelization==True:
-            #v=xr.DataArray(np.array([[0]*len(Vars.Lat2)]*number_of_parallels,dtype=float),coords=[np.arange(number_of_parallels),Vars.Lat2],dims=['parallel','lat2'])
-            v=np.reshape(np.zeros(number_of_parallels*len(Vars.Lat2)),(number_of_parallels,len(Vars.Lat2)))
+        if builtins.parallelization==True:
+            #v=xr.DataArray(np.array([[0]*len(Vars.Lat2)]*builtins.number_of_parallels,dtype=float),coords=[np.arange(builtins.number_of_parallels),Vars.Lat2],dims=['parallel','lat2'])
+            v=np.reshape(np.zeros(builtins.number_of_parallels*len(Vars.Lat2)),(builtins.number_of_parallels,len(Vars.Lat2)))
 
             T_av=np.average(np.abs(Vars.tempdif),weights=(2*np.pi*re*cosd(Vars.Lat2)),axis=1)
 
@@ -2660,11 +2675,11 @@ class earthsystem:
             i+=1
         k=i
 
-        if parallelization==True:
-            if np.shape(a)==(len(Vars.Lat2),number_of_parallels):
+        if builtins.parallelization==True:
+            if np.shape(a)==(len(Vars.Lat2),builtins.number_of_parallels):
                 a=np.transpose(a)
-            for l in range(number_of_parallels):
-                if np.shape(a)==(number_of_parallels,len(Vars.Lat2)):
+            for l in range(builtins.number_of_parallels):
+                if np.shape(a)==(builtins.number_of_parallels,len(Vars.Lat2)):
 
                     for j in range(k):
                         v[l,j]=-a[l,j]*(Vars.tempdif[l,j]-T_av[l])
@@ -2776,7 +2791,7 @@ class earthsystem:
 
         """
         #temperature dependant equation of saturation pressure
-        if parallelization==True:
+        if builtins.parallelization==True:
 
             e=e0*(1-0.5*eps*L*Vars.tempdif/(Rd*np.array(Vars.T[:,1:])**2))
         else:
@@ -2832,7 +2847,7 @@ class earthsystem:
         #equation of difference in humidity
         
         e=earthsystem.saturation_pressure(e0,eps,L,Rd)
-        if parallelization==True:
+        if builtins.parallelization==True:
             dq=eps**2*L*e*Vars.tempdif/(p*Rd*np.array(Vars.T[:,1:])**2)
         else:
             dq=eps**2*L*e*Vars.tempdif/(p*Rd*Vars.T[1:]**2)
@@ -2860,19 +2875,19 @@ class earthsystem:
 
         """
         #Returning the temperature difference between the northern and southern latitudinal boundary
-        if latitudinal_belt==True:
-            if parallelization==True:
+        if builtins.latitudinal_belt==True:
+            if builtins.parallelization==True:
                 dT=Vars.T[:,1:]-Vars.T[:,:-1]  
             else:
                 dT=Vars.T[1:]-Vars.T[:-1]  
         #Calculation if for sellers it is desired to be defined on the latitudinal circles, 
         #with interpolation towards the poles
-        if latitudinal_circle==True:
+        if builtins.latitudinal_circle==True:
             f=interpolator(Vars.Lat,Vars.T)
-            if both_hemispheres==True:
-                Lat_new=np.linspace(-90,90,int(180/spatial_resolution+1))
+            if builtins.both_hemispheres==True:
+                Lat_new=np.linspace(-90,90,int(180/builtins.spatial_resolution+1))
             else:
-                Lat_new=np.linspace(0,90,int(90/spatial_resolution+1))
+                Lat_new=np.linspace(0,90,int(90/builtins.spatial_resolution+1))
             dT=f(Lat_new)[1:]-f(Lat_new)[:-1]
         return dT
 
@@ -2964,12 +2979,12 @@ def sind(Lat):
 def plotmeanstd(array):
     #calculation of an arrays mean value and standard deviation, with regard to the equilibrium condition chosen
     #Used to process the final output data
-    arraymean=np.mean(array[:][-int(eq_condition_length):],axis=0)
-    arraystd=np.std(array[:][-int(eq_condition_length):],axis=0)
+    arraymean=np.mean(array[:][-int(builtins.eq_condition_length):],axis=0)
+    arraystd=np.std(array[:][-int(builtins.eq_condition_length):],axis=0)
     
     #for l in range(len(arraynew)):
-    #    arraymean.append(np.mean(arraynew[l][-eq_condition_length:]))
-    #    arraystd.append(np.std(arraynew[l][-eq_condition_length:]))
+    #    arraymean.append(np.mean(arraynew[l][-builtins.eq_condition_length:]))
+    #    arraystd.append(np.std(arraynew[l][-builtins.eq_condition_length:]))
     return arraymean, arraystd
 
 def datasetaverage(dataset):
@@ -2995,17 +3010,17 @@ def SteadyStateConditionGlobal(Global):
     #equilibrium condition of the RK4-algorithm, checking if the condition is fulfilled or not
     dT=np.std(Global)
     #if fulfilled, return True to interupt the algorithm and stop with output message
-    if dT <= eq_condition_amplitude:
-        print('Steady State reached after %s steps, within %s seconds'               %(int(Runtime_Tracker/(4*data_readout)),(time.time() - Vars.start_time)))
+    if dT <= builtins.eq_condition_amplitude:
+        print('Steady State reached after %s steps, within %s seconds'               %(int(builtins.Runtime_Tracker/(4*builtins.data_readout)),(time.time() - Vars.start_time)))
         return True
     #if not fulfilled return False, until the integrationnumber is exceeded
-    if Runtime_Tracker==(number_of_integration-1)*4:
+    if builtins.Runtime_Tracker==(builtins.number_of_integration-1)*4:
         print('Transit State within %s seconds' %(time.time() - Vars.start_time))
         return True
     else:
         return False
 
 def BPtimeplot(time,number):
-    time_new = (lna(time)/stepsize_of_integration-Vars.External_time_start[number])
+    time_new = (lna(time)/builtins.stepsize_of_integration-Vars.External_time_start[number])
     return time_new
 

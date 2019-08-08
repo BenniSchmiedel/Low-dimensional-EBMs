@@ -72,7 +72,7 @@ class Vars():
     **Running variables:**
 
     +---------------+-----------------------------------------------------------------------+
-    | t             | The time in the simulation (in steps of the stepsize_of_integration)  |
+    | t             | The time in the simulation (in steps of the builtins.stepsize_of_integration)  |
     +---------------+-----------------------------------------------------------------------+
     | T             | The ZMT temperature                                                   |
     +---------------+-----------------------------------------------------------------------+
@@ -258,7 +258,7 @@ class Vars():
 
 def trackerreset():
     reset('ForcingTracker')
-    Vars.ForcingTracker=np.array([Vars.ForcingTracker for i in range(int(number_of_externals))],dtype=object)
+    Vars.ForcingTracker=np.array([Vars.ForcingTracker for i in range(int(builtins.number_of_externals))],dtype=object)
     reset('CO2Tracker')
     reset('SolarTracker')
     reset('OrbitalTracker')
@@ -283,7 +283,7 @@ def datareset():
     Resets the *primary variables* to their initial values. The *primary variables* are variables defined under the``[initials]``-section in the *configuration.ini-file*. These are:
 
         +---------------+-----------------------------------------------------------------------+
-        | t             | The time in the simulation (in steps of the stepsize_of_integration)  |
+        | t             | The time in the simulation (in steps of the builtins.stepsize_of_integration)  |
         +---------------+-----------------------------------------------------------------------+
         | T             | The ZMT temperature                                                   |
         +---------------+-----------------------------------------------------------------------+
@@ -340,17 +340,17 @@ def builtin_importer(rk4input,control=False,parallel=False,parallel_config=0,acc
     Here all added variables (``[rk4input]``-variables + additional ones):
 
     +---------------------------+-----------------------------------------------------------------------+
-    | number_of_integration     | Number of iterations to perfom                                        |
+    | builtins.number_of_integration     | Number of iterations to perfom                                        |
     +---------------------------+-----------------------------------------------------------------------+
-    | stepsize_of_integration   | Time steps of one iteration steps                                     |   
+    | builtins.stepsize_of_integration   | Time steps of one iteration steps                                     |   
     +---------------------------+-----------------------------------------------------------------------+
-    | spatial_resolution        | Grid resolution (width of one latitudinal band in degree)             |
+    | builtins.spatial_resolution        | Grid resolution (width of one latitudinal band in degree)             |
     +---------------------------+-----------------------------------------------------------------------+
-    | both_hemispheres          | Indicates if both hemispheres or northern hemisphere is modeled       |
+    | builtins.both_hemispheres          | Indicates if both hemispheres or northern hemisphere is modeled       |
     +---------------------------+-----------------------------------------------------------------------+
-    | latitudinal_circle        | Indicates that the temperature is defined on latitudinal circles      |
+    | builtins.latitudinal_circle        | Indicates that the temperature is defined on latitudinal circles      |
     +---------------------------+-----------------------------------------------------------------------+
-    | latitudinal_belt          | Indicates that the temperature is defined on latitudinal belts        |
+    | builtins.latitudinal_belt          | Indicates that the temperature is defined on latitudinal belts        |
     +---------------------------+-----------------------------------------------------------------------+
     | eq_condition              | Activation/Deactivation of stop criterion (equilibrium condition)     |
     +---------------------------+-----------------------------------------------------------------------+   
@@ -358,13 +358,13 @@ def builtin_importer(rk4input,control=False,parallel=False,parallel_config=0,acc
     +---------------------------+-----------------------------------------------------------------------+   
     | eq_condition_amplitude    | The predefined limiting value which defines the stop criterion        |
     +---------------------------+-----------------------------------------------------------------------+   
-    | data_readout              | The number of iterations between data-readout                         |
+    | builtins.data_readout              | The number of iterations between data-readout                         |
     +---------------------------+-----------------------------------------------------------------------+    
-    | number_of_externals       | The number of external forcings are used                              |
+    | builtins.number_of_externals       | The number of external forcings are used                              |
     +---------------------------+-----------------------------------------------------------------------+
 
     +---------------------------+-----------------------------------------------------------------------+    
-    | Runtime_Tracker           | Tracks the iteration and cycle step (number_of_integration*4)         |
+    | Runtime_Tracker           | Tracks the iteration and cycle step (builtins.number_of_integration*4)         |
     +---------------------------+-----------------------------------------------------------------------+    
     | Noise_Tracker             | Tracks the value of solar noise                                       |
     +---------------------------+-----------------------------------------------------------------------+    
@@ -407,24 +407,7 @@ def builtin_importer(rk4input,control=False,parallel=False,parallel_config=0,acc
         builtins.eq_condition_amplitude=accuracy
         print('Starting controlrun with a temperature accuracy of %s K on the GMT over %s datapoints.' %(accuracy,accuracy_number))
     else:
-        builtins.control=False
-    """builtins.number_of_integration=rk4input['number_of_integration']     
-    builtins.stepsize_of_integration=rk4input[1] 
-    builtins.spatial_resolution=rk4input[2]      
-    builtins.both_hemispheres=rk4input[3]
-    builtins.latitudinal_circle=rk4input[4]
-    builtins.latitudinal_belt=rk4input[5]
-    builtins.initials['initial_temperature_cosine']=rk4input[6]
-    builtins.initials['initial_temperature_amplitude']=rk4input[7]
-    builtins.initials['initial_temperature_noise']=rk4input[8]
-    builtins.initials['initial_temperature_noise_amplitude']=rk4input[9]    
-    builtins.Runtime_Tracker=rk4input[10]
-    builtins.Noise_Tracker=rk4input[11]
-    builtins.Condition=rk4input[12]
-    builtins.ConditionLength=rk4input[13]
-    builtins.ConditionValue=rk4input[14]
-    builtins.data_readout=rk4input[15]
-    builtins.number_of_externals=rk4input[16]"""
+        builtins.control=False 
 
 def initial_importer(initials,initialZMT=True,control=False,parallel=False):
     """
@@ -441,36 +424,36 @@ def initial_importer(initials,initialZMT=True,control=False,parallel=False):
     from lowEBMs.Packages.Functions import cosd, lna
     ###filling the running variables with values depending on the systemconfiguration in rk4input###
 
-    if spatial_resolution==0:
+    if builtins.spatial_resolution==0:
         dim=0
         print('0D')
         Vars.T=initials['zmt']
     else:
         dim=1
        #NS==True corresponds to southpole to northpole representation (180 Degrees)
-        if both_hemispheres==True:    
+        if builtins.both_hemispheres==True:    
             Latrange=180
 
             #Checking if Temperature and Latitude is set on a latitudal circle (0°,10°,..if step=10)
             #or on a latitudinal belt and therefore between the boundaries (5°,15°,..if step=10)
 
             #circle==True and belt==False says on the latitudinal circle
-            if latitudinal_circle==True and latitudinal_belt==False:      
-                Vars.Lat=np.linspace(-90+spatial_resolution,90-spatial_resolution,int(Latrange/spatial_resolution-1))
-                Vars.Lat2=np.linspace(-90,90-spatial_resolution,int(Latrange/spatial_resolution))+spatial_resolution/2
+            if builtins.latitudinal_circle==True and builtins.latitudinal_belt==False:      
+                Vars.Lat=np.linspace(-90+builtins.spatial_resolution,90-builtins.spatial_resolution,int(Latrange/builtins.spatial_resolution-1))
+                Vars.Lat2=np.linspace(-90,90-builtins.spatial_resolution,int(Latrange/builtins.spatial_resolution))+builtins.spatial_resolution/2
                 if initialZMT==True:
-                    Vars.T=np.array([initials['zmt']]*int(Latrange/spatial_resolution-1))
+                    Vars.T=np.array([initials['zmt']]*int(Latrange/builtins.spatial_resolution-1))
                     #Checking if the Temperature for each latitude starts with the same value or a 
                     #cosine shifted value range
                     if initials['initial_temperature_cosine']==True:
                         Vars.T=Vars.T+initials['initial_temperature_amplitude']*(cosd(Vars.Lat)-1)
 
             #circle==False and belt==True say on the latitudinal belt
-            if latitudinal_circle==False and latitudinal_belt==True:
-                Vars.Lat2=np.linspace(-90+spatial_resolution,90-spatial_resolution,int(Latrange/spatial_resolution-1))
-                Vars.Lat=np.linspace(-90,90-spatial_resolution,int(Latrange/spatial_resolution))+spatial_resolution/2
+            if builtins.latitudinal_circle==False and builtins.latitudinal_belt==True:
+                Vars.Lat2=np.linspace(-90+builtins.spatial_resolution,90-builtins.spatial_resolution,int(Latrange/builtins.spatial_resolution-1))
+                Vars.Lat=np.linspace(-90,90-builtins.spatial_resolution,int(Latrange/builtins.spatial_resolution))+builtins.spatial_resolution/2
                 if initialZMT==True:
-                    Vars.T=np.array([initials['zmt']]*int(Latrange/spatial_resolution))
+                    Vars.T=np.array([initials['zmt']]*int(Latrange/builtins.spatial_resolution))
                     if initials['initial_temperature_cosine']==True:
                         if initials['initial_temperature_noise']==True:
                             z=[0]*len(Vars.Lat)
@@ -483,18 +466,18 @@ def initial_importer(initials,initialZMT=True,control=False,parallel=False):
         #Not from southpole to northpole rather equator to pole
         else:
             Latrange=90     
-            if latitudinal_circle==True and latitudinal_belt==False:
-                Vars.Lat=np.linspace(0,90-spatial_resolution,int(Latrange/spatial_resolution))
-                Vars.Lat2=np.linspace(0,90-spatial_resolution,int(Latrange/spatial_resolution))+spatial_resolution/2
+            if builtins.latitudinal_circle==True and builtins.latitudinal_belt==False:
+                Vars.Lat=np.linspace(0,90-builtins.spatial_resolution,int(Latrange/builtins.spatial_resolution))
+                Vars.Lat2=np.linspace(0,90-builtins.spatial_resolution,int(Latrange/builtins.spatial_resolution))+builtins.spatial_resolution/2
                 if initialZMT==True:
-                    Vars.T=np.array([initials['zmt']]*int(Latrange/spatial_resolution))
+                    Vars.T=np.array([initials['zmt']]*int(Latrange/builtins.spatial_resolution))
                     if initials['initial_temperature_cosine']==True:
                         Vars.T=Vars.T+initials['initial_temperature_amplitude']*(cosd(Vars.Lat)-1)
-            if latitudinal_circle==False and latitudinal_belt==True:
-                Vars.Lat2=np.linspace(0,90-spatial_resolution,int(Latrange/spatial_resolution))
-                Vars.Lat=np.linspace(0,90-spatial_resolution,int(Latrange/spatial_resolution))+spatial_resolution/2
+            if builtins.latitudinal_circle==False and builtins.latitudinal_belt==True:
+                Vars.Lat2=np.linspace(0,90-builtins.spatial_resolution,int(Latrange/builtins.spatial_resolution))
+                Vars.Lat=np.linspace(0,90-builtins.spatial_resolution,int(Latrange/builtins.spatial_resolution))+builtins.spatial_resolution/2
                 if initialZMT==True:
-                    Vars.T=np.array([initials['zmt']]*int(Latrange/spatial_resolution))
+                    Vars.T=np.array([initials['zmt']]*int(Latrange/builtins.spatial_resolution))
                     if initials['initial_temperature_cosine']==True:
                         Vars.T=Vars.T+initials['initial_temperature_amplitude']*(cosd(Vars.Lat)-1)
     
@@ -514,59 +497,59 @@ def output_importer(functiondict):
     The lists are directly written to their entry in ``Variable.Vars`` and can be returned after the simulation is finished. 
 
     """
-    if (number_of_integration) % data_readout == 0:
+    if (builtins.number_of_integration) % builtins.data_readout == 0:
         #Assigning dynamical variables in Variables Package with initial values from var
         for func in functionlist:
             if func.__qualname__=='transfer.sellers':
-                Vars.cL=np.array([0]*int(number_of_integration/data_readout),dtype=object)
-                Vars.C=np.array([0]*int(number_of_integration/data_readout),dtype=object)
-                Vars.F=np.array([0]*int(number_of_integration/data_readout),dtype=object)
-                Vars.P=np.array([0]*int(number_of_integration/data_readout),dtype=object)
-                Vars.Transfer=np.array([0]*int(number_of_integration/data_readout),dtype=object)
+                Vars.cL=np.array([0]*int(builtins.number_of_integration/builtins.data_readout),dtype=object)
+                Vars.C=np.array([0]*int(builtins.number_of_integration/builtins.data_readout),dtype=object)
+                Vars.F=np.array([0]*int(builtins.number_of_integration/builtins.data_readout),dtype=object)
+                Vars.P=np.array([0]*int(builtins.number_of_integration/builtins.data_readout),dtype=object)
+                Vars.Transfer=np.array([0]*int(builtins.number_of_integration/builtins.data_readout),dtype=object)
             if func.__qualname__=='transfer.budyko':
-                Vars.BudTransfer=np.array([0]*int(number_of_integration/data_readout),dtype=object)
+                Vars.BudTransfer=np.array([0]*int(builtins.number_of_integration/builtins.data_readout),dtype=object)
             if func.__qualname__=='forcing.co2_myhre':
-                Vars.CO2Output=np.array([0]*int(number_of_integration/data_readout),dtype=object)
+                Vars.CO2Output=np.array([0]*int(builtins.number_of_integration/builtins.data_readout),dtype=object)
             if func.__qualname__=='forcing.solar':                
-                Vars.SolarOutput=np.array([0]*int(number_of_integration/data_readout),dtype=object)
+                Vars.SolarOutput=np.array([0]*int(builtins.number_of_integration/builtins.data_readout),dtype=object)
             if func.__qualname__=='forcing.aod':            
-                Vars.AODOutput==np.array([0]*int(number_of_integration/data_readout),dtype=object)
+                Vars.AODOutput==np.array([0]*int(builtins.number_of_integration/builtins.data_readout),dtype=object)
                 
-        Vars.ExternalOutput=np.array([0]*int(number_of_integration/data_readout),dtype=object)
-        Vars.alpha=np.array([0]*int(number_of_integration/data_readout),dtype=object)
-        Vars.solar=np.array([0]*int(number_of_integration/data_readout),dtype=object)
-        Vars.noise=np.array([0]*int(number_of_integration/data_readout),dtype=object)
-        Vars.Rdown=np.array([0]*int(number_of_integration/data_readout),dtype=object)
-        #Vars.Rup=np.reshape(np.zeros(int(number_of_integration/data_readout)*len(Vars.Lat)),(int(number_of_integration/data_readout),len(Vars.Lat)))
-        Vars.Rup=np.array([0]*int(number_of_integration/data_readout),dtype=object)
+        Vars.ExternalOutput=np.array([0]*int(builtins.number_of_integration/builtins.data_readout),dtype=object)
+        Vars.alpha=np.array([0]*int(builtins.number_of_integration/builtins.data_readout),dtype=object)
+        Vars.solar=np.array([0]*int(builtins.number_of_integration/builtins.data_readout),dtype=object)
+        Vars.noise=np.array([0]*int(builtins.number_of_integration/builtins.data_readout),dtype=object)
+        Vars.Rdown=np.array([0]*int(builtins.number_of_integration/builtins.data_readout),dtype=object)
+        #Vars.Rup=np.reshape(np.zeros(int(builtins.number_of_integration/builtins.data_readout)*len(Vars.Lat)),(int(builtins.number_of_integration/builtins.data_readout),len(Vars.Lat)))
+        Vars.Rup=np.array([0]*int(builtins.number_of_integration/builtins.data_readout),dtype=object)
     else: 
         for func in functionlist:
             if func.__qualname__=='transfer.sellers':
-                Vars.cL=np.array([0]*int(number_of_integration/data_readout+1),dtype=object)
-                Vars.C=np.array([0]*int(number_of_integration/data_readout+1),dtype=object)
-                Vars.F=np.array([0]*int(number_of_integration/data_readout+1),dtype=object)
-                Vars.P=np.array([0]*int(number_of_integration/data_readout+1),dtype=object)
-                Vars.Transfer=np.array([0]*int(number_of_integration/data_readout+1),dtype=object)
+                Vars.cL=np.array([0]*int(builtins.number_of_integration/builtins.data_readout+1),dtype=object)
+                Vars.C=np.array([0]*int(builtins.number_of_integration/builtins.data_readout+1),dtype=object)
+                Vars.F=np.array([0]*int(builtins.number_of_integration/builtins.data_readout+1),dtype=object)
+                Vars.P=np.array([0]*int(builtins.number_of_integration/builtins.data_readout+1),dtype=object)
+                Vars.Transfer=np.array([0]*int(builtins.number_of_integration/builtins.data_readout+1),dtype=object)
             if func.__qualname__=='transfer.budyko':
-                Vars.BudTransfer=np.array([0]*int(number_of_integration/data_readout+1),dtype=object)
+                Vars.BudTransfer=np.array([0]*int(builtins.number_of_integration/builtins.data_readout+1),dtype=object)
             if func.__qualname__=='forcing.co2_myhre':
-                Vars.CO2Output=np.array([0]*int(number_of_integration/data_readout+1),dtype=object)
+                Vars.CO2Output=np.array([0]*int(builtins.number_of_integration/builtins.data_readout+1),dtype=object)
             if func.__qualname__=='forcing.solar':                
-                Vars.SolarOutput=np.array([0]*int(number_of_integration/data_readout+1),dtype=object)
+                Vars.SolarOutput=np.array([0]*int(builtins.number_of_integration/builtins.data_readout+1),dtype=object)
             if func.__qualname__=='forcing.aod':            
-                Vars.AODOutput==np.array([0]*int(number_of_integration/data_readout+1),dtype=object)
+                Vars.AODOutput==np.array([0]*int(builtins.number_of_integration/builtins.data_readout+1),dtype=object)
                 
-        Vars.ExternalOutput=np.array([0]*int(number_of_integration/data_readout+1),dtype=object)
-        Vars.alpha=np.array([0]*int(number_of_integration/data_readout+1),dtype=object)
-        Vars.solar=np.array([0]*int(number_of_integration/data_readout+1),dtype=object)
-        Vars.noise=np.array([0]*int(number_of_integration/data_readout+1),dtype=object)
-        Vars.Rdown=np.array([0]*int(number_of_integration/data_readout+1),dtype=object)
-        #Vars.Rup=np.reshape(np.zeros(int(number_of_integration/data_readout)*len(Vars.Lat)),(int(number_of_integration/data_readout),len(Vars.Lat)))
-        Vars.Rup=np.array([0]*int(number_of_integration/data_readout+1),dtype=object)
+        Vars.ExternalOutput=np.array([0]*int(builtins.number_of_integration/builtins.data_readout+1),dtype=object)
+        Vars.alpha=np.array([0]*int(builtins.number_of_integration/builtins.data_readout+1),dtype=object)
+        Vars.solar=np.array([0]*int(builtins.number_of_integration/builtins.data_readout+1),dtype=object)
+        Vars.noise=np.array([0]*int(builtins.number_of_integration/builtins.data_readout+1),dtype=object)
+        Vars.Rdown=np.array([0]*int(builtins.number_of_integration/builtins.data_readout+1),dtype=object)
+        #Vars.Rup=np.reshape(np.zeros(int(builtins.number_of_integration/builtins.data_readout)*len(Vars.Lat)),(int(builtins.number_of_integration/builtins.data_readout),len(Vars.Lat)))
+        Vars.Rup=np.array([0]*int(builtins.number_of_integration/builtins.data_readout+1),dtype=object)
         
     
-    Vars.ExternalOutput=np.array([Vars.ExternalOutput for i in range(int(number_of_externals))],dtype=object)
-    Vars.External_time_start=np.array([0 for i in range(int(number_of_externals))],dtype=object)
-    Vars.ForcingTracker=np.array([[0,0] for i in range(int(number_of_externals))],dtype=object)
-    Vars.ExternalInput=np.array([0 for i in range(int(number_of_externals))],dtype=object)
+    Vars.ExternalOutput=np.array([Vars.ExternalOutput for i in range(int(builtins.number_of_externals))],dtype=object)
+    Vars.External_time_start=np.array([0 for i in range(int(builtins.number_of_externals))],dtype=object)
+    Vars.ForcingTracker=np.array([[0,0] for i in range(int(builtins.number_of_externals))],dtype=object)
+    Vars.ExternalInput=np.array([0 for i in range(int(builtins.number_of_externals))],dtype=object)
     Vars.Read={'cL': Vars.cL,'C': Vars.C,'F': Vars.F,'P': Vars.P,'Transfer': Vars.Transfer,'alpha': Vars.alpha,'BudTransfer': Vars.BudTransfer, 'solar': Vars.solar,'noise': Vars.noise,'Rdown': Vars.Rdown,'Rup': Vars.Rup, 'ExternalOutput': Vars.ExternalOutput,'CO2Output': Vars.CO2Output,'SolarOutput':Vars.SolarOutput,'AODOutput':Vars.AODOutput}
