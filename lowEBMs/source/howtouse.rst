@@ -7,6 +7,8 @@ Here a brief introduction is given on how to get from a given input, which initi
 
 We will write a small python script, which will do this in a few steps. As it is easier to visualize the output in a plot and modify it, I recommend to perform this steps in a jupyter notebook.
 
+Skip_ detailed description
+
 Step 0: Import packages
 =======================
 
@@ -98,6 +100,8 @@ and you get something like this (for the simple 0D EBM):
    :width: 70%
 
    with an initial temperature of 17°C (290K)
+
+.. _Skip:
 
 Putting it together
 ===================
