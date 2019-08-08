@@ -62,7 +62,7 @@ class flux_down:
 
     """
 
-    def insolation(funcparam):
+    def insolation(self,funcparam):
         """
         Function defining the absorbed solar insolation. Physically there is an important difference between the insolation, which is denoted as :math:`Q` and the absorbed insolation, which is the output of this function denoted as :math:`R_{down}`. The absorbed insolation in it's simplest form is written (as introduced in the :doc:`physical background <../models>`): 
 
@@ -158,7 +158,7 @@ class flux_down:
                                             * unit: -
                                             * value: any (if 0 it is everytime another seed)
 
-                                        * *solarinput*: Indicates whether the solar insolation distribution from ``climlab.solar.insolation`` are used (recommended for 1D EBMs), which are called from ``lowEBMs.Packages.Functions.earthsystem.solarradiation``
+                                        * *solarinput*: Indicates whether the solar insolation distribution from ``climlab.solar.insolation`` are used (recommended for 1D EBMs), which are called from ``lowEBMs.Packages.Functions.earthsystem().solarradiation``
 
                                             * type: boolean
                                             * unit: -
@@ -176,7 +176,7 @@ class flux_down:
                                             * unit: -
                                             * value: 'annualmean' (average annually and give :math:`Q` as Watt/m^2), 'year', 'month', 'day', 'second' 
 
-                                        * *orbital*: Indicates whether the solar insolation considers manipulation through orbital parameters over time (this will replace ``lowEBMs.Packages.Functions.earthsystem.solarradiation`` by ``lowEBMs.Packages.Functions.earthsystem.solarradiation_orbital``
+                                        * *orbital*: Indicates whether the solar insolation considers manipulation through orbital parameters over time (this will replace ``lowEBMs.Packages.Functions.earthsystem().solarradiation`` by ``lowEBMs.Packages.Functions.earthsystem().solarradiation_orbital``
 
                                             * type: boolean
                                             * unit: -
@@ -217,22 +217,22 @@ class flux_down:
 
                         Vars.Lat=np.linspace(-85,85,18)
 
-                        Q=earthsystem.solarradiation_orbital(convfactor,orbitalyear,'annualmean',Q)
+                        Q=earthsystem().solarradiation_orbital(convfactor,orbitalyear,'annualmean',Q)
                         Vars.solar=np.average(Q, weights=cosd(Vars.Lat))
                     else:
-                        Vars.solar=earthsystem.solarradiation_orbital(convfactor,orbitalyear,timeunit,Q)
+                        Vars.solar=earthsystem().solarradiation_orbital(convfactor,orbitalyear,timeunit,Q)
                     
                 else:
                     if builtins.spatial_resolution==0:
 
                         Vars.Lat=np.linspace(-85,85,18)
-                        #Q=earthsystem.solarradiation_self(convfactor,'annualmean',orbitalyear,Q)
-                        Q=earthsystem.solarradiation(convfactor,'annualmean',orbitalyear,Q)
+                        #Q=earthsystem().solarradiation_self(convfactor,'annualmean',orbitalyear,Q)
+                        Q=earthsystem().solarradiation(convfactor,'annualmean',orbitalyear,Q)
                         Vars.solar=np.average(Q, weights=cosd(Vars.Lat))
                     else:
-                        #Vars.solar=earthsystem.solarradiation_self(convfactor,timeunit,orbitalyear,Q)
+                        #Vars.solar=earthsystem().solarradiation_self(convfactor,timeunit,orbitalyear,Q)
 
-                        Vars.solar=earthsystem.solarradiation(convfactor,timeunit,orbitalyear,Q)
+                        Vars.solar=earthsystem().solarradiation(convfactor,timeunit,orbitalyear,Q)
 
             #total solar insolation with possible offset
             else:
@@ -308,7 +308,7 @@ class albedo:
 
         These are special functions which are used by ``flux_down.insolation``. In the *configuration.ini* they have to be inserted in its [func]-section with the parameters used (see :ref:`albedo <albedo>`). 
     """
-    def static(alpha):
+    def static(self,alpha):
         """
         Function defining a static albedo value
 
@@ -326,7 +326,7 @@ class albedo:
         """
         return alpha
 
-    def static_bud(alpha_p,border_1,border_2):
+    def static_bud(self,alpha_p,border_1,border_2):
         """
         A static albedo distribution as used in :ref:`Budyko <Budyko>`. 
         
@@ -382,7 +382,7 @@ class albedo:
                 albedo[i]=alpha_p+0.3
         return np.array(albedo)
 
-    def dynamic_bud(T_1,T_2,alpha_0,alpha_1,alpha_2):
+    def dynamic_bud(self,T_1,T_2,alpha_0,alpha_1,alpha_2):
 
         """
         A temperature dependant albedo distribution with three albedo regions. Approach as used in :ref:`Budyko <Budyko>` but complemented with albedo transition depending on temperature. 
@@ -475,7 +475,7 @@ class albedo:
                     albedo[j]=alpha_2
         return np.array(albedo)
 
-    def smooth(T_ref,alpha_f,alpha_i,steepness):
+    def smooth(self,T_ref,alpha_f,alpha_i,steepness):
         """
         A temperature dependant albedo distribution with tangens hyperbolicus transition. A common approach in climate modelling (for example see :ref:`North <North>`)
         
@@ -526,7 +526,7 @@ class albedo:
         albedo=alpha_i-1/2*(alpha_i-alpha_f)*(1+np.tanh(steepness*(Vars.T-T_ref)))
         return albedo
 
-    def dynamic_sel(Z,b):
+    def dynamic_sel(self,Z,b):
         """
         A albedo distribution with linear temperature dependence. Approach as used by :ref:`Sellers <Sellers>`.
         
@@ -618,7 +618,7 @@ class flux_up:
 
     """
 
-    def budyko_noclouds(funcparam):  
+    def budyko_noclouds(self,funcparam):  
         """ 
         An empirically determined upward radiative energy flux which approximates the top of the atmosphere radiation emitted to space to be dependant linear on temperature. The presence of clouds is not specifically taken into account.
 
@@ -680,7 +680,7 @@ class flux_up:
                 Vars.Read['Rup'][int(builtins.Runtime_Tracker/(4*builtins.data_readout))]=R_out
         return R_out
 
-    def budyko_clouds(funcparam):
+    def budyko_clouds(self,funcparam):
         """ 
         An empirically determined upward radiative energy flux which approximates the top of the atmosphere radiation emitted to space to be dependant linear on temperature. The presence of clouds is specifically taken into account with a second temperature dependant term.
 
@@ -759,7 +759,7 @@ class flux_up:
                 
         return R_out
 
-    def planck(funcparam):
+    def planck(self,funcparam):
         """ 
         The stefan-boltzmann radiation for a grey body as radiative energy flux directed upward. The ideal stefan-boltzmann radiation with a temperature to the power of 4 scaled with an emissivity factor :math:`\epsilon`.
 
@@ -820,7 +820,7 @@ class flux_up:
             Vars.Read['Rup'][int(builtins.Runtime_Tracker/(4*builtins.data_readout))]=R_out
         return R_out
 
-    def sellers(funcparam):
+    def sellers(self,funcparam):
         """ 
         An empirically, by :ref:`William Sellers <Sellers>` adjusted stefan-boltzmann radiation as radiative energy flux directed upward. The ideal stefan-boltzmann radiation with a temperature to the power of 4 and an additional tangens hyperbolicus term with the temperature to the power of 6 to take into account that cloud formation is temperature dependant.
  
@@ -912,10 +912,10 @@ class transfer:
 
     .. Note::
 
-        Only ``transfer.budyko`` and ``transfer.sellers`` are transfer fluxes fully representing the globes meridional energy transfer, where ``transfer.sellers`` is built up from the three specific transfer fluxes ``transfer.watervapour_sel``, ``transfer.sensibleheat_air_sel`` and ``transfer.sensibleheat_ocean_sel``. 
+        Only ``transfer().budyko`` and ``transfer().sellers`` are transfer fluxes fully representing the globes meridional energy transfer, where ``transfer().sellers`` is built up from the three specific transfer fluxes ``transfer().watervapour_sel``, ``transfer().sensibleheat_air_sel`` and ``transfer().sensibleheat_ocean_sel``. 
 
     """
-    def budyko(funcparam):
+    def budyko(self,funcparam):
         """ 
         A poleward energy transfer flux based on the local to global temperature difference introduced by :ref:`Michail Budyko <Budyko>`.
         
@@ -972,13 +972,13 @@ class transfer:
                 Vars.Read['BudTransfer'][int(builtins.Runtime_Tracker/(4*builtins.data_readout))]=F
         return F
 
-    def sellers(funcparam):
+    def sellers(self,funcparam):
         """ 
         A energy transfer flux based on a combination of several transfer fluxes introduced by :ref:`William Sellers <Sellers>`.
 
         .. _Sellerstransfer:
 
-        It is defined as the difference of a sum of northward and a sum of southward transfer fluxes of one latitudinal belt. The sum (in one direction) :math:`P` consists of ``transfer.watervapour_sel``, ``transfer.sensibleheat_air_sel`` and ``transfer.sensibleheat_ocean_sel``:
+        It is defined as the difference of a sum of northward and a sum of southward transfer fluxes of one latitudinal belt. The sum (in one direction) :math:`P` consists of ``transfer().watervapour_sel``, ``transfer().sensibleheat_air_sel`` and ``transfer().sensibleheat_ocean_sel``:
     
         .. math::
 
@@ -1182,20 +1182,20 @@ class transfer:
             SH_oceanSelparam=[K_o,dz,l_cover,dy,cp_w,dens_w,factor_oc]
             
             #calculating the current temperature differences and wind patterns
-            Vars.tempdif=earthsystem.temperature_difference_latitudes()
-            Vars.meridional=earthsystem.meridionalwind_sel(a,re)
+            Vars.tempdif=earthsystem().temperature_difference_latitudes()
+            Vars.meridional=earthsystem().meridionalwind_sel(a,re)
 
             #calculating the 3 transfer components
             
-            cL=transfer.watervapour_sel(WV_Selparam)
-            C=transfer.sensibleheat_air_sel(SH_airSelparam)
-            F=transfer.sensibleheat_ocean_sel(SH_oceanSelparam)
+            cL=transfer().watervapour_sel(WV_Selparam)
+            C=transfer().sensibleheat_air_sel(SH_airSelparam)
+            F=transfer().sensibleheat_ocean_sel(SH_oceanSelparam)
             P=cL+C+F  
 
             #calculation of gridparameters (for 1st step only)
             if builtins.Runtime_Tracker==0:
-                Vars.latlength=earthsystem.length_latitudes(re)
-                Vars.area=earthsystem.area_latitudes(re)
+                Vars.latlength=earthsystem().length_latitudes(re)
+                Vars.area=earthsystem().area_latitudes(re)
                 
             #Converting Arrays to two arrays with an one element shift
             #Apply builtins.parallelization if activated
@@ -1227,9 +1227,9 @@ class transfer:
             Transfer=0
         return Transfer
 
-    def watervapour_sel(funcparam):
+    def watervapour_sel(self,funcparam):
         """ 
-        The energy transfer flux through watervapour used in ``transfer.sellers``.
+        The energy transfer flux through watervapour used in ``transfer().sellers``.
         
         It is based on the transport of watervapour to another latitudinal belt and it's condensation which releases energy. It is described through:
 
@@ -1237,7 +1237,7 @@ class transfer:
 
             c_{wv}=\left(v q - K_{wv}\\frac{\Delta q}{\Delta y}\\right) \cdot \\frac{\Delta p}{g}
 
-        with the meridional windspeed :math:`v` provided by ``earthsstem.meridionalwind_sel``, the specific saturation humidity :math:`q` provided by ``earthsystem.specific_saturation_humidity_sel`` and the humidity difference :math:`dq` provided by ``earthsystem.humidity_difference``. Additional parameters are the thermal diffusivity of watervapour :math:`K_{wv}`, the width of the latitudinal belts :math:`\Delta y`, the tropospheric pressure depth :math:`\Delta p` and the gravitational acceleration :math:`g`.
+        with the meridional windspeed :math:`v` provided by ``earthsstem.meridionalwind_sel``, the specific saturation humidity :math:`q` provided by ``earthsystem().specific_saturation_humidity_sel`` and the humidity difference :math:`dq` provided by ``earthsystem().humidity_difference``. Additional parameters are the thermal diffusivity of watervapour :math:`K_{wv}`, the width of the latitudinal belts :math:`\Delta y`, the tropospheric pressure depth :math:`\Delta p` and the gravitational acceleration :math:`g`.
 
         For purposes of tuning, :math:`c_{wv}` and :math:`K_{wv}` are provided with the scaling factors *factor_wv* and *factor_kwv*.
 
@@ -1321,8 +1321,8 @@ class transfer:
         K_wv,g,eps,p,e0,L,Rd,dy,dp,factor_wv,factor_kwv=funcparam
         
         #calculating the specific humidity q and its latitudinal difference dq
-        q=earthsystem.specific_saturation_humidity_sel(e0,eps,L,Rd,p)
-        dq=earthsystem.humidity_difference(e0,eps,L,Rd,p)
+        q=earthsystem().specific_saturation_humidity_sel(e0,eps,L,Rd,p)
+        dq=earthsystem().humidity_difference(e0,eps,L,Rd,p)
         if builtins.parallelization==True:
         #equation of the water vapour energy transfer
             a1=Vars.meridional*q
@@ -1333,9 +1333,9 @@ class transfer:
             cL=L*(Vars.meridional*q-K_wv*factor_kwv*dq/dy)*(dp*const.mb_to_Pa/g)*factor_wv
         return cL
 
-    def sensibleheat_air_sel(funcparam):
+    def sensibleheat_air_sel(self,funcparam):
         """ 
-        The energy transfer flux through atmospheric sensible heat used in ``transfer.sellers``.
+        The energy transfer flux through atmospheric sensible heat used in ``transfer().sellers``.
 
         It is based on the heat transport through wind and convection to another latitudinal belt. It is described through:
 
@@ -1343,7 +1343,7 @@ class transfer:
 
             C_{air}=\left(v T - K_h\\frac{\Delta T}{\Delta y}\\right) \cdot \\frac{c_p}{g} \Delta p
 
-        with the meridional windspeed :math:`v` provided by ``earthsstem.meridionalwind_sel``, and the temperature difference :math:`\Delta T` provided by ``earthsystem.tempdif``. Additional parameters are the temperature :math:`T`, the thermal diffusivity of air :math:`K_{h}`, the width of the latitudinal belts :math:`\Delta y`, the tropospheric pressure depth :math:`\Delta p`, the specific heat capacity of air :math:`c_p` and the gravitational acceleration :math:`g`.
+        with the meridional windspeed :math:`v` provided by ``earthsstem.meridionalwind_sel``, and the temperature difference :math:`\Delta T` provided by ``earthsystem().tempdif``. Additional parameters are the temperature :math:`T`, the thermal diffusivity of air :math:`K_{h}`, the width of the latitudinal belts :math:`\Delta y`, the tropospheric pressure depth :math:`\Delta p`, the specific heat capacity of air :math:`c_p` and the gravitational acceleration :math:`g`.
 
         For purposes of tuning, :math:`C_{air}` and :math:`K_{h}` are provided with the scaling factors *factor_air* and *factor_kair*.
 
@@ -1411,9 +1411,9 @@ class transfer:
             C=(Vars.meridional*Vars.T[1:]-K_h*factor_kair*(Vars.tempdif/(dy)))*(cp*dp*const.mb_to_Pa/g)*factor_air
         return C
         
-    def sensibleheat_ocean_sel(funcparam):
+    def sensibleheat_ocean_sel(self,funcparam):
         """ 
-        The energy transfer flux through oceanic sensible heat used in ``transfer.sellers``.
+        The energy transfer flux through oceanic sensible heat used in ``transfer().sellers``.
 
         It is based on the heat transport through oceanic convection to another latitudinal belt. It is described through:
 
@@ -1421,7 +1421,7 @@ class transfer:
 
             F_{oc}= - K_o l_{cover}\Delta z\\frac{\Delta T}{\Delta y}\cdot C_{p,w}\rho_{w}
 
-        with the temperature difference :math:`\Delta T` provided by ``earthsystem.tempdif``. Additional parameters are the thermal diffusivity of the ocean :math:`K_{o}`, the width of the latitudinal belts :math:`\Delta y`, the average ocean depth :math:`\Delta z`, the proportion of ocean cover :math:`l_{cover}`, the specific heat capacity of water :math:`c_{p,w}` and the densitiy of water :math:`\\rho_w`.
+        with the temperature difference :math:`\Delta T` provided by ``earthsystem().tempdif``. Additional parameters are the thermal diffusivity of the ocean :math:`K_{o}`, the width of the latitudinal belts :math:`\Delta y`, the average ocean depth :math:`\Delta z`, the proportion of ocean cover :math:`l_{cover}`, the specific heat capacity of water :math:`c_{p,w}` and the densitiy of water :math:`\\rho_w`.
 
         For purposes of tuning, a scaling factors *factor_oc* is provided.
 
@@ -1518,7 +1518,7 @@ class forcing:
             
         return Fcorrection
         
-    def random(funcparam):
+    def random(self,funcparam):
         """ 
         The random forcing mimics randomly occuring radiative forcing events.
 
@@ -1680,7 +1680,7 @@ class forcing:
             Vars.ExternalOutput[forcingnumber][int(builtins.Runtime_Tracker/(4*builtins.data_readout))]=F
         return F
 
-    def predefined(funcparam):
+    def predefined(self,funcparam):
         """ 
         The predefined forcing imports data containing external radiative forcings.
 
@@ -1797,7 +1797,7 @@ class forcing:
             Vars.ExternalOutput[forcingnumber][int(builtins.Runtime_Tracker/(4*builtins.data_readout))]=F
         return F
 
-    def predefined1d(funcparam):
+    def predefined1d(self,funcparam):
         """ 
         The predefined forcing imports data containing external radiative forcings.
 
@@ -1920,7 +1920,7 @@ class forcing:
             Vars.ExternalOutput[forcingnumber][int(builtins.Runtime_Tracker/(4*builtins.data_readout))]=F
         return F
 
-    def co2_myhre(funcparam):
+    def co2_myhre(self,funcparam):
         """ 
         The co2_myhre forcing calculates a radiative forcing from imported atmospheric CO2 conenctration data.
 
@@ -2060,7 +2060,7 @@ class forcing:
             Vars.CO2Output[int(builtins.Runtime_Tracker/(4*builtins.data_readout))]=F
         return F
 
-    def orbital(funcparam):
+    def orbital(self,funcparam):
         """ 
         Includes forcing from orbital parameter changes.
 
@@ -2183,7 +2183,7 @@ class forcing:
 
         return 0
 
-    def solar(funcparam):
+    def solar(self,funcparam):
         """ 
         The solar forcing imports changes in the total solar irradiance.
 
@@ -2302,7 +2302,7 @@ class forcing:
             Vars.SolarOutput[int(builtins.Runtime_Tracker/(4*builtins.data_readout))]=Vars.TSI
         return 0
 
-    def aod(funcparam):
+    def aod(self,funcparam):
         """ 
         The aod forcing imports changes in the atmospheric aod.
 
@@ -2441,7 +2441,7 @@ class earthsystem:
         area_latitudes
 
     """
-    def globalmean_temperature():
+    def globalmean_temperature(self):
         """ 
         The GMT calculated from the ZMT with a gridspcific areaweighting.
  
@@ -2468,7 +2468,7 @@ class earthsystem:
             GMT=np.average(Vars.T, weights=cosd(Vars.Lat))
         return GMT
     
-    def insolation(Lat_in,Days_in,orb={'ecc': 0.017236, 'long_peri': 281.37, 'obliquity': 23.446},S0=1366.14):
+    def insolation(self,Lat_in,Days_in,orb={'ecc': 0.017236, 'long_peri': 281.37, 'obliquity': 23.446},S0=1366.14):
         degrad=np.pi/180
         if type(Days_in)==np.ndarray and type(Lat_in)==np.ndarray:
             Lat=np.tile(Lat_in,(len(Days_in),1))
@@ -2504,7 +2504,7 @@ class earthsystem:
     
         return Fw
     
-    def solarradiation(convfactor,timeunit,orbitalyear,Q):
+    def solarradiation(self,convfactor,timeunit,orbitalyear,Q):
         """ 
         The solar insolation over the latitudes :math:`Q`.
         
@@ -2549,27 +2549,27 @@ class earthsystem:
         #time specified
         if timeunit=='annualmean':
             days=np.arange(365)
-            Q=lna(np.mean(earthsystem.insolation(Vars.Lat,days,Vars.orbitals,S0=Q+Vars.TSI),axis=0))
+            Q=lna(np.mean(earthsystem().insolation(Vars.Lat,days,Vars.orbitals,S0=Q+Vars.TSI),axis=0))
         if timeunit=='year':
             days=np.linspace(0,((365*int(Vars.t)-1) % 365)*builtins.stepsize_of_integration % 365,36)
-            Q=lna(np.mean(earthsystem.insolation(Vars.Lat,days,Vars.orbitals,S0=Q+Vars.TSI),axis=0))*convfactor
+            Q=lna(np.mean(earthsystem().insolation(Vars.Lat,days,Vars.orbitals,S0=Q+Vars.TSI),axis=0))*convfactor
         if timeunit=='month':
             days=np.linspace((int(Vars.t)*365/12) % 365,(int(Vars.t)*365/12-1) % 365,30)
-            Q=lna(np.mean(earthsystem.insolation(Vars.Lat,days,Vars.orbitals,S0=Q+Vars.TSI),axis=0))*convfactor
+            Q=lna(np.mean(earthsystem().insolation(Vars.Lat,days,Vars.orbitals,S0=Q+Vars.TSI),axis=0))*convfactor
         if timeunit=='day':
             days=int(Vars.t)%365
-            Q=lna(earthsystem.insolation(Vars.Lat,days,Vars.orbitals,S0=Q+Vars.TSI))*convfactor
+            Q=lna(earthsystem().insolation(Vars.Lat,days,Vars.orbitals,S0=Q+Vars.TSI))*convfactor
         if timeunit=='second':
             tconv=60*60*24
             days=int(Vars.t/tconv)%365
-            Q=lna(earthsystem.insolation(Vars.Lat,days,Vars.orbitals,S0=Q+Vars.TSI))*convfactor
+            Q=lna(earthsystem().insolation(Vars.Lat,days,Vars.orbitals,S0=Q+Vars.TSI))*convfactor
         return Q
         
-    def solarradiation_orbital(convfactor,orbitalyear,unit):
+    def solarradiation_orbital(self,convfactor,orbitalyear,unit):
         """ 
         The solar insolation over the latitudes :math:`Q` with changing orbital parameters.
       
-        The functionality of this module is in its main features the same as ``earthsystem.solarradiation`` with the addition that the orbital parameters are imported from ``climlab.solar.orbital`` and updated continously if ``Vars.t`` passes to the next century (can only be updated in kiloyears).
+        The functionality of this module is in its main features the same as ``earthsystem().solarradiation`` with the addition that the orbital parameters are imported from ``climlab.solar.orbital`` and updated continously if ``Vars.t`` passes to the next century (can only be updated in kiloyears).
         
         **Function-call arguments** \n
 
@@ -2622,19 +2622,19 @@ class earthsystem:
                 Q=Vars.solar
         return Q
 
-    def meridionalwind_sel(a,re):
+    def meridionalwind_sel(self,a,re):
         """ 
         The meridional wind :math:`v` between latitudinal belts.
       
-        This function is part of the ``transfer.sellers`` module which calculates the meridional windspeed depending on a latitudes temperature. It is given by:
+        This function is part of the ``transfer().sellers`` module which calculates the meridional windspeed depending on a latitudes temperature. It is given by:
 
         .. math::
 
             v = - a\cdot (\Delta T \pm | \overline{\Delta T} | )
         
-        with :math:`+` north of 5°N and :math:`-` south of 5°N, the temperature difference between latitudes :math:`\Delta T` provided by ``earthsystem.temperature_difference_latitudes``, empirical constants :math:`a` and the area weighted mean temperature difference :math:`| \overline{\Delta T} |`. 
+        with :math:`+` north of 5°N and :math:`-` south of 5°N, the temperature difference between latitudes :math:`\Delta T` provided by ``earthsystem().temperature_difference_latitudes``, empirical constants :math:`a` and the area weighted mean temperature difference :math:`| \overline{\Delta T} |`. 
 
-        The required parameters are directly parsed from the ``transfer.sellers`` module, for details see :doc:`here <transfer>`.
+        The required parameters are directly parsed from the ``transfer().sellers`` module, for details see :doc:`here <transfer>`.
 
         **Function-call arguments** \n
 
@@ -2699,19 +2699,19 @@ class earthsystem:
                 v[j]=-a[j]*(Vars.tempdif[j]+T_av)
         return v
 
-    def specific_saturation_humidity_sel(e0,eps,L,Rd,p):
+    def specific_saturation_humidity_sel(self,e0,eps,L,Rd,p):
         """ 
         The specific saturation humidity of a latitudinal belt.
       
-        This function is part of the ``transfer.sellers`` module which calculates provides the required properties for ``transfer.watervapour_sel``. It is given by:
+        This function is part of the ``transfer().sellers`` module which calculates provides the required properties for ``transfer().watervapour_sel``. It is given by:
 
         .. math::
 
             q = \\frac{\epsilon \cdot e}{p} 
         
-        with an empirical constant :math:`\epsilon`, the average sea level pressure p and the saturation pressure e from ``earthsystem.saturation_pressure``.
+        with an empirical constant :math:`\epsilon`, the average sea level pressure p and the saturation pressure e from ``earthsystem().saturation_pressure``.
 
-        The required parameters are directly parsed from the ``transfer.sellers`` module, for details see :doc:`here <transfer>`.
+        The required parameters are directly parsed from the ``transfer().sellers`` module, for details see :doc:`here <transfer>`.
 
         **Function-call arguments** \n
 
@@ -2746,22 +2746,22 @@ class earthsystem:
 
         """
         #equation of specific saturation humidity for WV_sel with the saturation pressure SatPr
-        q=eps*earthsystem.saturation_pressure(e0,eps,L,Rd)/p
+        q=eps*earthsystem().saturation_pressure(e0,eps,L,Rd)/p
         return q
         
-    def saturation_pressure(e0,eps,L,Rd):
+    def saturation_pressure(self,e0,eps,L,Rd):
         """ 
         The saturation pressure of a latitudinal belt.
       
-        This function is part of the ``transfer.sellers`` module which calculates provides the required properties for ``earthsystem.humidity_difference`` and ``earthsystem.specific_saturation_humidity_sel``. It is given by:
+        This function is part of the ``transfer().sellers`` module which calculates provides the required properties for ``earthsystem().humidity_difference`` and ``earthsystem().specific_saturation_humidity_sel``. It is given by:
 
         .. math::
 
             e = e_0 \left(1 - 0.5 \\frac{\epsilon L \Delta T}{R_d T^2} \\right) 
         
-        with the temperature difference between latitudes :math:`\Delta T` provided by ``earthsystem.temperature_difference_latitudes``, the empirical constant :math:`\epsilon`, the gas constant :math:`R_d`, the latent heat of condensation :math:`L`, the mean sea level saturation vapour pressure :math:`e_0` and the temperature of the southern latitudinal belt :math:`T`.
+        with the temperature difference between latitudes :math:`\Delta T` provided by ``earthsystem().temperature_difference_latitudes``, the empirical constant :math:`\epsilon`, the gas constant :math:`R_d`, the latent heat of condensation :math:`L`, the mean sea level saturation vapour pressure :math:`e_0` and the temperature of the southern latitudinal belt :math:`T`.
 
-        The required parameters are directly parsed from the ``earthsystem.specific_saturation_humidity_sel`` module, for details see :doc:`here <transfer>`.
+        The required parameters are directly parsed from the ``earthsystem().specific_saturation_humidity_sel`` module, for details see :doc:`here <transfer>`.
 
         **Function-call arguments** \n
 
@@ -2798,19 +2798,19 @@ class earthsystem:
             e=e0*(1-0.5*eps*L*Vars.tempdif/(Rd*Vars.T[1:]**2))
         return e
 
-    def humidity_difference(e0,eps,L,Rd,p):
+    def humidity_difference(self,e0,eps,L,Rd,p):
         """ 
         The humidity difference between latitudinal belts.
       
-        This function is part of the ``transfer.sellers`` module which calculates provides the required properties for ``transfer.watervapour_sel``. It is given by:
+        This function is part of the ``transfer().sellers`` module which calculates provides the required properties for ``transfer().watervapour_sel``. It is given by:
 
         .. math::
 
             \Delta q = \\frac{e \epsilon^2 L \Delta T}{p R_d T^2} 
         
-        with the temperature difference between latitudes :math:`\Delta T` provided by ``earthsystem.temperature_difference_latitudes``, the empirical constant :math:`\epsilon`, the average sea level pressure p, the gas constant :math:`R_d`, the latent heat of condensation :math:`L`, the mean sea level saturation vapour pressure :math:`e_0` and the temperature of the southern latitudinal belt :math:`T`.
+        with the temperature difference between latitudes :math:`\Delta T` provided by ``earthsystem().temperature_difference_latitudes``, the empirical constant :math:`\epsilon`, the average sea level pressure p, the gas constant :math:`R_d`, the latent heat of condensation :math:`L`, the mean sea level saturation vapour pressure :math:`e_0` and the temperature of the southern latitudinal belt :math:`T`.
 
-        The required parameters are directly parsed from the ``transfer.sellers`` module, for details see :doc:`here <transfer>`.
+        The required parameters are directly parsed from the ``transfer().sellers`` module, for details see :doc:`here <transfer>`.
 
         **Function-call arguments** \n
 
@@ -2846,14 +2846,14 @@ class earthsystem:
         """
         #equation of difference in humidity
         
-        e=earthsystem.saturation_pressure(e0,eps,L,Rd)
+        e=earthsystem().saturation_pressure(e0,eps,L,Rd)
         if builtins.parallelization==True:
             dq=eps**2*L*e*Vars.tempdif/(p*Rd*np.array(Vars.T[:,1:])**2)
         else:
             dq=eps**2*L*e*Vars.tempdif/(p*Rd*Vars.T[1:]**2)
         return dq
         
-    def temperature_difference_latitudes():
+    def temperature_difference_latitudes(self):
         """ 
         The temperature difference between latitudinal belts.
       
@@ -2891,7 +2891,7 @@ class earthsystem:
             dT=f(Lat_new)[1:]-f(Lat_new)[:-1]
         return dT
 
-    def length_latitudes(re):
+    def length_latitudes(self,re):
         """ 
         The length (circumference) of the latitudinal circles.
       
@@ -2920,7 +2920,7 @@ class earthsystem:
         r_new=re*cosd(Vars.Lat2)
         return 2*np.pi*r_new
 
-    def area_latitudes(re):
+    def area_latitudes(self,re):
         """ 
         The area of the latitudinal belts.
       

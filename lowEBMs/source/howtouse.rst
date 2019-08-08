@@ -43,7 +43,7 @@ To import this file use the ``importer``-function::
 ``configuration`` is an dictionary which contains all required input parameters. To seperate them for a clearer structure you can use::
 
     eq=configuration['eqparam']
-    rk4=configuration['rk4input']
+    rk=configuration['rk4input']
     fun=configuration['funccomp']
     ini=configuration['initials']
 
@@ -61,7 +61,7 @@ Third Step: Let the model/algorithm run
 
 Now we are ready to run the algorithm with the ``rk4alg`` function. It requires the ``model_equation`` function and the dictionaries we seperated before (maintain the order)::
 
-    outputdata=rk4alg(model_equation,eq,fun)
+    outputdata=rk4alg(model_equation,eq,rk,fun)
 
 Depending on your settings the algorithm will need some time until it prints *Finished!*.
 
@@ -119,7 +119,7 @@ and run the specific modules::
     rk=configdic['rk4input']
     fun=configdic['funccomp']
     variable_importer(configdic)
-    Time,ZMT,GMT=rk4alg(model_equation,eq,fun)
+    Time,ZMT,GMT=rk4alg(model_equation,eq,rk,fun)
 
 This demonstration also exists as a jupyter notebook in the *'Tutorials/'* directive of this project (*EBM0D_simple.ipynb*).
 
