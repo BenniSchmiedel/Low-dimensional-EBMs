@@ -11,8 +11,8 @@ with the deviation function :math:`y=\\frac{dT}{dt}` required by the ``lowEBMs.P
 
 """
 import numpy as np
-from lowEBMs.Packages.Variables import Vars
 import builtins
+from lowEBMs.Packages.Variables import Vars
 from qualname import qualname
 
 def model_equation(eqparam,funccomp):

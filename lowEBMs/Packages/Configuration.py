@@ -72,11 +72,15 @@ def importer(filename,*args,**kwargs):
                 sys.exit('Error: File not found, please specify the path of the configuration.ini.  importer(filename,path= " ... ")')
     else:
     #Importing the configfile.ini
-        exists = os.path.isfile(path+filename)
-        if exists:
+        
+        if os.path.isfile(path+filename):
             print('Loading Configuration from: '+path)
             config=configparser.ConfigParser()  
             config.read(path+filename) 
+        elif os.path.isfile(path+'/'+filename):
+            print('Loading Configuration from: '+path)
+            config=configparser.ConfigParser()  
+            config.read(path+'/'+filename)
         else:         
             sys.exit('Error: File not found, please specify the path of the configuration.ini.  importer(filename,path= " ... ")')                  
     #Creating arrays for the sections in the configfile 
