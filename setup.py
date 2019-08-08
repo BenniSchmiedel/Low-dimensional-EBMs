@@ -7,7 +7,7 @@ import setuptools
 
 
 setuptools.setup(name='lowEBMs',
-      version='0.3.7',
+      version='0.4.1',
       description='A python implementation of low-dimensional EBMs',
       url='https://github.com/BenniSchmiedel/Low-dimensional-EBMs',
       author='Benjamin Schmiedel',
@@ -18,7 +18,6 @@ setuptools.setup(name='lowEBMs',
           'numpy',
           'netCDF4',
           'tqdm',
-          'future'
       ],
       classifiers=[
     'Development Status :: 3 - Alpha'],
