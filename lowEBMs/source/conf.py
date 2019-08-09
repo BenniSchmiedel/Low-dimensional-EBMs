@@ -62,6 +62,7 @@ autodoc_mock_imports = ['matplotlib',
           'netCDF4',
           'scipy',
           'tqdm',
+          'qualname'
 ]
 
 language = 'en'
