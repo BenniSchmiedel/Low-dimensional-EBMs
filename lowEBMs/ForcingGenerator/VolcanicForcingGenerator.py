@@ -44,9 +44,9 @@ def Conversion(NH,SH):
     TamboraS=TotalH2SO4*S_H2SO4
     return TamboraS
 
-def ImportData(File,delimiter,header,col_time,col_lat,col_NH,col_SH):
+def ImportData(File,delimiter,header,col_time,col_loc,col_NH,col_SH):
     Raw=np.genfromtxt(File,
-                          delimiter=delimiter,skip_header=header,usecols=(col_time,col_lat,col_NH,col_SH),
+                          delimiter=delimiter,skip_header=header,usecols=(col_time,col_loc,col_NH,col_SH),
                           unpack=True,encoding='ISO-8859-1')
     sort=np.argsort(Raw[0])
     Raw_sorted=np.array([np.zeros(len(sort))]*4)
@@ -131,7 +131,9 @@ def Synthetic(File,delimiter,header,col_time,col_loc,col_NH,col_SH,Start,Stop,St
 
     Raw=ImportData(File,delimiter,header,col_time,col_loc,col_NH,col_SH)
 
+
     Datatime=Raw[0]
+    DataLoc=Raw[1]
     DataRF=Raw_to_timeRF(Raw)[1]
     DataAOD=Raw_to_timeAOD(Raw)[1]
     if np.min(Datatime)<0:
@@ -140,14 +142,18 @@ def Synthetic(File,delimiter,header,col_time,col_loc,col_NH,col_SH,Start,Stop,St
         Time_shift=Datatime-Datatime[0]+Start
     
     np.random.seed(Seed)
+    np.random.shuffle(Datatime)
+    np.random.shuffle(DataLoc)
     np.random.shuffle(DataRF)
     np.random.shuffle(DataAOD)
+    Datatime_randomized=Datatime
+    DataLoc_randomized=DataLoc
     DataRF_randomized=DataRF
     DataAOD_randomized=DataAOD
+    
+    Data_rand=[Time_shift,DataRF_randomized,DataAOD_randomized,DataLoc_randomized]
 
-    Data_rand=[Time_shift,DataRF_randomized,DataAOD_randomized]
-
-    time,RF,AOD=datacut(Time_shift,Data_rand,Start,Stop)
+    time,RF,AOD,Loc=datacut(Time_shift,Data_rand,Start,Stop)
     
     tprod=180
     tloss=330
@@ -177,27 +183,29 @@ def Synthetic(File,delimiter,header,col_time,col_loc,col_NH,col_SH,Start,Stop,St
         if Event_tracker==len(time):
             break
     
-    Location=Locationextractor(Series_time,Series_RF,Series_AOD,File,delimiter,header,col_time,col_loc,col_NH,col_SH,Step)
+    Location=Locationextractor(Series_time,Series_RF,Series_AOD,File,delimiter,header,col_time,col_loc,col_NH,col_SH,Step,Datainput=True,DataLoc=Loc,DataTime=time)
 
     return Series_time, Series_RF, Series_AOD, Location
 
-def Locationextractor(Time,RF,AOD,File,delimiter,header,col_time,col_loc,col_NH,col_SH,step):
+def Locationextractor(Time,RF,AOD,File,delimiter,header,col_time,col_loc,col_NH,col_SH,step,Datainput=False,DataLoc=0,DataTime=0):
 
-    Data=ImportData(File,delimiter,header,col_time,col_loc,col_NH,col_SH)
+    if Datainput:
+        Data=[DataTime,DataLoc]
+    else:
+        Data=ImportData(File,delimiter,header,col_time,col_loc,col_NH,col_SH)
     Trop=np.where(Data[1]==1)[0]
     NH=np.where(Data[1]==2)[0]
     SH=np.where(Data[1]==3)[0]
-    #print(Trop)
-    Time_int=np.array([0]*len(Time))
+    Time_int=np.zeros(len(Time))
     for i in range(len(Time)):
-        Time_int[i]=int(Time[i])
-
+        Time_int[i]=int(Time[i]) 
     Tropindex=[]
     NHindex=[]
     SHindex=[]
     for j in Trop:
         i=Data[0][j]
         x=np.where(Time_int==i)[0]
+
         if len(x) > 0:
             Tropindex.append(x[0])
     Troptime=Time[Tropindex]
