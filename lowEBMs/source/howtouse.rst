@@ -7,12 +7,14 @@ Here a brief introduction is given on how to get from a given input, which initi
 
 We will write a small python script, which will do this in a few steps. As it is easier to visualize the output in a plot and modify it, I recommend to perform this steps in a jupyter notebook.
 
+Skip_ detailed description
+
 Step 0: Import packages
 =======================
 
 Before you can use any module of this package you have to import the core modules::
 
-    import matplotlib as plt
+    import matplotlib.pyplot as plt
     import numpy as np
     from lowEBMs.Packages.Configuration import importer 
     from lowEBMs.Packages.Variables import variable_importer
@@ -99,6 +101,8 @@ and you get something like this (for the simple 0D EBM):
 
    with an initial temperature of 17°C (290K)
 
+.. _Skip:
+
 Putting it together
 ===================
 
@@ -113,11 +117,11 @@ The summary of what you need to get the model running. Import packages::
 
 and run the specific modules::
 
-    configdic=importer('EBM0D_simple_config.ini')
-    eq=configdic['eqparam']
-    rk=configdic['rk4input']
-    fun=configdic['funccomp']
-    variable_importer(configdic)
+    configuration=importer('EBM0D_simple_config.ini')
+    eq=configuration['eqparam']
+    rk=configuration['rk4input']
+    fun=configuration['funccomp']
+    variable_importer(configuration)
     Time,ZMT,GMT=rk4alg(model_equation,eq,rk,fun)
 
 This demonstration also exists as a jupyter notebook in the *'Tutorials/'* directive of this project (*EBM0D_simple.ipynb*).

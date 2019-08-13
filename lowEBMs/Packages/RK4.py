@@ -200,7 +200,7 @@ def rk4alg(func,eqparam,rk4input,funccomp,progressbar=True):
         Vars.t = Vars.t + h
         Vars.T = T0 + (k1 + k2 + k2 + k3 + k3 + k4) / 6
         if builtins.spatial_resolution>0:
-            Vars.T_global = earthsystem.globalmean_temperature()
+            Vars.T_global = earthsystem().globalmean_temperature()
         else: #if 0 dimensional
             Vars.T_global = Vars.T
         if (i) % builtins.data_readout == 0: 
@@ -221,6 +221,7 @@ def rk4alg(func,eqparam,rk4input,funccomp,progressbar=True):
                         for m in Vars.Read.keys():
                             if type(Vars.Read[m])==np.ndarray:
                                 Vars.Read[m]=Vars.Read[m][:(j)]
+                        print('Eq. State reached after %s steps, within %s seconds'%(int(builtins.Runtime_Tracker/4),(time.time() - Vars.start_time)))
                         break
                 else:
                     if SteadyStateConditionGlobal(data[2][j-builtins.eq_condition_length:j])==True:
@@ -229,14 +230,18 @@ def rk4alg(func,eqparam,rk4input,funccomp,progressbar=True):
                         for m in Vars.Read.keys():
                             if type(Vars.Read[m])==np.ndarray:
                                 Vars.Read[m]=Vars.Read[m][:(j)]
+                        print('Eq. State reached after %s steps, within %s seconds'%(int(builtins.Runtime_Tracker/4),(time.time() - Vars.start_time)))
                         break
+            elif builtins.Runtime_Tracker==(builtins.number_of_integration)*4:
+                print('Transit State reached after %s steps within %s seconds' %(int(builtins.Runtime_Tracker/4),time.time() - Vars.start_time))
+                break
     #Return the written data (Cut excessive 0s)
     dataout=[np.array(data[0][:(j+1)]),np.array(data[1][:(j+1)]),np.array(data[2][:(j+1)])]
     
     if builtins.control:
-        runtime=time.time()-Vars.start_time
+        #runtime=time.time()-Vars.start_time
 
-        print('Finished controlrun over %s years. Runtime: %s s' %(dataout[0][-1]/60/60/24/365,runtime))
+        #print('Finished controlrun over %s years. Runtime: %s s' %(dataout[0][-1]/60/60/24/365,runtime))
         #reset
         builtins.eq_condition=rk4input['eq_condition']
         builtins.eq_condition_length=rk4input['eq_condition_length']

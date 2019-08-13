@@ -1495,7 +1495,7 @@ class forcing:
         co2_myhre
     
     """
-    def offset(funcparam):
+    def offset(self,funcparam):
         list_parameters=list(funcparam.values())
         F1,F2,F3,F4,F5,F6,F7,F8,F9,F10,F11,F12,F13,F14,F15,F16,F17,F18,Correction_Latitudes=list_parameters
         paras=[F1,F2,F3,F4,F5,F6,F7,F8,F9,F10,F11,F12,F13,F14,F15,F16,F17,F18]
@@ -3011,12 +3011,8 @@ def SteadyStateConditionGlobal(Global):
     dT=np.std(Global)
     #if fulfilled, return True to interupt the algorithm and stop with output message
     if dT <= builtins.eq_condition_amplitude:
-        print('Steady State reached after %s steps, within %s seconds'               %(int(builtins.Runtime_Tracker/(4*builtins.data_readout)),(time.time() - Vars.start_time)))
         return True
     #if not fulfilled return False, until the integrationnumber is exceeded
-    if builtins.Runtime_Tracker==(builtins.number_of_integration-1)*4:
-        print('Transit State within %s seconds' %(time.time() - Vars.start_time))
-        return True
     else:
         return False
 
