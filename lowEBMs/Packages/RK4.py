@@ -167,9 +167,18 @@ def rk4alg(func,eqparam,rk4input,funccomp,progressbar=True):
     #locally defining rk4input parameters
     n,h=int(builtins.number_of_integration),builtins.stepsize_of_integration
     #Creating an array of the variables t,T,Lat,T_global which will be the outputarray
-    data=np.array([[0]*(n+1)]*3 )
+    if builtins.spatial_resolution>0:
+        if builtins.parallelization:
+            data=[np.zeros(n+1),np.reshape(np.zeros((n+1)*number_of_parallels*len(Vars.Lat)),(n+1,number_of_parallels,len(Vars.Lat))),np.reshape(np.zeros((n+1)*number_of_parallels),(n+1,number_of_parallels))]
+        else:
+            data=[np.zeros(n+1),np.reshape(np.zeros((n+1)*len(Vars.Lat)),(n+1,len(Vars.Lat))),np.zeros(n+1)]
+    else:
+        if builtins.parallelization:
+            data=[np.zeros(n+1),np.reshape(np.zeros((n+1)*number_of_parallels),(n+1,number_of_parallels)),np.reshape(np.zeros((n+1)*number_of_parallels),(n+1,number_of_parallels))]
+        else:
+            data=[np.zeros(n+1),np.zeros(n+1),np.zeros(n+1)]
     #Filling data with intitial conditions at positions data[.][0]
-    data=nal(data)
+    #data=nal(data)
     data[0][0]=Vars.t #time t
     data[1][0]=Vars.T #Temperature T
     data[2][0]=Vars.T_global #Global mean temperature T_global
@@ -213,9 +222,9 @@ def rk4alg(func,eqparam,rk4input,funccomp,progressbar=True):
         #Check if the equilibrium condition is fulfilled. If true, break the loop, cut the output array to
         #the current length and move on to return the output data
         if builtins.eq_condition:
-            if builtins.Runtime_Tracker > 4*builtins.eq_condition_length:
+            if (builtins.Runtime_Tracker+4) % (4*builtins.eq_condition_length+4) == 0:
                 if builtins.parallelization:
-                    if all(SteadyStateConditionGlobal(data[2][j-builtins.eq_condition_length:j][k]) for k in range(builtins.number_of_parallels)):
+                    if all(SteadyStateConditionGlobal(data[2][(j-builtins.eq_condition_length):j,k]) for k in range(builtins.number_of_parallels)):
                         for l in range(len(data)):
                             data[l]=data[l][:(j+1)]
                         for m in Vars.Read.keys():
@@ -224,7 +233,7 @@ def rk4alg(func,eqparam,rk4input,funccomp,progressbar=True):
                         print('Eq. State reached after %s steps, within %s seconds'%(int(builtins.Runtime_Tracker/4),(time.time() - Vars.start_time)))
                         break
                 else:
-                    if SteadyStateConditionGlobal(data[2][j-builtins.eq_condition_length:j])==True:
+                    if SteadyStateConditionGlobal(data[2][(j-builtins.eq_condition_length):j])==True:
                         for l in range(len(data)):
                             data[l]=data[l][:(j+1)]
                         for m in Vars.Read.keys():
