@@ -1,4 +1,9 @@
-def coremodule(config,P0,P_pert,Pmin,Pmax,labels,ZMT,GMT,grid,maxlength,targetmode,target,targetfunction,ratio_ZMT_GMT,elevation,precision,num_paras,gamma0,control,controlconfig):
+import numpy as np
+from lowEBMs.Packages.Variables import variable_importer, Vars
+from lowEBMs.Packages.RK4 import rk4alg
+from lowEBMs.Packages.ModelEquation import model_equation
+    
+def coremodule(config,P0,P_pert_ratio,Pmin,Pmax,labels,ZMT,GMT,grid,maxlength,targetmode,target,targetfunction,ratio_ZMT_GMT,elevation,precision,num_paras,gamma0,control,controlconfig):
     from tqdm import tqdm, tnrange
     
     F=np.reshape(np.zeros(maxlength*(2*num_paras+1)),(maxlength,2*num_paras+1))
@@ -20,8 +25,9 @@ def coremodule(config,P0,P_pert,Pmin,Pmax,labels,ZMT,GMT,grid,maxlength,targetmo
         print('Iteration no.'+str(i))
         if i==0:
             P[i]=P0
+            P_pert=(Pmax-Pmin)*P_pert_ratio
             Ptrans[i]=(P0-Pmin)/(Pmax-Pmin)
-            Ptrans_pert=Ptrans[i]*P_pert[0]/P0[0]
+            Ptrans_pert=Ptrans[i]*P_pert_ratio
 
         if targetmode=='Coupled':
             data_ZMT,data_GMT=run_model(config,P[i],P_pert,labels,ZMT,GMT,targetmode,control,controlconfig,grid,elevation)
@@ -86,12 +92,12 @@ def target_comparison(data,targetmode,target,targetfunction,num_paras,grid):
         elif targetmode=='ZMT':
             for i in range(len(F)):
                 if len(data[i])==len(target):
-                    F[i]=np.sum(((data[i]-target)*np.cos(grid*np.pi/180)/np.mean(np.cos(grid*np.pi/180)))**2)
+                    F[i]=np.nansum(((data[i]-target)*np.cos(grid*np.pi/180)/np.mean(np.cos(grid*np.pi/180)))**2)
                 elif len(data[i])==len(F):
-                    F[i]=np.sum(((data[:,i]-target)*np.cos(grid*np.pi/180)/np.mean(np.cos(grid*np.pi/180)))**2)
+                    F[i]=np.nansum(((data[:,i]-target)*np.cos(grid*np.pi/180)/np.mean(np.cos(grid*np.pi/180)))**2)
         elif targetmode=='GMT':
             for i in range(len(F)):
-                F[i]=np.sum((data[i]-target)**2)
+                F[i]=np.nansum((data[i]-target)**2)
 
     return F
 
@@ -124,26 +130,31 @@ def run_model(config,P,P_pert,labels,ZMT,GMT,targetmode,control,controlconfig,gr
         control=True
         
     if control==True:
-        variable_importer(controlconfig,initialZMT=True,parallel=True,parallel_config=setup)
+        variable_importer(controlconfig,initialZMT=True,parallel=True,parallel_config=setup,control=True)
         controlconfig=add_parameters(controlconfig,P_config,labels)
-        data_CTRL=rk4alg(model_equation,controlconfig['eqparam'],controlconfig['funccomp'],progressbar=True)
+        data_CTRL=rk4alg(model_equation,controlconfig['eqparam'],controlconfig['rk4input'],controlconfig['funccomp'],progressbar=True)
         ZMT,GMT=data_CTRL[1][-1],data_CTRL[2][-1]
 
     variable_importer(config,initialZMT=False,parallel=True,parallel_config=setup)
     config=add_parameters(config,P_config,labels)
     Vars.T,Vars.T_global=ZMT,GMT   
-    data=rk4alg(model_equation,config['eqparam'],config['funccomp'],progressbar=True)
+    data=rk4alg(model_equation,config['eqparam'],config['rk4input'],config['funccomp'],progressbar=True)
     
     if targetmode=='Single':
         data_out=data[2][-1]
     elif targetmode=='ZMT':
-        for i in range(len(data)):
-            data[i]=data[i]+elevation
-        data_out=data[1][-1]
+        dataZMT=data[1][-1]
+        for i in range(len(dataZMT)):
+            dataZMT[i]=dataZMT[i]+elevation
+        data_out=dataZMT
     elif targetmode=='GMT':
         data_out=np.transpose(data[2][:-1]-data[2][0])
     elif targetmode=='Coupled':
-        data_out=[data_CTRL[1][-1],np.transpose(data[2][:-1]-data[2][0])]
+        dataZMT=data_CTRL[1][-1]
+        for i in range(len(dataZMT)):
+            dataZMT[i]=dataZMT[i]+elevation
+        dataGMT=np.transpose(data[2][:-1]-data[2][0])
+        data_out=[dataZMT,dataGMT]
     return data_out
 
 def reshape_parameters(P,P_pert):

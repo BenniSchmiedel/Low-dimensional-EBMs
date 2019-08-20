@@ -385,6 +385,7 @@ def builtin_importer(rk4input,control=False,parallel=False,parallel_config=0,acc
     for i in range(len(keys)):
         exec("builtins.%s=%f" % (keys[i],values[i]))
     builtins.Runtime_Tracker=0
+    builtins.Readout_Tracker=0
     builtins.Noise_Tracker=0
     if parallel==True:
         builtins.parallelization=True

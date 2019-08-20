@@ -106,7 +106,15 @@ def importer(filename,*args,**kwargs):
     funclistd={}
     funcparamd={}
     i=0
-    while 'func'+str(i) in config:
+    for func in config:
+        if func[:4]=='func':
+            funclistd[func]=eval(config[func]['func'])
+            keys=config.options(func)[1:]  
+            values=[]      
+            for j in range(len(keys)):        
+                values.append(eval(config[func][keys[j]]))
+            funcparamd[func]=dict(zip(keys,values))
+    """while 'func'+str(i) in config:
         funclistd['func'+str(i)]=eval(config['func'+str(i)]['func'])
 
         keys=config.options('func'+str(i))[1:]  
@@ -115,7 +123,7 @@ def importer(filename,*args,**kwargs):
             values.append(eval(config['func'+str(i)][keys[j]]))
         funcparamd['func'+str(i)]=dict(zip(keys,values))
         i+=1
-    
+    """
     #packing the function components into one dictionary
     funccompd={'funclist':funclistd,'funcparam':funcparamd} 
     #converting to list-type to allow indexing

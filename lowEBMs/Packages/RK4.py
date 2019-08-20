@@ -49,7 +49,7 @@ import builtins
 import time
 
 
-def rk4alg(func,eqparam,rk4input,funccomp,progressbar=True):
+def rk4alg(func,eqparam,rk4input,funccomp,progressbar=True,daily=False):
     from tqdm import tqdm, tnrange
     """This functions main task is performing the numerical integration explained above by using the solution of the model equation from ``lowEBMs.Packages.ModelEquations``. 
 
@@ -212,7 +212,18 @@ def rk4alg(func,eqparam,rk4input,funccomp,progressbar=True):
             Vars.T_global = earthsystem().globalmean_temperature()
         else: #if 0 dimensional
             Vars.T_global = Vars.T
-        if (i) % builtins.data_readout == 0: 
+            
+        if daily:
+            month=int((i%365)/365*12)
+            day=int(i%(365/12))
+            if day==15:
+                builtins.Readout_Tracker+=1
+                
+                data[0][builtins.Readout_Tracker] = Vars.t
+                data[1][builtins.Readout_Tracker] = Vars.T  
+                data[2][builtins.Readout_Tracker] = Vars.T_global
+                
+        elif (i) % builtins.data_readout == 0: 
             j += 1       
             data[0][j] = Vars.t 
             #The Temperature is an average over the generated increments
