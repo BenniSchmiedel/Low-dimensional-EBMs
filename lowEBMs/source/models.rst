@@ -30,7 +30,7 @@ The physical basis of EBMs can be expressed in a model equation which commonly h
 
     C \cdot \frac{dT}{dt} = R_{down} + R_{up} + F 
 
-where C is the heatcapacity, :math:`\frac{dT}{dt}` the term to consider that the system is dynamical and :math:`R_{down}`, :math:`R_{up}`, :math:`F` the energy fluxes which are included.
+where C is the heatcapacity, :math:`\frac{dT}{dt}` the temperature tendency and :math:`R_{down}`, :math:`R_{up}`, :math:`F` the energy fluxes which are included.
 
 Model Types
 ===========

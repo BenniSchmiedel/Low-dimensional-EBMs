@@ -30,14 +30,51 @@ def Tutorial_copy(*args,**kwargs):
     if exit:
         print('Copy tutorial files to:'+trypath)
     else:
-        print('Path could not be found, please insert a valid path')
+        print('Output path could not be found, please insert a valid path')
+        
+def Forcing_copy(*args,**kwargs):
+    import shutil, sys, os
+    path=kwargs.get('path',os.getcwd())
+    possible_paths=[]
+    if path!=os.getcwd():
+        subdir=['..','../..','../../..','../../../..','../../../../..']
+        for i in subdir:
+            possible_paths.append(i+path)
+            
+    data_paths=[]
+    for i in sys.path:
+        data_paths.append(i+'/lowEBMs/Forcings')
+    for data in data_paths:
+        exists = os.path.isdir(data)
+        if exists:
+            location=data
+            break
+    exit=False
+    for trypath in possible_paths:
+        exists= os.path.isdir(trypath)
+        if exists:
+            
+            if os.path.exists(trypath+'/Forcings/TSI') and os.path.exists(trypath+'/Forcings/Orbital') and os.path.exists(trypath+'/Forcings/Volcanic'):
+                shutil.rmtree(trypath+'/Forcings/TSI')
+                shutil.rmtree(trypath+'/Forcings/Orbital')
+                shutil.rmtree(trypath+'/Forcings/Volcanic')
+            shutil.copytree(data+'/TSI',trypath+'/Forcings/TSI')
+            shutil.copytree(data+'/Orbital',trypath+'/Forcings/Orbital')
+            shutil.copytree(data+'/Volcanic',trypath+'/Forcings/Volcanic')
+            exit=True
+            break
+    if exit:
+        print('Copy forcing data to:'+trypath)
+    else:
+        print('Output path could not be found, please insert a valid path')
         
 
 def update_plotstyle():
     import matplotlib
+    matplotlib.rcParams['figure.figsize'] = [16,9]
     matplotlib.rcParams['axes.titlesize']=24
     matplotlib.rcParams['axes.labelsize']=20
-    matplotlib.rcParams['lines.linewidth']=3
+    matplotlib.rcParams['lines.linewidth']=2.5
     matplotlib.rcParams['lines.markersize']=10
     matplotlib.rcParams['xtick.labelsize']=16
     matplotlib.rcParams['ytick.labelsize']=16

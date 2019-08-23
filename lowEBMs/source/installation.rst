@@ -22,12 +22,13 @@ To download and install ``lowEBMs`` with all its dependencies, go to the command
     
     pip install lowEBMs
 
-.. Note::
-    Depending on how your system is confiured you might have to exchange ``pip`` with ``pip3``, which uses python 3. 
+or (if you have python 2 and python 3 installed and want to install it on python 3)::
+
+	pip install lowEBMs
 
 Alternatively, you can clone the git repository of the source code and manually run the setup.py which installs the package with all its dependencies::
 
-    git clone https://github.com/paleovar/lowEBMs 
+    git clone https://github.com/BenniSchmiedel/Low-dimensional-EBMs.git
 
     python setup.py install
 
@@ -37,15 +38,23 @@ Alternatively, you can clone the git repository of the source code and manually 
 Export Tutorial Files
 =====================
 
-``lowEBMs`` comes with a :doc:`list of tutorial files <tutorials>` supplemented in a subfolder of the package. When the package is installed via pip, it is automatically inbound in your specific python environment. To easily extract this tutorial files, a copy function is added which allows you to export the *jupyter notebooks* and *configuration.ini* files to your preferred directory.
+``lowEBMs`` comes with a :doc:`list of tutorial files <tutorials>` supplemented in a subfolder of the package. When the package is installed via pip, it is automatically inbound in your specific python environment. To easily extract those *jupyter notebooks* and *configuration.ini* files to your preferred directory, do the following:
 
-There are two options:
-Go to the command line, change your directory to the one where you want the files and use::
+Open the terminal, change your directory to the one where you want the files and use::
 
      python -c "from lowEBMs import Tutorial_copy; Tutorial_copy()"
 
-Or go to the command line and add your prefered path to the funtion::
+.. Note::
+	You can specify the output directory as argument with ``Tutorial_copy(path='/outputdir')``
 
-     python -c "from lowEBMs import Tutorial_copy; Tutorial_copy(path='/insert/your/path/here')"
+Export Forcing Files
+====================
 
+There are also PMIP3 forcing datasets included which can be exported the same way as the tutorial files.
 
+Open the terminal, change your directory to the one where you want the files and use::
+
+     python -c "from lowEBMs import Forcing_copy; Forcing_copy()"
+
+.. Note::
+	You can specify the output directory as argument with ``Forcing_copy(path='/outputdir')``

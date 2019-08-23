@@ -3,7 +3,7 @@
 How to use
 **********
 
-Here a brief introduction is given on how to get from a given input, which initializes the EBM you want to run, to an output, e.g. the global temperature propagation over time or the temperature distribution over a spatial grid representing the earth.
+Here described is how you use a given input, which initializes an EBM, to run a simulation with it.
 
 We will write a small python script, which will do this in a few steps. As it is easier to visualize the output in a plot and modify it, I recommend to perform this steps in a jupyter notebook.
 
@@ -21,25 +21,23 @@ Before you can use any module of this package you have to import the core module
     from lowEBMs.Packages.RK4 import rk4alg
     from lowEBMs.Packages.ModelEquation import model_equation
 
-This will import all needed modules.
-
 First Step: Import model configuration
 ======================================
 
-The way this project is built up enables to take any physical function implemented and merge them to create the basis of a desired EBM, which will be our input.
-The input will be created manually and is stored in a **configuration.ini** file. Details on how to create and structure **.ini** files is given in :doc:`input <input>`. 
+The way this project is built up enables to take any physical function implemented and merge them to formulate the desired EBM.
+The configuration has to be given manually and is stored in a **configuration.ini** file. Details on how to create and structure **.ini** files is given in :doc:`input <input>`. 
 
 .. Important::
     The configuration.ini file will provide the physical sense of the EBM!
 
 For now you can simply use the **EBM0D_simple_config.ini** file which imports a 0D EBM with a model run over 10 year and a stepsize of integration of 1 day. A demonstration on how to reproduce this **.ini** file is given in :ref:`Example Input 0D-EBM <0Dconf>`.
 
-To import this file use the ``importer``-function::
+To import the information from this file into the program use ``importer()``::
 
     configuration=importer('EBM0D_simple_config.ini')
 
 .. Note::
-    In case you work in another directory than the installation directory of the project or get the error 'File not found', add the additional argument path: **importer('filename',path='path/to/your/configuration.ini')**. The path can be a relative or full path to where your **configuration.ini** is located.
+    In case you work in another directory than the installation directory of the project or get the error 'File not found', add the additional argument path: ``importer('filename',path='path/to/your/file')``. The path can be a relative or full path to where your **configuration.ini** is located.
  
 
 ``configuration`` is an dictionary which contains all required input parameters. To seperate them for a clearer structure you can use::
@@ -49,19 +47,19 @@ To import this file use the ``importer``-function::
     fun=configuration['funccomp']
     ini=configuration['initials']
 
-These are four dictionaries which contain the information needed for the base equation, the runge-kutta algorithm, the functions used and the initial conditions.
+Those are four dictionaries which contain the information needed for the base equation, the runge-kutta algorithm, the functions used and the initial conditions.
 
 Second Step: Import variables
 =============================
 
-As next step the configuration we just imported has to be distributed on different variables. For example arrays of initals conditions are calculated or arrays for the output will be created. To do so we can simply use the ``variable_importer``::
+As next step the information from the configuration has to be imported into the programs variablespace. To do so use ``variable_importer()``::
 
     variable_importer(configuration)
 
-Third Step: Let the model/algorithm run
-=======================================
+Third Step: Start the simulation
+================================
 
-Now we are ready to run the algorithm with the ``rk4alg`` function. It requires the ``model_equation`` function and the dictionaries we seperated before (maintain the order)::
+Now we are ready to run the algorithm with ``rk4alg()``. It requires the ``model_equation`` and the dictionaries we seperated before (maintain the order)::
 
     outputdata=rk4alg(model_equation,eq,rk,fun)
 
@@ -70,9 +68,10 @@ Depending on your settings the algorithm will need some time until it prints *Fi
 Final Step: Evaluating the output
 =================================
 
-The function ``rk4alg`` return three arrays, the **Time, zonal mean temperature (ZMT) and global mean temperature (GMT)**. Other variables which are of interest, for example the grid specifications, can be accessed by importing the :doc:`variables <code/variables>` package and additional constants by importing the :doc:`constants <code/constants>` class::
+The function ``rk4alg`` return three arrays, the **Time, zonal mean temperature (ZMT) and global mean temperature (GMT)**. Other variables of interest, for example the grid specifications, can be accessed by importing the :doc:`variables <code/variables>` variablespace and additional constants by importing the :doc:`constants <code/constants>` class::
 
-    import lowEBMs.Packages.Variables as Vars
+    from lowEBMs.Packages.Variables import Vars
+	import lowEBMs.Packages.Constants as const
 
 and then return the desired variables by their specified name, for example::
 
@@ -82,7 +81,6 @@ For detailed information about output variables see section :doc:`output <output
 
 You can plot the global temperature over time with (with time conversion)::
 
-    import lowEBMs.Packages.Constants as const
     plt.plot(Time/const.time_sec_year,GMT)
     plt.xlabel('time [years]')
     plt.ylabel('GMT [K]')
