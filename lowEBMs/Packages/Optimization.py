@@ -3,7 +3,7 @@ from lowEBMs.Packages.Variables import variable_importer, Vars
 from lowEBMs.Packages.RK4 import rk4alg
 from lowEBMs.Packages.ModelEquation import model_equation
     
-def coremodule(config,P0,P_pert_ratio,Pmin,Pmax,labels,ZMT,GMT,grid,maxlength,targetmode,target,targetfunction,ratio_ZMT_GMT,elevation,precision,num_paras,gamma0,control,controlconfig):
+def coremodule(config,P0,P_pert_ratio,Pmin,Pmax,labels,ZMT,GMT,grid,maxlength,targetmode,target,targetfunction,ratio_ZMT_GMT,elevation,precision,num_paras,gamma0,control,controlconfig,monthly):
     from tqdm import tqdm, tnrange
     
     F=np.reshape(np.zeros(maxlength*(2*num_paras+1)),(maxlength,2*num_paras+1))
@@ -17,10 +17,17 @@ def coremodule(config,P0,P_pert_ratio,Pmin,Pmax,labels,ZMT,GMT,grid,maxlength,ta
     elif targetmode=='ZMT':
         dataout=np.reshape(np.zeros(maxlength*len(grid)*(2*num_paras+1)),(maxlength,(2*num_paras+1),len(grid)))
     elif targetmode=='GMT':
-        dataout=np.reshape(np.zeros(maxlength*int(number_of_integration/data_readout)*(2*num_paras+1)),(maxlength,(2*num_paras+1),int(number_of_integration/data_readout)))
+        if monthly:
+            dataout=np.reshape(np.zeros(maxlength*int(number_of_integration/365*12)*(2*num_paras+1)),(maxlength,(2*num_paras+1),int(number_of_integration/365*12)))
+        else:
+            dataout=np.reshape(np.zeros(maxlength*int(number_of_integration/data_readout)*(2*num_paras+1)),(maxlength,(2*num_paras+1),int(number_of_integration/data_readout)))
     elif targetmode=='Coupled':
         dataout_ZMT=np.reshape(np.zeros(maxlength*len(grid)*(2*num_paras+1)),(maxlength,(2*num_paras+1),len(grid)))
-        dataout_GMT=np.reshape(np.zeros(maxlength*int(number_of_integration/data_readout)*(2*num_paras+1)),(maxlength,(2*num_paras+1),int(number_of_integration/data_readout)))     
+        if monthly:
+            dataout_GMT=np.reshape(np.zeros(maxlength*int(number_of_integration/365*12)*(2*num_paras+1)),(maxlength,(2*num_paras+1),int(number_of_integration/365*12)))
+        else:
+            dataout_GMT=np.reshape(np.zeros(maxlength*int(number_of_integration/data_readout)*(2*num_paras+1)),(maxlength,(2*num_paras+1),int(number_of_integration/data_readout)))
+        
     for i in tnrange(maxlength):
         print('Iteration no.'+str(i))
         if i==0:
@@ -30,11 +37,11 @@ def coremodule(config,P0,P_pert_ratio,Pmin,Pmax,labels,ZMT,GMT,grid,maxlength,ta
             Ptrans_pert=Ptrans[i]*P_pert_ratio
 
         if targetmode=='Coupled':
-            data_ZMT,data_GMT=run_model(config,P[i],P_pert,labels,ZMT,GMT,targetmode,control,controlconfig,grid,elevation)
+            data_ZMT,data_GMT=run_model(config,P[i],P_pert,labels,ZMT,GMT,targetmode,control,controlconfig,grid,elevation,monthly=monthly)
             dataout_ZMT[i]=data_ZMT
             dataout_GMT[i]=data_GMT
         else:
-            data=run_model(config,P[i],P_pert,labels,ZMT,GMT,targetmode,control,controlconfig,grid,elevation)
+            data=run_model(config,P[i],P_pert,labels,ZMT,GMT,targetmode,control,controlconfig,grid,elevation,monthly=monthly)
             dataout[i]=data
             
         if targetmode=='Coupled':
@@ -121,7 +128,7 @@ def new_parameters(P,gamma,dF):
     P_next=P-gamma*dF
     return P_next
 
-def run_model(config,P,P_pert,labels,ZMT,GMT,targetmode,control,controlconfig,grid,elevation):
+def run_model(config,P,P_pert,labels,ZMT,GMT,targetmode,control,controlconfig,grid,elevation,monthly):
     
     P_config=reshape_parameters(P,P_pert)
     setup={'number_of_parameters': len(P), 'number_of_cycles': 1, 'number_of_parallels': len(P)*2+1}
@@ -132,13 +139,13 @@ def run_model(config,P,P_pert,labels,ZMT,GMT,targetmode,control,controlconfig,gr
     if control==True:
         variable_importer(controlconfig,initialZMT=True,parallel=True,parallel_config=setup,control=True)
         controlconfig=add_parameters(controlconfig,P_config,labels)
-        data_CTRL=rk4alg(model_equation,controlconfig['eqparam'],controlconfig['rk4input'],controlconfig['funccomp'],progressbar=True)
+        data_CTRL=rk4alg(model_equation,controlconfig['eqparam'],controlconfig['rk4input'],controlconfig['funccomp'],progressbar=True,monthly=monthly)
         ZMT,GMT=data_CTRL[1][-1],data_CTRL[2][-1]
 
     variable_importer(config,initialZMT=False,parallel=True,parallel_config=setup)
     config=add_parameters(config,P_config,labels)
     Vars.T,Vars.T_global=ZMT,GMT   
-    data=rk4alg(model_equation,config['eqparam'],config['rk4input'],config['funccomp'],progressbar=True)
+    data=rk4alg(model_equation,config['eqparam'],config['rk4input'],config['funccomp'],progressbar=True,monthly=monthly)
     
     if targetmode=='Single':
         data_out=data[2][-1]

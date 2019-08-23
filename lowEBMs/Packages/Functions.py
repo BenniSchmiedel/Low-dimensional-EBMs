@@ -2505,6 +2505,7 @@ class earthsystem:
         return Fw
     
     def solarradiation(self,convfactor,timeunit,orbitalyear,Q):
+        import sys
         """ 
         The solar insolation over the latitudes :math:`Q`.
         
@@ -2550,19 +2551,22 @@ class earthsystem:
         if timeunit=='annualmean':
             days=np.arange(365)
             Q=lna(np.mean(earthsystem().insolation(Vars.Lat,days,Vars.orbitals,S0=Q+Vars.TSI),axis=0))
-        if timeunit=='year':
+        elif timeunit=='year':
             days=np.linspace(0,((365*int(Vars.t)-1) % 365)*builtins.stepsize_of_integration % 365,36)
             Q=lna(np.mean(earthsystem().insolation(Vars.Lat,days,Vars.orbitals,S0=Q+Vars.TSI),axis=0))*convfactor
-        if timeunit=='month':
+        elif timeunit=='month':
             days=np.linspace((int(Vars.t)*365/12) % 365,(int(Vars.t)*365/12-1) % 365,30)
             Q=lna(np.mean(earthsystem().insolation(Vars.Lat,days,Vars.orbitals,S0=Q+Vars.TSI),axis=0))*convfactor
-        if timeunit=='day':
+        elif timeunit=='day':
             days=int(Vars.t)%365
             Q=lna(earthsystem().insolation(Vars.Lat,days,Vars.orbitals,S0=Q+Vars.TSI))*convfactor
-        if timeunit=='second':
+        elif timeunit=='second':
             tconv=60*60*24
             days=int(Vars.t/tconv)%365
             Q=lna(earthsystem().insolation(Vars.Lat,days,Vars.orbitals,S0=Q+Vars.TSI))*convfactor
+        else:
+            sys.exit('insolation timeunit unknown')
+        
         return Q
         
     def solarradiation_orbital(self,convfactor,orbitalyear,unit):

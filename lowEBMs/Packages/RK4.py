@@ -49,7 +49,7 @@ import builtins
 import time
 
 
-def rk4alg(func,eqparam,rk4input,funccomp,progressbar=True,daily=False):
+def rk4alg(func,eqparam,rk4input,funccomp,progressbar=True,monthly=False):
     from tqdm import tqdm, tnrange
     """This functions main task is performing the numerical integration explained above by using the solution of the model equation from ``lowEBMs.Packages.ModelEquations``. 
 
@@ -213,7 +213,7 @@ def rk4alg(func,eqparam,rk4input,funccomp,progressbar=True,daily=False):
         else: #if 0 dimensional
             Vars.T_global = Vars.T
             
-        if daily:
+        if monthly:
             month=int((i%365)/365*12)
             day=int(i%(365/12))
             if day==15:
@@ -255,6 +255,7 @@ def rk4alg(func,eqparam,rk4input,funccomp,progressbar=True,daily=False):
             elif builtins.Runtime_Tracker==(builtins.number_of_integration)*4:
                 print('Transit State reached after %s steps within %s seconds' %(int(builtins.Runtime_Tracker/4),time.time() - Vars.start_time))
                 break
+    j=builtins.Readout_Tracker
     #Return the written data (Cut excessive 0s)
     dataout=[np.array(data[0][:(j+1)]),np.array(data[1][:(j+1)]),np.array(data[2][:(j+1)])]
     

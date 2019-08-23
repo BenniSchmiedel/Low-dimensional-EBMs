@@ -180,37 +180,37 @@ Option 2, :ref:`Imported predefined forcing <Predefinedforcing>`::
 
     [func3]
     func=forcing.predefined
-    forcingnumber=1
-    datapath="../Config"
-    name="Forcingdata.csv"
+    forcingnumber=0
+    datapath="../Config/Data/"
+    name="EVA_800_2000.txt"
     delimiter=","
     header=1
     footer=0
-    col_time=1
-    col_forcing=2
+    col_time=0
+    col_forcing=1
     timeunit='year'
     bp=False
-    time_start=7362.5
+    time_start=0
     k_output=1
     m_output=0
     k_input=1
     m_input=0
 
-Option 3, :ref:`Imported predefined forcing <Predefinedforcing>`::
+Option 3, :ref:`Imported 1D predefined forcing <Predefinedforcing1d>`::
 
     [func3]
     func=forcing.predefined1
-    forcingnumber=2
-    datapath="../Config"
+    forcingnumber=0
+    datapath="../Config/Data/"
     name="Forcingdata1D.csv"
     delimiter=","
     header=1
     footer=0
-    col_time=1
+    col_time=0
     colrange_forcing=[1,19]
     timeunit='year'
     bp=False
-    time_start=7362.5
+    time_start=0
     k_output=1
     m_output=0
     k_input=1
@@ -259,9 +259,9 @@ Option 6, :ref:`Imported total solar irradiance <TSIForcing>`::
     [func3]
     func=forcing.solar
     datapath="../Config/Data/"
-    name="TSIdata.csv"
-    delimiter=","
-    header=0
+    name="tsi_SBF_11yr.txt"
+    delimiter=""
+    header=4
     footer=0
     col_time=0
     col_forcing=1
