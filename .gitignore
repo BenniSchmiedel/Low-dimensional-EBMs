@@ -17,5 +17,5 @@ Data/EVA_800_2000_1D_10deg.txt
 Data/*
 
 #Ignore Development data
-*.ipynb
-/Devdata/*.ini
+/*.ipynb
+/Devdata/
