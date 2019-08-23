@@ -10,7 +10,7 @@ with open(path.join(this_directory, 'README.txt'), encoding='utf-8') as f:
     long_description = f.read()
 
 setuptools.setup(name='lowEBMs',
-      version='0.7.1',
+      version='1.0',
       description='A python implementation of low-dimensional EBMs',
       long_description=long_description,
       long_description_content_type='text/plain',
